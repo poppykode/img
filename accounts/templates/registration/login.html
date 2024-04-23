@@ -1,0 +1,96 @@
+{% extends 'auth_shared.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+            <!-- Register -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Logo -->
+                    <div class="app-brand justify-content-center">
+                        <a href="/" class="app-brand-link gap-2">
+                            <span class="app-brand-logo demo">
+                                <img src="{% static 'assets/img/logos/logo.png' %}" alt="logo"
+                                    style="max-width: 300px;">
+
+                            </span>
+                        </a>
+                    </div>
+                    <!-- /Logo -->
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                        </button>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <h4 class="mb-2 text-center">Welcome!</h4>
+                    <p class="mb-4 text-center">Please login to your account</p>
+
+
+
+                    <form class="mb-3" action="{% url 'accounts:login' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.username|as_crispy_field }}
+
+                        </div>
+                        <div class="mb-3">
+                            {{ form.password|as_crispy_field }}
+
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="remember-me">
+                                <label class="form-check-label" for="remember-me"> Remember Me </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-primary d-grid w-100" type="submit">Sign in</button>
+                        </div>
+                    </form>
+
+
+                    <p class="text-center">
+                        <span>New on our platform?</span>
+                        <br>
+                        <a href="/">
+                            <span>Create a Study Buddy Account</span>
+                         
+                        </a>
+                     <br>
+                        <a href="/">
+                            <span>Apply as coach</span>
+                        </a>
+                    </p>
+
+                    <div class="divider my-4">
+                        <div class="divider-text">or</div>
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        <a href="javascript:;" class="btn btn-icon btn-label-facebook me-3">
+                            <i class="tf-icons bx bxl-facebook"></i>
+                        </a>
+
+                        <a href="javascript:;" class="btn btn-icon btn-label-google-plus me-3">
+                            <i class="tf-icons bx bxl-google-plus"></i>
+                        </a>
+
+                        <a href="javascript:;" class="btn btn-icon btn-label-twitter">
+                            <i class="tf-icons bx bxl-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- /Register -->
+        </div>
+    </div>
+</div>
+{% endblock %}
