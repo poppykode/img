@@ -26,7 +26,7 @@ class StationCategory(models.Model):
         ordering = ["-timestamp", ]
 
 class StationSubCategory(models.Model):
-    station_sub_category=models.ForeignKey(StationCategory,related_name='station_sub_category', on_delete=models.CASCADE)
+    station_category=models.ForeignKey(StationCategory,related_name='station_sub_category', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)

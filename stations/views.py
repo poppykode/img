@@ -66,7 +66,7 @@ def create_category_station(request):
         if form.is_valid():
             form.save()
             messages.success(request,"Station category successfully created.")
-            return redirect('stations:category_stations')
+            return redirect('stations:station_categories')
     return render(request,template_name,{'form':form,'type':'create'})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
@@ -78,8 +78,8 @@ def edit_category_station(request, id):
         if form.is_valid():
             form.save()
             messages.success(request,f'Category station {station_category.title} successfully updated.')
-            return redirect('stations:category_stations')
-    return render(request, template_name, {'form':form,'type':'edit','station':station_category})
+            return redirect('stations:station_categories')
+    return render(request, template_name, {'form':form,'type':'edit','station_category':station_category})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def delete_category_station(request, id):
@@ -88,7 +88,7 @@ def delete_category_station(request, id):
     if request.method ==  'POST':
         station_category.delete()
         messages.success(request,f'Category Station {station_category.title} successfully deleted.')
-        return redirect('stations:category_stations')
+        return redirect('stations:station_categories')
     return render(request, template_name, {'obj':station_category})
 
 ## stations sub categories

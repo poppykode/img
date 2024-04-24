@@ -1,6 +1,36 @@
 {% extends 'main_shared.html' %}
+{% load crispy_forms_tags %}
 {% load static %}
-{% block title %}Create Category Station{% endblock %}
+{% block title %}
+ {% include 'snippets/title_text.html' %} Station Category
+{% endblock %}
 {% block content %}
-<h1>Create Category Station</h1>
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / stations /</span>
+    {% include 'snippets/title_text.html' %} Station Category
+   </h5>
+<div class="card mb-4">
+   {% if type == 'create' %}
+   <form class="card-body"  action="{% url 'stations:create_category_station' %}" method="POST">
+      {% else %}
+   <form class="card-body"  action="{% url 'stations:edit_category_station' station_category.id  %}" method="POST">
+   {% endif %}
+
+      {% csrf_token %} 
+     <div class="row g-3">
+        <div class="col-md-6">
+            {{form.station|as_crispy_field}}
+          </div>
+       <div class="col-md-6">
+         {{form.title|as_crispy_field}}
+       </div>
+     </div>
+     <div class="pt-4">
+       <button type="submit" class="btn btn-primary me-sm-3 me-1">
+        {% include 'snippets/title_text.html' %} Station Category
+       </button>
+       <a href="{% url 'stations:station_categories' %}" class="btn btn-label-secondary">Cancel</a>
+     </div>
+   </form>
+ </div>
+
 {% endblock %}

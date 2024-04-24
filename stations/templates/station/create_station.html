@@ -2,25 +2,17 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% block title %}
-{% if type == 'create' %}
-   Create Station
-{% else %}
-   Edit Station
-{% endif %}
+{% include 'snippets/title_text.html' %} Station
 {% endblock %}
 {% block content %}
 <h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / stations /</span>
-   {% if type == 'create' %}
-     Create Station
-   {% else %}
-     Edit Station
-   {% endif %}
-   </h5>
+  {% include 'snippets/title_text.html' %} Station
+  </h5>
 <div class="card mb-4">
    {% if type == 'create' %}
    <form class="card-body"  action="{% url 'stations:create_station' %}" method="POST">
       {% else %}
-   <form class="card-body"  action="{% url 'stations:create_station' %}" method="POST">
+   <form class="card-body"  action="{% url 'stations:edit_station' station.id %}" method="POST">
    {% endif %}
 
       {% csrf_token %}
@@ -31,11 +23,7 @@
      </div>
      <div class="pt-4">
        <button type="submit" class="btn btn-primary me-sm-3 me-1">
-         {% if type == 'create' %}
-            Create Station
-         {% else %}
-            Edit Station
-         {% endif %}
+        {% include 'snippets/title_text.html' %} Station
        </button>
        <a href="{% url 'stations:stations' %}" class="btn btn-label-secondary">Cancel</a>
      </div>

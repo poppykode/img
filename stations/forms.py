@@ -24,8 +24,7 @@ class StationCategoryForm(forms.ModelForm):
         'title':'Station Category Name'
     }
 
-    fields = ['title',]
-    fields = ['title',]
+    fields = ['station','title',]
 
 class StationSubCategoryForm(forms.ModelForm):
   class Meta:
@@ -36,5 +35,5 @@ class StationSubCategoryForm(forms.ModelForm):
     labels = {
         'title':'Station Sub Category Name'
     }
-    fields = ['station_sub_category','title',]
+    fields = ['station_category','title',]
 

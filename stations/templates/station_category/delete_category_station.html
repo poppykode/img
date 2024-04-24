@@ -1,0 +1,25 @@
+{% extends 'main_shared.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}{{obj.title|title}}{% endblock %}
+{% block content %}
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / stations /</span> Delete {{obj.title|title}}</h5>
+<div class="card mb-4">
+
+   <form class="card-body"  action="{% url 'stations:delete_category_station' obj.id %}" method="POST">
+      {% csrf_token %}
+     <div class="row g-3 mt-2">
+       <div class="col-md-12">
+        <h4>Are you sure you want to delete station <strong>{{obj.title|title}}</strong></h4>
+       </div>
+     </div>
+     <div class="pt-4">
+       <button type="submit" class="btn btn-danger me-sm-3 me-1">       
+            Delete Station
+       </button>
+       <a href="{% url 'stations:station_categories' %}" class="btn btn-label-secondary">Cancel</a>
+     </div>
+   </form>
+ </div>
+
+{% endblock %}
