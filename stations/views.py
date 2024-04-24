@@ -100,14 +100,14 @@ def station_sub_categories(request):
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def create_category_sub_station(request):
-    template_name = 'station_sub_category/create_categroy_sub_station.html'
+    template_name = 'station_sub_category/create_category_sub_station.html'
     form = forms.StationSubCategoryForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
             form.save()
             messages.success(request,"Sub station category successfully created.")
-            return redirect('stations:sub_category_stations')
-    return render(request,template_name,{'form':form})
+            return redirect('stations:station_sub_categories')
+    return render(request,template_name,{'form':form,'type':'create'})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def edit_sub_category_station(request, id):
@@ -118,8 +118,8 @@ def edit_sub_category_station(request, id):
         if form.is_valid():
             form.save()
             messages.success(request,f'Station sub category {station_sub_category.title} successfully updated.')
-            return redirect('stations:sub_category_stations')
-    return render(request, template_name, {'form':form,'type':'edit','station':station_sub_category})
+            return redirect('stations:station_sub_categories')
+    return render(request, template_name, {'form':form,'type':'edit','station_sub_category':station_sub_category})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def delete_sub_category_station(request, id):
@@ -128,6 +128,6 @@ def delete_sub_category_station(request, id):
     if request.method ==  'POST':
         station_sub_category.delete()
         messages.success(request,f'Station sub category  {station_sub_category.title} successfully deleted.')
-        return redirect('stations:sub_category_stations')
+        return redirect('stations:station_sub_categories')
     return render(request, template_name, {'obj':station_sub_category})
 

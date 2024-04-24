@@ -1,6 +1,87 @@
 {% extends 'main_shared.html' %}
 {% load static %}
-{% block title %}Sub Category Stations{% endblock %}
+{% load static %}
+{% block title %} Station Sub Categories{% endblock %}
 {% block content %}
-<h1>Sub Category Stations</h1>
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home /</span> Station Categories / Station Sub Categories</h5>
+<div class="card-header flex-column flex-md-row mb-3">
+     
+    <div class="dt-action-buttons pt-3 pt-md-0">
+        <div class="dt-buttons btn-group flex-wrap"> 
+            <div class="btn-group">
+         
+            </div> 
+            <a class="btn btn-secondary create-new btn-primary" href="{% url 'stations:create_category_sub_station' %}">
+                <span>
+                    <i class="bx bx-plus me-sm-1"></i> 
+                    <span class="d-none d-sm-inline-block">Add Station Sub Categories</span>
+                </span>
+            </a> 
+        </div>
+    </div>
+
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible mt-3" role="alert">
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+  </button>
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+</div>
+  <div class="card">
+
+  
+    <div class="table-responsive">
+      <table class="table border-top table-hover">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Station Sub Category</th> 
+            <th>Station Category</th> 
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        
+        <tbody>
+          {% for station_sub_cat in station_sub_categories %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{station_sub_cat.title|title}}</td>
+            <td>{{station_sub_cat.station_category.title|title}}</td>
+            <td>{{station_sub_cat.timestamp}}</td>
+            <td>
+              <div class="dropdown">
+                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bx bx-dots-vertical-rounded"></i>
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{% url 'stations:edit_sub_category_station' station_sub_cat.id %}"><i class="bx bx-edit-alt me-1"></i> Edit</a>
+                  <a class="dropdown-item" href="{% url 'stations:delete_sub_category_station' station_sub_cat.id %}"><i class="bx bx-trash me-1"></i> Delete</a>
+                </div>
+              </div>
+            </td>
+
+          </tr>
+          {% empty %}
+          <tr>
+            <td>No data</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      
+      </table>
+    </div>
+  {% if station_sub_categories %}
+  {% include 'snippets/pagination.html' with items=station_sub_categories %}
+  {% endif %}
+  </div>
+
+
 {% endblock %}
+
+
