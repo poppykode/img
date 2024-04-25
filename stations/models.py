@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-class Station(models.Model):
+class FirstLevelStation(models.Model):
     title = models.CharField(max_length=255)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -13,8 +13,8 @@ class Station(models.Model):
     class Meta:
         ordering = ["-timestamp", ]
 
-class StationCategory(models.Model):
-    station=models.ForeignKey(Station,related_name='station_category', on_delete=models.CASCADE)
+class SecondLevelStation(models.Model):
+    first_level_station = models.ForeignKey(FirstLevelStation,related_name='first_level_station', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -25,16 +25,28 @@ class StationCategory(models.Model):
     class Meta:
         ordering = ["-timestamp", ]
 
-class StationSubCategory(models.Model):
-    station_category=models.ForeignKey(StationCategory,related_name='station_sub_category', on_delete=models.CASCADE)
+class ThirdLevelStation(models.Model):
+    second_level_station=models.ForeignKey(SecondLevelStation,related_name='second_level_station', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-         return self.title
+         return f"{self.second_level_station.first_level_station.title} -> {self.second_level_station.title} ->{self.title}"
 
     class Meta:
         ordering = ["-timestamp", ]
 
+
+# class CandidateInstruction(models.Model):
+#     station = models.ForeignKey(ThirdLevelStation,related_name='candidate_station', on_delete=models.CASCADE)
+#     title = models.CharField(max_length=255)
+#     updated = models.DateTimeField(auto_now=True)
+#     timestamp = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#          return self.title
+
+#     class Meta:
+#         ordering = ["-timestamp", ]
 

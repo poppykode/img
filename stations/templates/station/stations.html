@@ -1,8 +1,9 @@
 {% extends 'main_shared.html' %}
 {% load static %}
-{% block title %}Stations{% endblock %}
+{% block title %}First Level Stations{% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home /</span> Stations</h5>
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home /</span> First Level Stations</h5>
+
 <div class="card-header flex-column flex-md-row mb-3">
      
     <div class="dt-action-buttons pt-3 pt-md-0">
@@ -10,10 +11,10 @@
             <div class="btn-group">
          
             </div> 
-            <a class="btn btn-secondary create-new btn-primary" href="{% url 'stations:create_station' %}">
+            <a class="btn btn-secondary create-new btn-primary" href="{% url 'stations:create_first_level_station' %}">
                 <span>
                     <i class="bx bx-plus me-sm-1"></i> 
-                    <span class="d-none d-sm-inline-block">Add Station</span>
+                    <span class="d-none d-sm-inline-block">Add First Level Station</span>
                 </span>
             </a> 
         </div>
@@ -39,26 +40,26 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Station Name</th>
+            <th>First Level Station Name</th>
             <th>Date</th>
             <th>Action</th>
           </tr>
         </thead>
         
         <tbody>
-          {% for station in stations %}
+          {% for item in items %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{station.title}}</td>
-            <td>{{station.timestamp}}</td>
+            <td>{{item.title}}</td>
+            <td>{{item.timestamp}}</td>
             <td>
               <div class="dropdown">
                 <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="bx bx-dots-vertical-rounded"></i>
                 </button>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{% url 'stations:edit_station' station.id %}"><i class="bx bx-edit-alt me-1"></i> Edit</a>
-                  <a class="dropdown-item" href="{% url 'stations:delete_station' station.id %}"><i class="bx bx-trash me-1"></i> Delete</a>
+                  <a class="dropdown-item" href="{% url 'stations:edit_first_level_station' item.id %}"><i class="bx bx-edit-alt me-1"></i> Edit</a>
+                  <a class="dropdown-item" href="{% url 'stations:delete_first_level_station' item.id %}"><i class="bx bx-trash me-1"></i> Delete</a>
                 </div>
               </div>
             </td>
@@ -73,8 +74,8 @@
       
       </table>
     </div>
-  {% if stations %}
-  {% include 'snippets/pagination.html' with items=stations %}
+  {% if items %}
+  {% include 'snippets/pagination.html' with items=items %}
   {% endif %}
 
   </div>

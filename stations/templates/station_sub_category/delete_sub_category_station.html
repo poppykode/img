@@ -3,21 +3,21 @@
 {% load static %}
 {% block title %}{{obj.title|title}}{% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / stations / stations category / </span> Delete {{obj.title|title}}</h5>
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Third Level Stations / </span> Delete {{obj.title|title}}</h5>
 <div class="card mb-4">
 
-   <form class="card-body"  action="{% url 'stations:delete_sub_category_station' obj.id %}" method="POST">
+   <form class="card-body"  action="{% url 'stations:delete_third_level_station' obj.id %}" method="POST">
       {% csrf_token %}
      <div class="row g-3 mt-2">
        <div class="col-md-12">
-        <h4>Are you sure you want to delete station sub category <strong>{{obj.title|title}}</strong></h4>
+        <h4>Are you sure you want to delete third level station <strong>{{obj.title|title}}</strong></h4>
        </div>
      </div>
      <div class="pt-4">
-       <button type="submit" class="btn btn-danger me-sm-3 me-1">       
-            Delete Station Sub Sation
+       <button type="submit" class="btn btn-danger me-sm-3 me-1">      
+            Delete Third Level Station
        </button>
-       <a href="{% url 'stations:station_sub_categories' %}" class="btn btn-label-secondary">Cancel</a>
+       <a href="{% url 'stations:third_level_stations' %}" class="btn btn-label-secondary">Cancel</a>
      </div>
    </form>
  </div>

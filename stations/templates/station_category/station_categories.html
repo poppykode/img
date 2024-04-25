@@ -1,9 +1,9 @@
 {% extends 'main_shared.html' %}
 {% load static %}
 {% load static %}
-{% block title %}Station Categories{% endblock %}
+{% block title %}Second Level Station{% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home /</span> Station Categories</h5>
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home /</span> Second Level Sations </h5>
 <div class="card-header flex-column flex-md-row mb-3">
      
     <div class="dt-action-buttons pt-3 pt-md-0">
@@ -11,10 +11,10 @@
             <div class="btn-group">
          
             </div> 
-            <a class="btn btn-secondary create-new btn-primary" href="{% url 'stations:create_category_station' %}">
+            <a class="btn btn-secondary create-new btn-primary" href="{% url 'stations:create_second_level_station' %}">
                 <span>
                     <i class="bx bx-plus me-sm-1"></i> 
-                    <span class="d-none d-sm-inline-block">Add Station Category</span>
+                    <span class="d-none d-sm-inline-block">Add Second Level Station</span>
                 </span>
             </a> 
         </div>
@@ -40,28 +40,28 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Station Category</th> 
-            <th>Station</th> 
+            <th>Second Level Station</th> 
+            <th>First Level Station</th> 
             <th>Date</th>
             <th>Action</th>
           </tr>
         </thead>
         
         <tbody>
-          {% for station_cat in station_categories %}
+          {% for item in items %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{station_cat.title|title}}</td>
-            <td>{{station_cat.station.title|title}}</td>
-            <td>{{station_cat.timestamp}}</td>
+            <td>{{item.title|title}}</td>
+            <td>{{item.first_level_station.title|title}}</td>
+            <td>{{item.timestamp}}</td>
             <td>
               <div class="dropdown">
                 <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="bx bx-dots-vertical-rounded"></i>
                 </button>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{% url 'stations:edit_category_station' station_cat.id %}"><i class="bx bx-edit-alt me-1"></i> Edit</a>
-                  <a class="dropdown-item" href="{% url 'stations:delete_category_station' station_cat.id %}"><i class="bx bx-trash me-1"></i> Delete</a>
+                  <a class="dropdown-item" href="{% url 'stations:edit_second_level_station' item.id %}"><i class="bx bx-edit-alt me-1"></i> Edit</a>
+                  <a class="dropdown-item" href="{% url 'stations:delete_second_level_station' item.id %}"><i class="bx bx-trash me-1"></i> Delete</a>
                 </div>
               </div>
             </td>
@@ -76,8 +76,8 @@
       
       </table>
     </div>
-  {% if station_categories %}
-  {% include 'snippets/pagination.html' with items=station_categories %}
+  {% if items %}
+  {% include 'snippets/pagination.html' with items=items %}
   {% endif %}
   </div>
 

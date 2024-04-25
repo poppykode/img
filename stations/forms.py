@@ -3,37 +3,37 @@ from . import models
 
 form_control = {'class': 'form-control'}
 
-class StationForm(forms.ModelForm):
+class FirstLevelStationForm(forms.ModelForm):
   class Meta:
-    model = models.Station
+    model = models.FirstLevelStation
     widgets = {
       'title': forms.widgets.TextInput(attrs=form_control)
     }
     labels = {
-        'title':'Station Name'
+        'title':'First Level Station Name'
     }
     fields = ['title',]
 
-class StationCategoryForm(forms.ModelForm):
+class SecondLevelStationForm(forms.ModelForm):
   class Meta:
-    model = models.StationCategory
+    model = models.SecondLevelStation
     widgets = {
       'title': forms.widgets.TextInput(attrs=form_control)
     }
     labels = {
-        'title':'Station Category Name'
+        'title':'Second Level Station Name'
     }
 
-    fields = ['station','title',]
+    fields = ['first_level_station','title',]
 
-class StationSubCategoryForm(forms.ModelForm):
+class ThirdLevelStationForm(forms.ModelForm):
   class Meta:
-    model = models.StationSubCategory
+    model = models.ThirdLevelStation
     widgets = {
       'title': forms.widgets.TextInput(attrs=form_control)
     }
     labels = {
-        'title':'Station Sub Category Name'
+        'title':'Third Level Station Name'
     }
-    fields = ['station_category','title',]
+    fields = ['second_level_station','title',]
 

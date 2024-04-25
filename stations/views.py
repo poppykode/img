@@ -13,121 +13,121 @@ from . import utils
 
 ## stations
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def stations(request):
+def first_level_stations(request):
     template_name = 'station/stations.html'
-    stations_ = models.Station.objects.all()
-    return render(request,template_name,{'stations':utils.paginator(request,stations_,10)})
+    first_level_stations_ = models.FirstLevelStation.objects.all()
+    return render(request,template_name,{'items':utils.paginator(request,first_level_stations_,10)})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def create_station(request):
+def create_first_level_station(request):
     template_name = 'station/create_station.html'
-    form = forms.StationForm(request.POST or None)
+    form = forms.FirstLevelStationForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-            messages.success(request,"Station successfully created.")
-            return redirect('stations:stations')
+            messages.success(request,"First level station successfully created.")
+            return redirect('stations:first_level_stations')
     return render(request,template_name,{'form':form,'type':'create'})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def edit_station(request, id):
-    station = get_object_or_404(models.Station,id=id)
-    form = forms.StationForm(request.POST or None, instance=station)
+def edit_first_level_station(request, id):
+    first_level_station_ = get_object_or_404(models.FirstLevelStation,id=id)
+    form = forms.FirstLevelStationForm(request.POST or None, instance=first_level_station_)
     template_name = 'station/create_station.html'
     if request.method ==  'POST':
         if form.is_valid():
             form.save()
-            messages.success(request,f'Station {station.title} successfully updated.')
-            return redirect('stations:stations')
-    return render(request, template_name, {'form':form,'type':'edit','station':station})
+            messages.success(request,f'First level station {first_level_station_.title} successfully updated.')
+            return redirect('stations:first_level_stations')
+    return render(request, template_name, {'form':form,'type':'edit','obj':first_level_station_})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def delete_station(request, id):
-    station = get_object_or_404(models.Station,id=id)
+def delete_first_level_station(request, id):
+    first_level_station = get_object_or_404(models.FirstLevelStation,id=id)
     template_name = 'station/delete_station.html'
     if request.method ==  'POST':
-        station.delete()
-        messages.success(request,f'Station {station.title} successfully deleted.')
-        return redirect('stations:stations')
-    return render(request, template_name, {'obj':station})
+        first_level_station.delete()
+        messages.success(request,f'First level station {first_level_station.title} successfully deleted.')
+        return redirect('stations:first_level_stations')
+    return render(request, template_name, {'obj':first_level_station})
 
 ## stations categories
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def station_categories(request):
+def second_level_stations(request):
     template_name = 'station_category/station_categories.html'
-    station_categories_ = models.StationCategory.objects.all()
-    return render(request,template_name,{'station_categories':utils.paginator(request,station_categories_,10)})
+    second_level_stations_ = models.SecondLevelStation.objects.all()
+    return render(request,template_name,{'items':utils.paginator(request,second_level_stations_,10)})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def create_category_station(request):
+def create_second_level_station(request):
     template_name = 'station_category/create_category_station.html'
-    form = forms.StationCategoryForm(request.POST or None)
+    form = forms.SecondLevelStationForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-            messages.success(request,"Station category successfully created.")
-            return redirect('stations:station_categories')
+            messages.success(request,"Second level station successfully created.")
+            return redirect('stations:second_level_stations')
     return render(request,template_name,{'form':form,'type':'create'})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def edit_category_station(request, id):
-    station_category = get_object_or_404(models.StationCategory,id=id)
-    form = forms.StationCategoryForm(request.POST or None, instance=station_category)
+def edit_second_level_station(request, id):
+    second_level_station = get_object_or_404(models.SecondLevelStation,id=id)
+    form = forms.SecondLevelStationForm(request.POST or None, instance=second_level_station)
     template_name = 'station_category/create_category_station.html'
     if request.method ==  'POST':
         if form.is_valid():
             form.save()
-            messages.success(request,f'Category station {station_category.title} successfully updated.')
-            return redirect('stations:station_categories')
-    return render(request, template_name, {'form':form,'type':'edit','station_category':station_category})
+            messages.success(request,f'Second level station {second_level_station.title} successfully updated.')
+            return redirect('stations:second_level_stations')
+    return render(request, template_name, {'form':form,'type':'edit','obj':second_level_station})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def delete_category_station(request, id):
-    station_category = get_object_or_404(models.StationCategory,id=id)
+def delete_second_level_station(request, id):
+    second_level_station = get_object_or_404(models.SecondLevelStation,id=id)
     template_name = 'station_category/delete_category_station.html'
     if request.method ==  'POST':
-        station_category.delete()
-        messages.success(request,f'Category Station {station_category.title} successfully deleted.')
-        return redirect('stations:station_categories')
-    return render(request, template_name, {'obj':station_category})
+        second_level_station.delete()
+        messages.success(request,f'Second level station {second_level_station.title} successfully deleted.')
+        return redirect('stations:second_level_stations')
+    return render(request, template_name, {'obj':second_level_station})
 
 ## stations sub categories
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def station_sub_categories(request):
+def third_level_stations(request):
     template_name = 'station_sub_category/station_sub_categories.html'
-    station_sub_categories_ = models.StationSubCategory.objects.all()
-    return render(request,template_name,{'station_sub_categories':utils.paginator(request,station_sub_categories_,10)})
+    third_level_stations_ = models.ThirdLevelStation.objects.all()
+    return render(request,template_name,{'items':utils.paginator(request,third_level_stations_,10)})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def create_category_sub_station(request):
+def create_third_level_station(request):
     template_name = 'station_sub_category/create_category_sub_station.html'
-    form = forms.StationSubCategoryForm(request.POST or None)
+    form = forms.ThirdLevelStationForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-            messages.success(request,"Sub station category successfully created.")
-            return redirect('stations:station_sub_categories')
+            messages.success(request,"Second level station successfully created.")
+            return redirect('stations:third_level_stations')
     return render(request,template_name,{'form':form,'type':'create'})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def edit_sub_category_station(request, id):
-    station_sub_category = get_object_or_404(models.StationSubCategory,id=id)
-    form = forms.StationSubCategoryForm(request.POST or None, instance=station_sub_category)
+def edit_third_level_station(request, id):
+    third_level_station = get_object_or_404(models.ThirdLevelStation,id=id)
+    form = forms.ThirdLevelStationForm(request.POST or None, instance=third_level_station)
     template_name = 'station_sub_category/create_category_sub_station.html'
     if request.method ==  'POST':
         if form.is_valid():
             form.save()
-            messages.success(request,f'Station sub category {station_sub_category.title} successfully updated.')
-            return redirect('stations:station_sub_categories')
-    return render(request, template_name, {'form':form,'type':'edit','station_sub_category':station_sub_category})
+            messages.success(request,f'Second level station {third_level_station.title} successfully updated.')
+            return redirect('stations:third_level_stations')
+    return render(request, template_name, {'form':form,'type':'edit','obj':third_level_station})
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def delete_sub_category_station(request, id):
-    station_sub_category = get_object_or_404(models.StationSubCategory,id=id)
+def delete_third_level_station(request, id):
+    third_level_station = get_object_or_404(models.ThirdLevelStation,id=id)
     template_name = 'station_sub_category/delete_sub_category_station.html'
     if request.method ==  'POST':
-        station_sub_category.delete()
-        messages.success(request,f'Station sub category  {station_sub_category.title} successfully deleted.')
-        return redirect('stations:station_sub_categories')
-    return render(request, template_name, {'obj':station_sub_category})
+        third_level_station.delete()
+        messages.success(request,f'Second level station  {third_level_station.title} successfully deleted.')
+        return redirect('stations:third_level_stations')
+    return render(request, template_name, {'obj':third_level_station})
 

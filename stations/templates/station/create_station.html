@@ -5,14 +5,14 @@
 {% include 'snippets/title_text.html' %} Station
 {% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / stations /</span>
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / First Level Sations /</span>
   {% include 'snippets/title_text.html' %} Station
   </h5>
 <div class="card mb-4">
    {% if type == 'create' %}
-   <form class="card-body"  action="{% url 'stations:create_station' %}" method="POST">
+   <form class="card-body"  action="{% url 'stations:create_first_level_station' %}" method="POST">
       {% else %}
-   <form class="card-body"  action="{% url 'stations:edit_station' station.id %}" method="POST">
+   <form class="card-body"  action="{% url 'stations:edit_first_level_station' obj.id %}" method="POST">
    {% endif %}
 
       {% csrf_token %}
@@ -25,7 +25,7 @@
        <button type="submit" class="btn btn-primary me-sm-3 me-1">
         {% include 'snippets/title_text.html' %} Station
        </button>
-       <a href="{% url 'stations:stations' %}" class="btn btn-label-secondary">Cancel</a>
+       <a href="{% url 'stations:first_level_stations' %}" class="btn btn-label-secondary">Cancel</a>
      </div>
    </form>
  </div>
