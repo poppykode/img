@@ -232,10 +232,8 @@ def station_creator(request):
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def stations(request):
     template_name = "station/stations.html"
-    first_level_stations_ = models.FirstLevelStation.objects.all()
     return render(
         request,
-        template_name,
-        {"items": utils.paginator(request, first_level_stations_, 10)},
+        template_name
     )
 
