@@ -19,4 +19,6 @@ urlpatterns = [
     path('edit-sub-category-station/<int:id>',views.edit_third_level_station,name='edit_third_level_station'),
     path('delete-sub-category-station/<int:id>',views.delete_third_level_station,name='delete_third_level_station'),
 
+    path('station-creator',views.station_creator,name='station_creator'),
+
 ]

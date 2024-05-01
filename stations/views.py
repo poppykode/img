@@ -1,7 +1,9 @@
+from django.forms import formset_factory
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from core.decorators import role_required
 from core.enums import (
+    ExaminerMarkSheetEnum,
     RoleEnum
 )
 from . import forms
@@ -130,4 +132,44 @@ def delete_third_level_station(request, id):
         messages.success(request,f'Second level station  {third_level_station.title} successfully deleted.')
         return redirect('stations:third_level_stations')
     return render(request, template_name, {'obj':third_level_station})
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value])
+def station_creator(request):
+    template_name = 'station_creator.html'
+    form_candidate_ = formset_factory(forms.CandidateInstructionForm,extra=4)
+    form_patient_ = formset_factory(forms.PatientDisclosureForm, extra = 3)
+    form_station = forms.StationForm(request.POST or None)
+    form_candidate = form_candidate_(request.POST or None)
+    form_patient = form_patient_(request.POST or None)
+    form_examiner = forms.ExaminerMarkSheetForm(request.POST or None)
+    if request.method ==  'POST':
+        station_id = request.POST.get('station')
+        data_gathering_text = request.POST.getlist('data_gathering_text')     
+        station = get_object_or_404(models.ThirdLevelStation,id=station_id)
+        has_station = models.ExaminerMarkSheet.objects.filter(station=station).exists()
+        if not has_station:
+            saved_examiner_mark_sheet = save_examiner_mark_sheet(station,ExaminerMarkSheetEnum.DATA_GATHERING.value)
+            save_examiner_mark_sheet_answers(data_gathering_text, saved_examiner_mark_sheet)
+    context ={
+        'form_candidate':form_candidate,
+        'form_patient':form_patient,
+        'form_station':form_station,
+        'form_examiner':form_examiner
+    }
+    return render(request,template_name,context)
+
+
+def save_examiner_mark_sheet_answers(data_gathering_text, saved_examiner_mark_sheet):
+    exam_mark_sheet_answers = [models.ExaminerMarkSheetAnswer(examiner_mark_sheet = saved_examiner_mark_sheet,answer = data_gathering_text[i]) for i in range(len(data_gathering_text))]
+    models.ExaminerMarkSheetAnswer.objects.bulk_create(
+            exam_mark_sheet_answers
+        )
+
+def save_examiner_mark_sheet(station, heading_enum):
+    saved_examiner_mark_sheet =models.ExaminerMarkSheet.objects.create(
+            station=station,
+            heading = heading_enum
+        )
+
+    return saved_examiner_mark_sheet
 
