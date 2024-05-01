@@ -13,7 +13,7 @@ from . import utils
 ## stations
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def first_level_stations(request):
-    template_name = "station/stations.html"
+    template_name = "first_level_station/first_level_stations.html"
     first_level_stations_ = models.FirstLevelStation.objects.all()
     return render(
         request,
@@ -24,7 +24,7 @@ def first_level_stations(request):
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def create_first_level_station(request):
-    template_name = "station/create_station.html"
+    template_name = "first_level_station/create_first_level_station.html"
     form = forms.FirstLevelStationForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
@@ -40,7 +40,7 @@ def edit_first_level_station(request, id):
     form = forms.FirstLevelStationForm(
         request.POST or None, instance=first_level_station_
     )
-    template_name = "station/create_station.html"
+    template_name = "first_level_station/create_first_level_station.html"
     if request.method == "POST":
         if form.is_valid():
             form.save()
@@ -59,7 +59,7 @@ def edit_first_level_station(request, id):
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def delete_first_level_station(request, id):
     first_level_station = get_object_or_404(models.FirstLevelStation, id=id)
-    template_name = "station/delete_station.html"
+    template_name = "first_level_station/delete_first_level_station.html"
     if request.method == "POST":
         first_level_station.delete()
         messages.success(
@@ -73,7 +73,7 @@ def delete_first_level_station(request, id):
 ## stations categories
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def second_level_stations(request):
-    template_name = "station_category/station_categories.html"
+    template_name = "second_level_station/second_level_stations.html"
     second_level_stations_ = models.SecondLevelStation.objects.all()
     return render(
         request,
@@ -84,7 +84,7 @@ def second_level_stations(request):
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def create_second_level_station(request):
-    template_name = "station_category/create_category_station.html"
+    template_name = "second_level_station/create_second_level_station.html"
     form = forms.SecondLevelStationForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
@@ -100,7 +100,7 @@ def edit_second_level_station(request, id):
     form = forms.SecondLevelStationForm(
         request.POST or None, instance=second_level_station
     )
-    template_name = "station_category/create_category_station.html"
+    template_name = "second_level_station/create_second_level_station.html"
     if request.method == "POST":
         if form.is_valid():
             form.save()
@@ -119,7 +119,7 @@ def edit_second_level_station(request, id):
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def delete_second_level_station(request, id):
     second_level_station = get_object_or_404(models.SecondLevelStation, id=id)
-    template_name = "station_category/delete_category_station.html"
+    template_name = "second_level_station/delete_second_level_station.html"
     if request.method == "POST":
         second_level_station.delete()
         messages.success(
@@ -133,7 +133,7 @@ def delete_second_level_station(request, id):
 ## stations sub categories
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def third_level_stations(request):
-    template_name = "station_sub_category/station_sub_categories.html"
+    template_name = "third_level_station/third_level_stations.html"
     third_level_stations_ = models.ThirdLevelStation.objects.all()
     return render(
         request,
@@ -144,7 +144,7 @@ def third_level_stations(request):
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def create_third_level_station(request):
-    template_name = "station_sub_category/create_category_sub_station.html"
+    template_name = "third_level_station/create_third_level_station.html"
     form = forms.ThirdLevelStationForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
@@ -160,7 +160,7 @@ def edit_third_level_station(request, id):
     form = forms.ThirdLevelStationForm(
         request.POST or None, instance=third_level_station
     )
-    template_name = "station_sub_category/create_category_sub_station.html"
+    template_name = "third_level_station/create_third_level_station.html"
     if request.method == "POST":
         if form.is_valid():
             form.save()
@@ -179,7 +179,7 @@ def edit_third_level_station(request, id):
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def delete_third_level_station(request, id):
     third_level_station = get_object_or_404(models.ThirdLevelStation, id=id)
-    template_name = "station_sub_category/delete_sub_category_station.html"
+    template_name = "third_level_station/delete_third_level_station.html"
     if request.method == "POST":
         third_level_station.delete()
         messages.success(
@@ -228,3 +228,14 @@ def station_creator(request):
         "patient_instruction_disclosure_choices": models.PatientInstruction.Disclosure,
     }
     return render(request, template_name, context)
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value])
+def stations(request):
+    template_name = "station/stations.html"
+    first_level_stations_ = models.FirstLevelStation.objects.all()
+    return render(
+        request,
+        template_name,
+        {"items": utils.paginator(request, first_level_stations_, 10)},
+    )
+
