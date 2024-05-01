@@ -59,7 +59,7 @@ class CandidateInstruction(models.Model):
     class Meta:
         ordering = ["-timestamp", ]
 
-class PatientDisclosure(models.Model):
+class PatientInstruction(models.Model):
     class Disclosure(models.TextChoices):
         FREELY_DIVULGED_TO_DOCTOR = pd_enum.FREELY_DIVULGED_TO_DOCTOR.value
         DIVULGED_TO_DOCTOR_IF_ASKED = pd_enum.DIVULGED_TO_DOCTOR_IF_ASKED.value

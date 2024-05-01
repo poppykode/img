@@ -57,7 +57,7 @@ class CandidateInstructionForm(forms.ModelForm):
 
 class PatientDisclosureForm(forms.ModelForm):
   class Meta:
-    model = models.PatientDisclosure
+    model = models.PatientInstruction
     widgets = {
       'heading': forms.widgets.Select(attrs={'class':'form-select form-control'}),
       'text': forms.widgets.Textarea(attrs={'class':'form-control','rows':1})
