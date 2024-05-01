@@ -26,41 +26,45 @@
           <div class="row">
             <h5 class="mb-4">1. Station Details</h5>
             <!-- 1. Station Details  -->
-            {{form_station.station|as_crispy_field}}
+            <div class="row">
+              <div class="col-md-12">
+                {{form_station.station|as_crispy_field}}
+              </div>
+            </div>
+
 
             <hr class="mb-3 mt-4">
             <!-- 2. Candidate Instructions -->
             <h5 class="mb-4">2. Candidate Instructions</h5>
-            <!-- {{ form_candidate.management_data }}
-            {% for form in form_candidate %}
-            <div class="form-group row">
+
+            {% for choice in candidate_instruction_inquiry_choices %}
+            <div class="form-group row mb-4">
               <div class="col-md-4">
-                <label class="form-label">{{ form.heading.label }}</label>
-                {{ form.heading }}
+                <input type="text" value="{{choice.value}}" name="candidate_instruction_heading"
+                  class="textinput form-control" required readonly />
               </div>
               <div class="col-md-8">
-                <label class="form-label">{{ form.text.label }}</label>
-                {{ form.text }}
+                <textarea class="form-control" name="candidate_instruction_text" rows="1"></textarea>
               </div>
             </div>
-            {% endfor %} -->
+            {% endfor %}
 
             <hr class="mb-3 mt-4">
             <!-- 3. Patient Instructions -->
             <h5 class="mb-4">3. Patient Instructions</h5>
-            <!-- {{ form_patient.management_data }}
-            {% for form in form_patient %}
-            <div class="form-group row">
+
+            {% for choice in patient_instruction_choices %}
+            <div class="form-group row mb-4">
               <div class="col-md-4">
-                <label class="form-label">{{ form.heading.label }}</label>
-                {{ form.heading }}
+                <input type="text" value="{{choice.value}}" name="patient_instruction_heading"
+                  class="textinput form-control" required readonly />
               </div>
               <div class="col-md-8">
-                <label class="form-label">{{ form.text.label }}</label>
-                {{ form.text }}
+                <textarea class="form-control" name="patient_instruction_text" rows="1"></textarea>
               </div>
             </div>
-            {% endfor %} -->
+            {% endfor %}
+
             <hr class="mb-3 mt-4">
             <!-- 3. Examiner Mark Sheet -->
             <h5 class="mb-4">4. Examiner Mark Sheet</h5>
@@ -72,15 +76,18 @@
 
                     <input type="button" value="Add Line" id="newrows_data_gathering" class="btn btn-success"
                       style="margin-right: 1em;">
-                    <input type="button" value="Remove Selected Line" id="delnewrows_data_gathering" class="btn btn-danger">
+                    <input type="button" value="Remove Selected Line" id="delnewrows_data_gathering"
+                      class="btn btn-danger">
 
                   </tr>
                 </thead>
                 <tbody class="table-border-bottom-0" id="data_gathering_table">
                   <tr>
                     <td style="padding: 1em 0;" class="mb-3">
-                      <label for="data_gathering_text" class="form-label requiredField"> Text<span class="asteriskField">*</span></label>
-                      <input type="text" name="data_gathering_text" maxlength="255" class="textinput form-control" required id="data_gathering_text">
+                      <label for="data_gathering_text" class="form-label requiredField"> Text<span
+                          class="asteriskField">*</span></label>
+                      <input type="text" name="data_gathering_text" maxlength="255" class="textinput form-control"
+                        required id="data_gathering_text">
                     </td>
                     <td style="padding: 1em;"><input type='checkbox' class='form-control form-check-input'
                         name='checkbx' disabled></td>
@@ -103,8 +110,10 @@
                 <tbody class="table-border-bottom-0" id="management_table">
                   <tr>
                     <td style="padding: 1em 0;" class="mb-3">
-                      <label for="data_gathering_text" class="form-label requiredField"> Text<span class="asteriskField">*</span></label>
-                      <input type="text" name="management_text" maxlength="255" class="textinput form-control" required id="management_text">
+                      <label for="data_gathering_text" class="form-label requiredField"> Text<span
+                          class="asteriskField">*</span></label>
+                      <input type="text" name="management_text" maxlength="255" class="textinput form-control" required
+                        id="management_text">
                     </td>
                     <td style="padding: 1em;"><input type='checkbox' class='form-control form-check-input'
                         name='checkbx' disabled></td>
@@ -120,21 +129,65 @@
 
                     <input type="button" value="Add Line" id="newrows_interpersonal_skills" class="btn btn-success"
                       style="margin-right: 1em;">
-                    <input type="button" value="Remove Selected Line" id="delnewrows_interpersonal_skills" class="btn btn-danger">
+                    <input type="button" value="Remove Selected Line" id="delnewrows_interpersonal_skills"
+                      class="btn btn-danger">
 
                   </tr>
                 </thead>
                 <tbody class="table-border-bottom-0" id="interpersonal_skills_table">
                   <tr>
                     <td style="padding: 1em 0;" class="mb-3">
-                      <label for="interpersonal_skills_text" class="form-label requiredField"> Text<span class="asteriskField">*</span></label>
-                      <input type="text" name="interpersonal_skills_text" maxlength="255" class="textinput form-control" required id="interpersonal_skills_text">
+                      <label for="interpersonal_skills_text" class="form-label requiredField"> Text<span
+                          class="asteriskField">*</span></label>
+                      <input type="text" name="interpersonal_skills_text" maxlength="255" class="textinput form-control"
+                        required id="interpersonal_skills_text">
                     </td>
                     <td style="padding: 1em;"><input type='checkbox' class='form-control form-check-input'
                         name='checkbx' disabled></td>
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <!-- 4. station Approach -->
+            <h5 class="mb-4">5. station Approach</h5>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="mb-4">
+                  <label for="learning_points" class="form-label">Learning Points</label>
+                  <textarea class="form-control" name="station_approach_learning_points" id="learning_points"
+                    rows="3"></textarea>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <h6 class="mb-4"><strong>LINKS</strong></h6>
+                <div class="table-responsive text-nowrap">
+                  <table class="table">
+                    <thead>
+                      <tr>
+
+                        <input type="button" value="Add Line" id="newrows_station_approach_link" class="btn btn-success"
+                          style="margin-right: 1em;">
+                        <input type="button" value="Remove Selected Line" id="delnewrows_station_approach_link"
+                          class="btn btn-danger">
+
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0" id="station_approach_link_table">
+                      <tr>
+                        <td style="padding: 1em 0;" class="mb-3">
+                          <label for="station_approach_link" class="form-label requiredField"> Link<span
+                              class="asteriskField">*</span></label>
+                          <input type="text" name="station_approach_link" maxlength="255" class="textinput form-control"
+                            required id="station_approach_link">
+                        </td>
+                        <td style="padding: 1em;"><input type='checkbox' class='form-control form-check-input'
+                            name='checkbx' disabled></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -193,6 +246,21 @@
       $("#interpersonal_skills_table").find('input[name="checkbx"]').each(function () {
         if ($(this).is(":checked")) {
           $(this).parents("#interpersonal_skills_row").remove();
+        }
+      });
+    });
+
+    $("#newrows_station_approach_link").click(function () {
+      var addcontrols = "<tr id='station_approach_link_row'>"
+      addcontrols += '<td style="padding: 1em 0;" class="mb-3"><label for="station_approach_link" class="form-label requiredField"> LINK <span class="asteriskField">*</span></label> <input type="text" name="station_approach_link" maxlength="255" class="textinput form-control" required id="station_approach_link"></td>'
+      addcontrols += "<td><input type='checkbox' class='form-control form-check-input' name='checkbx'></td>"
+      addcontrols += "</tr>";
+      $("#station_approach_link_table").append(addcontrols);
+    });
+    $("#delnewrows_station_approach_link").click(function () {
+      $("#station_approach_link_table").find('input[name="checkbx"]').each(function () {
+        if ($(this).is(":checked")) {
+          $(this).parents("#station_approach_link_row").remove();
         }
       });
     });

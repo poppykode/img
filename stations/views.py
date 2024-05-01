@@ -150,11 +150,14 @@ def station_creator(request):
         if not has_station:
             saved_examiner_mark_sheet = save_examiner_mark_sheet(station,ExaminerMarkSheetEnum.DATA_GATHERING.value)
             save_examiner_mark_sheet_answers(data_gathering_text, saved_examiner_mark_sheet)
+    
     context ={
         'form_candidate':form_candidate,
         'form_patient':form_patient,
         'form_station':form_station,
-        'form_examiner':form_examiner
+        'form_examiner':form_examiner,
+        'candidate_instruction_inquiry_choices': models.CandidateInstruction.Inquiry,
+        'patient_instruction_choices':models.PatientDisclosure.Disclosure
     }
     return render(request,template_name,context)
 
