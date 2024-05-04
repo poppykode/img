@@ -2,32 +2,31 @@
 {% load static %}
 {% block title %}{{obj.title|title}}{% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Stations / </span> {{obj.title|title}}  </h5>
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Stations / </span> {{obj.title|title}} </h5>
 
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-9">
         <div class="card">
             <div class="card-body mb-3">
-                {% for candidate_instruction in  obj.candidate_station.all %}
+                {% for candidate_instruction in obj.candidate_station.all %}
                 <div class="mb-4">
                     <h5 class="card-title"><a href="#">{{candidate_instruction.heading|title}}</a></h5>
                     <p class="card-text">{{candidate_instruction.text|title}}</p>
                 </div>
                 {% endfor %}
-        
+
             </div>
-    
+
         </div>
 
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="col-md-12 mb-4">
             <div class="card">
-                <div class="card-body mb-3">
-                   Timer
-            
+                <div class="card-body mb-3">             
+                    {% include 'snippets/timer.html' %}
                 </div>
-        
+
             </div>
         </div>
         <div class="col-md-12 mb-4">
@@ -38,13 +37,13 @@
                     </p>
                     <p>
                         <a href="#" class="font-20">Station Approach</a>
-                    </p>               
+                    </p>
                     <p>
-                    <a href="#" class="font-20">Examination</a>
-                   </p>
-            
+                        <a href="#" class="font-20">Examination</a>
+                    </p>
+
                 </div>
-        
+
             </div>
         </div>
 
@@ -52,5 +51,45 @@
 
 </div>
 
+
+{% endblock %}
+{% block js %}
+<script>
+      let timerInterval;
+    let startTime;
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function updateTimer() {
+      const elapsedTime = Date.now() - startTime;
+      const seconds = Math.floor(elapsedTime / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+
+      const displaySeconds = seconds % 60;
+      const displayMinutes = minutes % 60;
+      const displayHours = hours % 24;
+
+      const formattedTime = `${displayHours.toString().padStart(2, '0')}:${displayMinutes.toString().padStart(2, '0')}:${displaySeconds.toString().padStart(2, '0')}`;
+      document.getElementById('timer').textContent = formattedTime;
+    }
+
+    document.getElementById('startButton').addEventListener('click', startTimer);
+    document.getElementById('stopButton').addEventListener('click', stopTimer);
+
+    // Stop timer when leaving the page
+    window.addEventListener('beforeunload', function(event) {
+      if (timerInterval) {
+        stopTimer();
+      }
+    });
+</script>
 
 {% endblock %}
