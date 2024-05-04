@@ -47,6 +47,9 @@
    
   
     <link rel="stylesheet" href="{% static 'assets/css/ratings.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/vendor/libs/jstree/jstree.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/vendor/fonts/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
 
     <!-- Page CSS -->
 
@@ -106,7 +109,7 @@
               </a>
               <ul class="menu-sub">
                 <li class="menu-item">
-                  <a href="/" class="menu-link">
+                  <a href="{% url 'stations:first_level_station_view' %}" class="menu-link">
                     <div data-i18n="Stations">Stations</div>
                   </a>
                 </li>
@@ -149,7 +152,7 @@
                       </a>
                     </li>
                     <li class="menu-item">
-                      <a href="{% url 'stations:station_creator' %}" class="menu-link">
+                      <a href="{% url 'stations:stations' %}" class="menu-link">
                         <div data-i18n="Station Sub Categories">Station Creator</div>
                       </a>
                     </li>
@@ -309,9 +312,10 @@
     <!-- endbuild -->
 
     <!-- Vendors JS -->
-
+    <!-- <script src="{% static 'assets/vendor/libs/jstree/jstree.js' %}"></script> -->
     <!-- Main JS -->
     <script src="{% static 'assets/js/main.js' %}"></script>
+    <!-- <script src="{% static 'assets/js/extended-ui-treeview.js' %}"></script> -->
     {% block js %}
 
     {% endblock %}

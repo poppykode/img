@@ -1,0 +1,29 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% block title %}{{obj.title|title}}{% endblock %}
+{% block content %}
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Stations /</span> {{obj.title|title}} </h5>
+
+<div class="row">
+    {% for item in items %}
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body pb-0">
+                <!-- <span class="d-block fw-semibold mb-1">{{item.title|title}}</span> -->
+                <h3 class="card-title  mb-4 text-center">
+                   <a href="{% url 'stations:third_level_station_view' item.id %}" class="font-20">{{item.title|title}} </a>
+                </h3>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if items %}
+    {% include 'snippets/pagination.html' with items=items %}
+    {% endif %}
+  
+</div>
+
+
+{% endblock %}

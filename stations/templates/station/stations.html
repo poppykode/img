@@ -1,0 +1,99 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% load static %}
+{% block title %}Second Level Station{% endblock %}
+{% block content %}
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home /</span> Sations </h5>
+<div class="card-header flex-column flex-md-row mb-3">
+
+  <div class="dt-action-buttons pt-3 pt-md-0">
+    <div class="dt-buttons btn-group flex-wrap">
+      <div class="btn-group">
+
+      </div>
+      <a class="btn btn-secondary create-new btn-primary" href="{% url 'stations:station_creator' %}">
+        <span>
+          <i class="bx bx-plus me-sm-1"></i>
+          <span class="d-none d-sm-inline-block">Add Station</span>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  {% if messages %}
+  {% for message in messages %}
+
+  <div class="alert alert-{{ message.tags }} alert-dismissible mt-3" role="alert">
+    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+    </button>
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+</div>
+<div class="row">
+  <!-- Basic -->
+  {% for item in items %}
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <h5 class="card-header">{{item.title|title}}</h5>
+      <div class="card-body">
+        <ul>
+          <li>{{item.title|title}}</li>
+          <ul>
+            {% for second_level in item.first_level_station.all  %}
+            <li>{{second_level.title|title}}</li>
+            <ul>
+              {% for third_level in second_level.second_level_station.all %}
+              <li>{{third_level.title|title}}</li>
+              {% endfor %}
+            </ul>
+            {% endfor %}
+
+          </ul>
+        </ul>
+      
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <!-- /Basic -->
+
+    <!-- {% for item in items %}
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <h5 class="card-header">{{ item.title|title }}</h5>
+          <div class="card-body">
+            <ul class="list-group">
+              <li class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#firstLevel{{item.id}}">
+                {{ item.title|title }}
+                <span class="float-right fas fa-chevron-down"></span>
+              </li>
+              <ul class="collapse" id="firstLevel{{item.id}}" >
+                {% for second_level in item.first_level_station.all %}
+                  <li class="list-group-item list-group-item-action">
+                    {{ second_level.title|title }}
+                    <span class="float-right fas fa-chevron-down"></span>
+                  </li>
+                  <ul class="collapse" id="secondLevel{{second_level.id}}">
+                    {% for third_level in second_level.second_level_station.all %}
+                      <li class="list-group-item">{{third_level.title|title }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endfor %}
+              </ul>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  -->
+  
+
+
+
+</div>
+
+
+{% endblock %}

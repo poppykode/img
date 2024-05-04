@@ -1,0 +1,64 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% block title %}{{title|title}}{% endblock %}
+{% block content %}
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Stations / </span> {{title|title}}  </h5>
+
+<div class="row mb-4">
+<div class="col-md-6 offset-md-3">
+    <div class="card">
+        <div class="card-body pb-0">
+            <h3 class="card-title  mb-4 text-center">
+               <a href="{% url 'stations:candidate_instructions' id %}" class="font-20">Candidate Instruction</a>
+            </h3>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="row mb-4">
+<div class="col-md-6 offset-md-3">
+    <div class="card">
+        <div class="card-body pb-0">
+            <h3 class="card-title  mb-4 text-center">
+               <a href="#" class="font-20">Examiner Mark Sheet</a>
+            </h3>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="row mb-4">
+<div class="col-md-6 offset-md-3">
+    <div class="card">
+        <div class="card-body pb-0">
+            <h3 class="card-title  mb-4 text-center">
+               <a href="#" class="font-20">Patient Instruction</a>
+            </h3>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="row mb-4">
+<div class="col-md-6 offset-md-3">
+    <div class="card">
+        <div class="card-body pb-0">
+            <h3 class="card-title  mb-4 text-center">
+               <a href="#" class="font-20">Station Approach</a>
+            </h3>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="row mb-4">
+<div class="col-md-6 offset-md-3 text-center">
+   <a href="#" class="font-20">Share station link</a>
+</div>
+</div>
+  
+</div>
+
+
+{% endblock %}

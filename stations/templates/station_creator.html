@@ -3,7 +3,7 @@
 {% block title %}Station Creator{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home /</span> Station Creator</h5>
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Stations / </span> Station Creator</h5>
 <div class="row">
   <div class="col-12">
     <form action="{% url 'stations:station_creator' %}" method="POST">
@@ -15,9 +15,9 @@
             style="width: 1146.46px;">
             <h5 class="card-title mb-sm-0 me-2">Station Creator</h5>
             <div class="action-btns">
-              <button class="btn btn-label-primary me-3">
+              <a class="btn btn-label-primary me-3" href="{% url 'stations:stations' %}">
                 <span class="align-middle"> Back</span>
-              </button>
+              </a>
               <button class="btn btn-primary">Submit</button>
             </div>
           </div>

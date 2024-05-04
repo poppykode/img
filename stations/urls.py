@@ -15,11 +15,18 @@ urlpatterns = [
     path('delete-second-level-station/<int:id>',views.delete_second_level_station,name='delete_second_level_station'),
 
     path('third-level-stations',views.third_level_stations,name='third_level_stations'),
-    path('third-level-stations',views.third_level_stations,name='create_third_level_station'),
+    path('create-third-level-stations',views.create_third_level_station,name='create_third_level_station'),
     path('edit-third-level-station/<int:id>',views.edit_third_level_station,name='edit_third_level_station'),
     path('delete-third-level-station/<int:id>',views.delete_third_level_station,name='delete_third_level_station'),
 
     path('station-creator',views.station_creator,name='station_creator'),
-    path('stations',views.stations,name='stations'),
+    path('stations-admin',views.stations_admin,name='stations'),
+
+    path('stations',views.first_level_station_view,name='first_level_station_view'),
+    path('stations/2/<int:id>',views.second_level_station_view,name='second_level_station_view'),
+    path('stations/3/<int:id>',views.third_level_station_view,name='third_level_station_view'),
+
+    path('stations-menu/<int:id>/<str:title>',views.stations_menu_view,name='stations_menu_view'),
+    path('candidate-instructions/<int:id>',views.candidate_instructions,name='candidate_instructions'),
 
 ]

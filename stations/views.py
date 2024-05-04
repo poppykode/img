@@ -230,10 +230,71 @@ def station_creator(request):
     return render(request, template_name, context)
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
-def stations(request):
+def stations_admin(request):
     template_name = "station/stations.html"
+    station_ = models.FirstLevelStation.objects.all()
     return render(
         request,
-        template_name
+        template_name,
+        {"items": utils.paginator(request, station_, 10)}
     )
+
+#User views
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])
+def first_level_station_view(request):
+    template_name = "first_level_station/first_level_station_view.html"
+    station_ = models.FirstLevelStation.objects.all()
+    return render(
+        request,
+        template_name,
+        {"items": utils.paginator(request, station_, 10)}
+    )
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])
+def second_level_station_view(request,id):
+    template_name = "second_level_station/second_level_station_view.html"
+    first_level_station_ = get_object_or_404(models.FirstLevelStation , id = id)
+    station_ = models.SecondLevelStation.objects.filter(first_level_station= first_level_station_)
+    return render(
+        request,
+        template_name,
+        {"items": utils.paginator(request, station_, 10),'obj':first_level_station_}
+    )
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])
+def third_level_station_view(request,id):
+    template_name = "third_level_station/third_level_station_view.html"
+    second_level_station_ = get_object_or_404(models.SecondLevelStation , id = id)
+    station_ = models.ThirdLevelStation.objects.filter(second_level_station= second_level_station_)
+    return render(
+        request,
+        template_name,
+        {"items": utils.paginator(request, station_, 10),'obj':second_level_station_}
+    )
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])
+def stations_menu_view(request, id,title):
+    template_name = "station/stations_menu_view.html"
+    return render(
+        request,
+        template_name,
+        {'id':id,'title':title}
+    )
+
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])
+def candidate_instructions(request, id):
+    template_name = "station/candidate_instructions.html"
+    candidate_instruction = get_object_or_404(models.ThirdLevelStation, id = id)
+    return render(
+        request,
+        template_name,
+        {'obj':candidate_instruction}
+    )
+
+
+
+
+
 
