@@ -9,7 +9,7 @@
     <div class="card">
         <div class="card-body pb-0">
             <h3 class="card-title  mb-4 text-center">
-               <a href="{% url 'stations:candidate_instructions' id %}" class="font-20">Candidate Instruction</a>
+               <a href="{% url 'stations:station_practice' id 'candidate_instructions' %}" class="font-20">Candidate Instruction</a>
             </h3>
         </div>
 
@@ -21,7 +21,7 @@
     <div class="card">
         <div class="card-body pb-0">
             <h3 class="card-title  mb-4 text-center">
-               <a href="#" class="font-20">Examiner Mark Sheet</a>
+               <a href="{% url 'stations:station_practice' id 'examiner_mark_sheet' %}" class="font-20">Examiner Mark Sheet</a> 
             </h3>
         </div>
 
@@ -33,7 +33,7 @@
     <div class="card">
         <div class="card-body pb-0">
             <h3 class="card-title  mb-4 text-center">
-               <a href="#" class="font-20">Patient Instruction</a>
+               <a href="{% url 'stations:station_practice' id 'patient_instruction' %}" class="font-20">Patient Instruction</a>
             </h3>
         </div>
 
@@ -45,7 +45,7 @@
     <div class="card">
         <div class="card-body pb-0">
             <h3 class="card-title  mb-4 text-center">
-               <a href="#" class="font-20">Station Approach</a>
+               <a href="{% url 'stations:station_practice' id 'station_approach' %}" class="font-20">Station Approach</a>
             </h3>
         </div>
 

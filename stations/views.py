@@ -284,13 +284,23 @@ def stations_menu_view(request, id,title):
 
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])
-def candidate_instructions(request, id):
-    template_name = "station/candidate_instructions.html"
-    candidate_instruction = get_object_or_404(models.ThirdLevelStation, id = id)
+def station_practice(request, id, type):
+    template = ['candidate_instructions.html','patient_instruction.html','examiner_mark_sheet.html' ,'station_approach.html']
+    template_name = ""
+    if type == 'candidate_instructions':
+        template_name = f'station/{template[0]}'
+    elif type == 'patient_instruction':
+        template_name = f'station/{template[1]}'
+    elif type == 'examiner_mark_sheet':
+        template_name = f'station/{template[2]}'
+    else:
+        template_name = f'station/{template[3]}'
+
+    obj = get_object_or_404(models.ThirdLevelStation, id = id)
     return render(
         request,
         template_name,
-        {'obj':candidate_instruction}
+        {'obj':obj,'type':type}
     )
 
 

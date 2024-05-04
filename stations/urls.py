@@ -27,6 +27,6 @@ urlpatterns = [
     path('stations/3/<int:id>',views.third_level_station_view,name='third_level_station_view'),
 
     path('stations-menu/<int:id>/<str:title>',views.stations_menu_view,name='stations_menu_view'),
-    path('candidate-instructions/<int:id>',views.candidate_instructions,name='candidate_instructions'),
+    path('station-practice/<int:id>/<str:type>',views.station_practice,name='station_practice'),
 
 ]

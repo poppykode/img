@@ -1,0 +1,26 @@
+<div class="card">
+    <div class="card-body mb-3">
+        {% if not type == 'patient_instruction' %}
+        <p>
+            <a href="{% url 'stations:station_practice' obj.id 'patient_instruction' %}" class="font-20">Patient Instruction</a>
+        </p>
+        {% endif %}
+        {% if not type == 'station_approach' %}
+        <p>
+            <a href="{% url 'stations:station_practice' obj.id 'station_approach' %}" class="font-20">Station Approach</a>
+        </p>
+        {% endif %}
+        {% if not type == 'candidate_instructions' %}
+        <p>
+            <a href="{% url 'stations:station_practice' obj.id 'candidate_instructions' %}" class="font-20">Candidate Instruction</a>
+        </p>
+        {% endif %}
+        {% if not type == 'examiner_mark_sheet' %}
+        <p>
+            <a href="{% url 'stations:station_practice' obj.id 'examiner_mark_sheet' %}" class="font-20">Examination Mark Sheet</a>
+        </p>
+        {% endif %}
+
+    </div>
+
+</div>

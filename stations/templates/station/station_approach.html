@@ -2,16 +2,18 @@
 {% load static %}
 {% block title %}{{obj.title|title}}{% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Stations / {{obj.title|title}} / </span>Candidate Instruction  </h5>
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Stations / {{obj.title|title}} / </span>Station Approach  </h5>
 
 <div class="row">
     <div class="col-md-9">
         <div class="card">
             <div class="card-body mb-3">
-                {% for candidate_instruction in obj.candidate_station.all %}
+                {% for station_approach in obj.station_approach.all %}
                 <div class="mb-4">
-                    <h5 class="card-title"><a href="#">{{candidate_instruction.heading|title}}</a></h5>
-                    <p class="card-text">{{candidate_instruction.text|title}}</p>
+                    <p class="card-text">{{station_approach.learning_points|title}}</p>
+                    {% for link in station_approach.station_approach_link.all %}
+                    <p class="card-text"><a href="{{link.link}}" target="_blank">{{link.link}}</a></p>
+                    {% endfor %}
                 </div>
                 {% endfor %}
 
@@ -30,7 +32,7 @@
             </div>
         </div>
         <div class="col-md-12 mb-4">
-            {% include 'snippets/practice_side_menu.html' %}
+            {% include 'snippets/practice_side_menu.html' with obj=obj %}
         </div>
 
     </div>
