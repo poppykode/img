@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login as login_
+from django.contrib.auth import authenticate, login as login_, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -45,4 +45,10 @@ def redirect_logged(request):
     else:
         messages.error(request,'You do not have a role assigned.')
         return redirect('accounts:not_authorized')
+    
+@login_required
+def my_logout(request):
+    logout(request)
+    messages.success(request, 'You have successfully logged out.')
+    return redirect('/')
 

@@ -57,7 +57,7 @@ class CandidateInstruction(models.Model):
         return f"{self.station.title} - {self.heading}"
 
     class Meta:
-        ordering = ["-timestamp", ]
+        ordering = ["timestamp", ]
 
 class PatientInstruction(models.Model):
     class Disclosure(models.TextChoices):
@@ -75,7 +75,7 @@ class PatientInstruction(models.Model):
         return f"{self.station.title} - {self.heading}"
 
     class Meta:
-        ordering = ["-timestamp", ]
+        ordering = ["timestamp", ]
 
 
 class ExaminerMarkSheet(models.Model):
@@ -93,7 +93,7 @@ class ExaminerMarkSheet(models.Model):
         return f"{self.station.title} - {self.heading}"
 
     class Meta:
-        ordering = ["-timestamp", ]
+        ordering = ["timestamp", ]
 
 class ExaminerMarkSheetAnswer(models.Model):    
     examiner_mark_sheet = models.ForeignKey(ExaminerMarkSheet,related_name='examiner_mark_sheet_answer', on_delete=models.CASCADE)
@@ -105,7 +105,7 @@ class ExaminerMarkSheetAnswer(models.Model):
         return f"{self.examiner_mark_sheet} - {self.answer}"
 
     class Meta:
-        ordering = ["-timestamp", ]
+        ordering = ["timestamp", ]
 
 
 class StationApproach(models.Model):
@@ -118,7 +118,7 @@ class StationApproach(models.Model):
         return f"{self.station.title} - {self.learning_points}"
 
     class Meta:
-        ordering = ["-timestamp", ]
+        ordering = ["timestamp", ]
 
 class StationApproachLink(models.Model):
     station_approach = models.ForeignKey(StationApproach,related_name='station_approach_link', on_delete=models.CASCADE)   
@@ -130,7 +130,7 @@ class StationApproachLink(models.Model):
         return f"{self.station_approach.station.title} - {self.link}"
 
     class Meta:
-        ordering = ["-timestamp", ]
+        ordering = ["timestamp", ]
 
 
 

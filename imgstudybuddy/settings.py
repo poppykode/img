@@ -36,7 +36,7 @@ SECRET_KEY = 'django-insecure-4o&cl$xacf_&_f0=m(ja8i5&0p#qh@e0qg%-3e)$3l2u_0mcal
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -103,9 +103,9 @@ WSGI_APPLICATION = 'imgstudybuddy.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'img_db_v1',
+        'NAME': 'img_db',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': 'root2',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -169,3 +169,9 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'expresscareweb@gmail.com'
 EMAIL_HOST_PASSWORD = 'lqpa hghx srex sjyv'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+try:
+    from .local_settings import *
+except:
+    pass
+
