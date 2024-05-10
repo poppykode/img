@@ -39,12 +39,12 @@
 
             {% for choice in candidate_instruction_inquiry_choices %}
             <div class="form-group row mb-4">
-              <div class="col-md-4">
+              <div class="col-md-4 mb-4">
                 <input type="text" value="{{choice.value}}" name="candidate_instruction_heading"
                   class="textinput form-control" required readonly />
               </div>
-              <div class="col-md-8">
-                <textarea class="form-control" name="candidate_instruction_text" rows="1"></textarea>
+              <div class="col-md-8 mb-4">
+                <textarea class="form-control editor" name="candidate_instruction_text" rows="1"></textarea>
               </div>
             </div>
             {% endfor %}
@@ -55,12 +55,12 @@
 
             {% for choice in patient_instruction_disclosure_choices %}
             <div class="form-group row mb-4">
-              <div class="col-md-4">
+              <div class="col-md-4 mb-4">
                 <input type="text" value="{{choice.value}}" name="patient_instruction_heading"
                   class="textinput form-control" required readonly />
               </div>
-              <div class="col-md-8">
-                <textarea class="form-control" name="patient_instruction_text" rows="1"></textarea>
+              <div class="col-md-8 mb-4">
+                <textarea class="form-control editor" name="patient_instruction_text" rows="1"></textarea>
               </div>
             </div>
             {% endfor %}
@@ -154,7 +154,7 @@
               <div class="col-md-12">
                 <div class="mb-4">
                   <label for="learning_points" class="form-label">Learning Points</label>
-                  <textarea class="form-control" name="station_approach_learning_points" id="learning_points"
+                  <textarea class="form-control editor" name="station_approach_learning_points" id="learning_points"
                     rows="3"></textarea>
                 </div>
               </div>
@@ -264,8 +264,20 @@
         }
       });
     });
+    
+    var textareas = document.querySelectorAll('.editor');
+
+    tinymce.init({
+    selector: 'textarea',
+    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount linkchecker',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+  });
+
+
 
   });
 
 </script>
+
+
 {% endblock %}

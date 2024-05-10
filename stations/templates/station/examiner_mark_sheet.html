@@ -14,7 +14,7 @@
                     {% for examiner_mark_sheet_text in examiner_mark_sheet_heading.examiner_mark_sheet_answer.all  %}
                     <div class="row">
                         <div class="col-11">
-                            {{examiner_mark_sheet_text.answer|title}}
+                            {{examiner_mark_sheet_text.answer|safe}}
                         </div>
                         <div class="col-md-1">
                             <input class="form-check-input" type="checkbox" value="" >

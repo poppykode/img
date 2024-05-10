@@ -10,7 +10,7 @@
             <div class="card-body mb-3">
                 {% for station_approach in obj.station_approach.all %}
                 <div class="mb-4">
-                    <p class="card-text">{{station_approach.learning_points|title}}</p>
+                    <p class="card-text">{{station_approach.learning_points|safe}}</p>
                     {% for link in station_approach.station_approach_link.all %}
                     <p class="card-text"><a href="{{link.link}}" target="_blank">{{link.link}}</a></p>
                     {% endfor %}

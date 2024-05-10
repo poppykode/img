@@ -5,8 +5,13 @@ form_control = {'class': 'form-control'}
 
 def get_all_stations():
     stations = models.ThirdLevelStation.objects.all()
+    for station in stations:   
+      exists = models.ExaminerMarkSheet.objects.filter(station = station).exists()
+      if exists:
+        stations.exclude(id = station.id)
     choices = [(station.id, station.title) for station in stations]
     return choices
+
 
 class FirstLevelStationForm(forms.ModelForm):
   class Meta:

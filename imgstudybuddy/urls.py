@@ -24,6 +24,8 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('stations/', include('stations.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
+    
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

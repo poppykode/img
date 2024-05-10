@@ -199,29 +199,33 @@ def station_creator(request):
         station = get_object_or_404(
             models.ThirdLevelStation, id=request.POST.get("station")
         )
-        utils.save_instruction_bulk(
-            station,
-            request.POST.getlist("candidate_instruction_heading"),
-            request.POST.getlist("candidate_instruction_text"),
-            request.POST.getlist("patient_instruction_heading"),
-            request.POST.getlist("patient_instruction_text"),
-        )
-        # Examiner Mark Sheet
-        # has_station = models.ExaminerMarkSheet.objects.filter(station=station).exists()
-        utils.save_mark_sheet_bulk(
-            station,
-            request.POST.getlist("data_gathering_text"),
-            request.POST.getlist("management_text"),
-            request.POST.getlist("interpersonal_skills_text"),
-        )
-        # station Approach
-        utils.save_station_approach(
-            station,
-            request.POST.get("station_approach_learning_points"),
-            request.POST.getlist("station_approach_link"),
-        )
-        messages.success(request,f"Sation {station.title} was successfully created.")
-
+        station_exists = models.ExaminerMarkSheet.objects.filter(station=station).exists()
+        if not station_exists:
+            utils.save_instruction_bulk(
+                station,
+                request.POST.getlist("candidate_instruction_heading"),
+                request.POST.getlist("candidate_instruction_text"),
+                request.POST.getlist("patient_instruction_heading"),
+                request.POST.getlist("patient_instruction_text"),
+            )
+            # Examiner Mark Sheet
+            # has_station = models.ExaminerMarkSheet.objects.filter(station=station).exists()
+            utils.save_mark_sheet_bulk(
+                station,
+                request.POST.getlist("data_gathering_text"),
+                request.POST.getlist("management_text"),
+                request.POST.getlist("interpersonal_skills_text"),
+            )
+            # station Approach
+            utils.save_station_approach(
+                station,
+                request.POST.get("station_approach_learning_points"),
+                request.POST.getlist("station_approach_link"),
+            )
+            messages.success(request,f"Sation {station.title} was successfully created.")
+        else:
+            messages.error(request,f"Sation {station.title} already exists.")
+        return redirect('stations:stations')
     context = {
         "form_station": form_station,
         "candidate_instruction_inquiry_choices": models.CandidateInstruction.Inquiry,

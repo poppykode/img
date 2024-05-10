@@ -11,7 +11,7 @@
                 {% for candidate_instruction in obj.candidate_station.all %}
                 <div class="mb-4">
                     <h5 class="card-title"><a href="#">{{candidate_instruction.heading|title}}</a></h5>
-                    <p class="card-text">{{candidate_instruction.text|title}}</p>
+                    <p class="card-text">{{candidate_instruction.text|safe}}</p>
                 </div>
                 {% endfor %}
 

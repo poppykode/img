@@ -1,4 +1,5 @@
 from django.db import models
+from django_quill.fields import QuillField
 
 from core.enums import CandidateInquiryEnum as ci_enum, ExaminerMarkSheetEnum as ems_enum, PatientDisclosureEnum as pd_enum
 

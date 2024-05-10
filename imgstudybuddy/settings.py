@@ -55,9 +55,26 @@ INSTALLED_APPS = [
     #3rd Part Apps
     'crispy_forms',
     'crispy_bootstrap5',
+
+
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
+# CKEDITOR_5_CONFIGS = {
+#     'extends': {
+#         'toolbar': ['heading','|', 'bold','|', 'italic','|', 'underline','|',
+#                     'bulletedList','|', 'numberedList','|', 'blockQuote','|',
+#                     'paragraph',],
+#     },
+# }
+
+# TINYMCE_DEFAULT_CONFIG = {
+#     'selector': 'textarea',
+#     'plugins': 'advlist autolink lists link image charmap print preview anchor',
+#     'toolbar': 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image',
+# }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
