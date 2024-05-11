@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from django.contrib.messages import constants as messages
+from environs import Env
+
+env = Env()
+env.read_env()
+
 
 MESSAGE_TAGS = {
     messages.INFO: 'info',
@@ -146,6 +151,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 
 
 # Internationalization
