@@ -193,7 +193,6 @@ def delete_third_level_station(request, id):
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def station_creator(request):
     template_name = "station_creator.html"
-    form_station = forms.StationForm(request.POST or None)
     if request.method == "POST":
         # Station Details
         station = get_object_or_404(
@@ -227,7 +226,7 @@ def station_creator(request):
             messages.error(request,f"Sation {station.title} already exists.")
         return redirect('stations:stations')
     context = {
-        "form_station": form_station,
+        "stations": utils.get_all_stations(),
         "candidate_instruction_inquiry_choices": models.CandidateInstruction.Inquiry,
         "patient_instruction_disclosure_choices": models.PatientInstruction.Disclosure,
     }

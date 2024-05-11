@@ -92,3 +92,13 @@ def save_instruction(station, model, heading, text):
         for i in range(len(text))
     ]
     model.objects.bulk_create(candidate_bulk)
+
+def get_all_stations():
+    stations_db = models.ThirdLevelStation.objects.all()
+    stations = []
+    for station in stations_db:   
+      exists = models.ExaminerMarkSheet.objects.filter(station = station).exists()
+      if not exists:
+       stations.append(station) 
+    return stations
+

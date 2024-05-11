@@ -28,7 +28,20 @@
             <!-- 1. Station Details  -->
             <div class="row">
               <div class="col-md-12">
-                {{form_station.station|as_crispy_field}}
+                <div class="mb-3">
+                  <label for="exampleFormControlSelect1" class="form-label">Stations*</label>
+                  <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
+                    <option selected="">Select a Station</option>
+                    {% for station in stations %}
+                    <option value="{{station.id}}">{{station.title|title}}</option>
+                    {% empty %}
+                    <option>No Stations Available</option>
+                    {% endfor %}
+                 
+                  </select>
+                </div>
+                
+             
               </div>
             </div>
 
