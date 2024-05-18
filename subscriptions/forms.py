@@ -13,4 +13,4 @@ class SubscriptionProductForm(forms.ModelForm):
     labels = {
         'duration_period':'Duration of Subscription'
     }
-    fields = ['title','interval','currency','duration_period','price']
+    fields = ['title','interval','currency','duration_period','price','description',]

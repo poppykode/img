@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from core.decorators import role_required
-from core.enums import ExaminerMarkSheetEnum, RoleEnum
+from core.enums import RoleEnum
 from . import forms
 from . import models
 from . import utils

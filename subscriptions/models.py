@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 
 SECRET_KEY = settings.STRIPE_SECRET_KEY
+USER = settings.AUTH_USER_MODEL
 
 stripe.api_key = SECRET_KEY
 
@@ -21,6 +22,8 @@ class SubscriptionProduct(models.Model):
     title = models.CharField(max_length=255)
     interval = models.CharField(max_length=255, choices=Interval.choices)
     currency = models.CharField(max_length=10,choices=Curency.choices)
+    is_active = models.BooleanField(default=True)
+    description = models.TextField(blank=True)
     stripe_product_id = models.CharField(max_length=255,blank=True)
     stripe_price_id = models.CharField(max_length=255,blank=True)
     duration_period = models.IntegerField(default=0)
@@ -50,4 +53,20 @@ class SubscriptionProduct(models.Model):
                 )
             self.stripe_price_id = stripe_price_obj.id
         super().save(*args, **kwargs)
+
+class Subscription(models.Model):
+    user = models.ForeignKey(USER,related_name='user_subscription', on_delete=models.CASCADE)
+    subscription_product = models.ForeignKey(SubscriptionProduct,related_name='user_subscription_product', on_delete=models.CASCADE)
+    check_out_session_id = models.CharField(max_length=255, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_successfully = models.BooleanField(default=True)
+    expiration_date = models.TextField(blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+         return self.user.first_name
+
+    class Meta:
+        ordering = ["-timestamp", ]
         
