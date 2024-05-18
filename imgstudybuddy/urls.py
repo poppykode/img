@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('accounts.urls')),
     path('stations/', include('stations.urls')),
+    path('subscriptions/', include('subscriptions.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path("ckeditor5/", include('django_ckeditor_5.urls')),
     
