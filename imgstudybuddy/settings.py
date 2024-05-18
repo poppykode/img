@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'core',
     'accounts',
     'stations',
+    'subscriptions',
     #3rd Part Apps
     'crispy_forms',
     'crispy_bootstrap5',
