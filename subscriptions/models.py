@@ -1,17 +1,31 @@
+import stripe
 from django.db import models
+from django.conf import settings
+
+SECRET_KEY = settings.STRIPE_SECRET_KEY
+
+stripe.api_key = SECRET_KEY
 
 # Create your models here.
 # Sorry it’s £49.99 for 1 month and £79.99 for 3 months and £99.99 for 6 months access
 
 class SubscriptionProduct(models.Model):
-    class DurationType(models.TextChoices):
+    class Interval(models.TextChoices):
         MONTHS = 'Months'
         DAYS = 'Days'
         YEARS = 'Year'
+
+    class Curency(models.TextChoices):
+        USD = 'usd'
+        GBP = 'gbp'
     title = models.CharField(max_length=255)
-    duration_type = models.CharField(max_length=255, choices=DurationType.choices)
+    interval = models.CharField(max_length=255, choices=Interval.choices)
+    currency = models.CharField(max_length=10,choices=Curency.choices)
+    stripe_product_id = models.CharField(max_length=255,blank=True)
+    stripe_price_id = models.CharField(max_length=255,blank=True)
     duration_period = models.IntegerField(default=0)
-    price =models.FloatField(default=0.0)
+    stripe_price = models.IntegerField(default=0,blank=True) #price *100
+    price =models.DecimalField(default=0.0, max_digits=10,decimal_places=2)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -20,3 +34,20 @@ class SubscriptionProduct(models.Model):
 
     class Meta:
         ordering = ["-timestamp", ]
+
+    def save(self, *args, **kwargs):
+        
+        if self.price:
+            self.stripe_price = int(self.price * 100)
+        if self.title:
+            stripe_product_obj = stripe.Product.create(name=self.title)
+            self.stripe_product_id = stripe_product_obj.id
+        if self.stripe_product_id:
+            stripe_price_obj  = stripe.Price.create(
+                product=self.stripe_product_id,
+                unit_amount=self.stripe_price,
+                currency= self.currency,
+                )
+            self.stripe_price_id = stripe_price_obj.id
+        super().save(*args, **kwargs)
+        
