@@ -8,9 +8,10 @@ class SubscriptionProductForm(forms.ModelForm):
   class Meta:
     model = models.SubscriptionProduct
     widgets = {
-      'title': forms.widgets.TextInput(attrs=form_control)
+      'title': forms.widgets.TextInput(attrs=form_control),
+      'is_active': forms.widgets.CheckboxInput()
     }
     labels = {
         'duration_period':'Duration of Subscription'
     }
-    fields = ['title','interval','currency','duration_period','price','description',]
+    fields = ['title','interval','currency','is_active','duration_period','price',]

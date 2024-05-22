@@ -22,8 +22,7 @@ class SubscriptionProduct(models.Model):
     title = models.CharField(max_length=255)
     interval = models.CharField(max_length=255, choices=Interval.choices)
     currency = models.CharField(max_length=10,choices=Curency.choices)
-    is_active = models.BooleanField(default=True)
-    description = models.TextField(blank=True)
+    is_active = models.BooleanField()
     stripe_product_id = models.CharField(max_length=255,blank=True)
     stripe_price_id = models.CharField(max_length=255,blank=True)
     duration_period = models.IntegerField(default=0)
@@ -38,21 +37,21 @@ class SubscriptionProduct(models.Model):
     class Meta:
         ordering = ["-timestamp", ]
 
-    def save(self, *args, **kwargs):
+    # def save(self, *args, **kwargs):
         
-        if self.price:
-            self.stripe_price = int(self.price * 100)
-        if self.title:
-            stripe_product_obj = stripe.Product.create(name=self.title)
-            self.stripe_product_id = stripe_product_obj.id
-        if self.stripe_product_id:
-            stripe_price_obj  = stripe.Price.create(
-                product=self.stripe_product_id,
-                unit_amount=self.stripe_price,
-                currency= self.currency,
-                )
-            self.stripe_price_id = stripe_price_obj.id
-        super().save(*args, **kwargs)
+    #     if self.price:
+    #         self.stripe_price = int(self.price * 100)
+    #     if self.title:
+    #         stripe_product_obj = stripe.Product.create(name=self.title)
+    #         self.stripe_product_id = stripe_product_obj.id
+    #     if self.stripe_product_id:
+    #         stripe_price_obj  = stripe.Price.create(
+    #             product=self.stripe_product_id,
+    #             unit_amount=self.stripe_price,
+    #             currency= self.currency,
+    #             )
+    #         self.stripe_price_id = stripe_price_obj.id
+    #     super().save(*args, **kwargs)
 
 class Subscription(models.Model):
     user = models.ForeignKey(USER,related_name='user_subscription', on_delete=models.CASCADE)

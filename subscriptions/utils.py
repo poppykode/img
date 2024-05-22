@@ -1,3 +1,4 @@
+from decimal import Decimal
 import stripe
 from django.conf import settings
 
@@ -5,45 +6,47 @@ SECRET_KEY = settings.STRIPE_SECRET_KEY
 
 stripe.api_key = SECRET_KEY
 
+def get_stripe_price_in_cents(price:float) -> int:
+    stripe_price = int(price * 100)
+    return stripe_price
 
-def product_sales_pipeline(product_name='Test', price_in_cents=1000):
+def create_stripe(product_name: str, currency: str, price)-> tuple[str, str, int]:
+    if product_name:
+        try:
+            stripe_product = stripe.Product.create(
+                name=product_name
+            )
+            stripe_product_id = stripe_product.id
+            stripe_price_in_cents = get_stripe_price_in_cents(price)
+            stripe_price = stripe.Price.create(
+                product=stripe_product_id,
+                unit_amount= stripe_price_in_cents,
+                currency=currency,
+            )
+            stripe_price_id = stripe_price.id
+            return stripe_product_id, stripe_price_id, stripe_price_in_cents
 
+        except stripe.error.StripeError as e:
+            print(f"Stripe Error : {e}")
+            raise
+
+def edit_stripe(obj, product_name: str, currency: str, price: Decimal):
     try:
-        # Create the Stripe product
-        stripe_product = stripe.Product.create(
-            name=product_name
-        )
-        product_id = stripe_product.id
-
-        # Create the Stripe price (in cents)
-        stripe_price = stripe.Price.create(
-            product=product_id,
-            unit_amount=price_in_cents,
-            currency="usd",
-        )
-        price_id = stripe_price.id
-
-        # Create the Stripe checkout session
-        base_url = 'http://127.0.0.1:8000'  # Replace with your actual base URL
-        success_url = f'{base_url}/subscriptions/success/'
-        cancel_url = f'{base_url}/subscriptions/cancel/'
-
-        checkout_session = stripe.checkout.Session.create(
-            line_items=[
-                {
-                    "price": price_id,
-                    "quantity": 1
-                }
-            ],
-            mode="payment",
-            success_url=success_url,
-            cancel_url=cancel_url
-        )
-
-        return checkout_session.url
-
+        if obj.title != product_name:
+            print('Price Modify')
+            stripe.Product.modify(
+                obj.stripe_product_id,
+                name = product_name
+            )
+        if obj.price != price or obj.currency != currency :
+            print('Price Modify')
+            stripe.Price.modify(
+                obj.stripe_price_id,
+                price  =  get_stripe_price_in_cents(price),
+                currency = currency
+            )
     except stripe.error.StripeError as e:
-        # Handle Stripe errors appropriately (e.g., logging, error messages)
-        print(f"Error creating Stripe session: {e}")
+        print(f"Stripe Error : {e}")
         raise
+
 
