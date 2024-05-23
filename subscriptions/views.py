@@ -40,8 +40,7 @@ def create_subscription_product(request):
         cleaned_data = form.cleaned_data
         stripe_product_id, stripe_price_id, stripe_price_in_cents = utils.create_stripe(
             cleaned_data["title"],
-            cleaned_data["currency"],
-            float(cleaned_data["price"])
+            cleaned_data["price"]
         )
         new_sub_form = form.save(commit=False)
         new_sub_form.stripe_price = stripe_price_in_cents
@@ -61,10 +60,14 @@ def edit_subscription_product(request, product_id):
 
     if form.is_valid():
         cleaned_data = form.cleaned_data
-        print(type(cleaned_data["price"]))
         try:
-            utils.edit_stripe(obj, cleaned_data["title"],cleaned_data["currency"],cleaned_data["price"])
-            form.save()
+            modified_stripe_price_id = utils.edit_stripe(obj, cleaned_data["title"],cleaned_data["price"])
+            if not modified_stripe_price_id == "":
+                updated_sub_form = form.save(commit=False)
+                updated_sub_form.stripe_price_id = modified_stripe_price_id
+                updated_sub_form.save()
+            else:
+                form.save()
             messages.success(request, "Subscription successfully updated.")
         except Exception as e:
             messages.error(request, f"Error updating subscription: {e}")

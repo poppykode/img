@@ -41,7 +41,7 @@ Subscriptions Products
         <div class="d-flex justify-content-between align-items-start">
           <span class="badge bg-label-primary">{{item.title|title}}</span>
           <div class="d-flex justify-content-center">
-            <sup class="h5 pricing-currency mt-3 mb-0 me-1 text-primary">{{item.currency|upper}}</sup>
+            <sup class="h5 pricing-currency mt-3 mb-0 me-1 text-primary">GBP</sup>
             <h1 class="display-5 mb-0 text-primary">{{item.price|floatformat:2}}</h1>
 
           </div>
@@ -50,14 +50,21 @@ Subscriptions Products
         <ul class="ps-3 g-2 my-4">
           <li class="mb-2">
             {% if item.duration_period == 1 %}
-            {{item.duration_period}} Month
+            {{item.duration_period}} {{item.interval}}
             {% else %}
-            {{item.duration_period}} {{item.interval}} 
+            {{item.duration_period}} {{item.interval}}s
             {% endif %}
             access to all stations.
           </li>
           <li class="mb-2">{{item.duration_period}} {{item.interval}} access to Masterclass videos.</li>
-          <li>Support</li>
+          <li>
+            {% if item.duration_period == 1 %}
+            {{item.duration_period}} {{item.interval}}
+            {% else %}
+            {{item.duration_period}} {{item.interval}}s
+            {% endif %}
+            Support
+          </li>
         </ul>
         
         <div class="d-grid w-100 mt-4 pt-2">

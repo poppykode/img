@@ -20,3 +20,7 @@ class ExaminerMarkSheetEnum(Enum):
     DATA_GATHERING = "Data Gathering"
     MANAGEMENT = "Management"
     INTERPERSONAL_SKILLS = "Interpersonal skills"
+
+class CurrencyEnum(Enum):
+    USD = 'usd'
+    GBP = 'gbp'

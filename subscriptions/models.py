@@ -2,6 +2,8 @@ import stripe
 from django.db import models
 from django.conf import settings
 
+from core.enums import CurrencyEnum
+
 SECRET_KEY = settings.STRIPE_SECRET_KEY
 USER = settings.AUTH_USER_MODEL
 
@@ -12,16 +14,13 @@ stripe.api_key = SECRET_KEY
 
 class SubscriptionProduct(models.Model):
     class Interval(models.TextChoices):
-        MONTHS = 'Months'
-        DAYS = 'Days'
-        YEARS = 'Year'
+        MONTH = 'Month'
+        DAY = 'Day'
+        YEAR = 'Year'
 
-    class Curency(models.TextChoices):
-        USD = 'usd'
-        GBP = 'gbp'
     title = models.CharField(max_length=255)
     interval = models.CharField(max_length=255, choices=Interval.choices)
-    currency = models.CharField(max_length=10,choices=Curency.choices)
+    currency = models.CharField(max_length=10,default= CurrencyEnum.GBP.value)
     is_active = models.BooleanField()
     stripe_product_id = models.CharField(max_length=255,blank=True)
     stripe_price_id = models.CharField(max_length=255,blank=True)
