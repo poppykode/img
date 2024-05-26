@@ -93,6 +93,7 @@ def edit_subscription_product(request, product_id):
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value])
 def subscription_products(request):
+    utils.expire_subscriptions()
     template_name = "subscription_products/subscription_products.html"
     subscription_products = models.SubscriptionProduct.objects.filter(is_active=True)
     return render(request, template_name, {"items": subscription_products,'is_grayed_out':utils.check_if_active_subscription(request)})

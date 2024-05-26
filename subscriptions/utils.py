@@ -12,6 +12,7 @@ from core.enums import CurrencyEnum, IntervalEnum, StatusEnum
 SECRET_KEY = settings.STRIPE_SECRET_KEY
 
 stripe.api_key = SECRET_KEY
+logging.basicConfig(filename='logs.log',level=logging.INFO)
 
 def get_stripe_price_in_cents(price) -> int:
     stripe_price = int(price * 100)
@@ -97,6 +98,8 @@ def create_subscription(sub_obj, user_id,check_out_session_id):
 def successful_subscription(check_out_session_id, sub_id):
     sub_obj = get_object_or_404(Subscription,check_out_session_id=check_out_session_id)
     sub_obj.expiration_date = calculate_subscription_expiry_date(sub_id)
+    sub_obj.is_active = True
+    sub_obj.is_successfully = True
     sub_obj.status = StatusEnum.SUCCESSFULL.value
     sub_obj.save()
     return sub_obj
@@ -104,8 +107,6 @@ def successful_subscription(check_out_session_id, sub_id):
 def unsuccessful_subscription(check_out_session_id):
     sub_obj = get_object_or_404(Subscription,check_out_session_id=check_out_session_id)
     sub_obj.status = StatusEnum.CANCELLED.value
-    sub_obj.is_active = False
-    sub_obj.is_successfully = False
     sub_obj.save()
     return sub_obj
 
@@ -115,8 +116,6 @@ def check_if_active_subscription(request):
     if is_subscribed:
         is_grayed_out = True
     return is_grayed_out
-
-
 
 
 def get_expired_subscriptions():
@@ -141,6 +140,7 @@ def expire_subscriptions():
     logging.info(f"number of expired subs :: {subscriptions_to_expire.count()}")
     logging.info(f"Cron::{formatted_time}")
     if subscriptions_to_expire:
+        print("we are here")
         subscriptions_to_expire.update(is_active=False)
 
 def notify_subscription_expiry_vial_email():
