@@ -61,11 +61,17 @@ INSTALLED_APPS = [
     #3rd Part Apps
     'crispy_forms',
     'crispy_bootstrap5',
+    'django_crontab',
 
 
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
+CRONJOBS = [
+    # ('0 23 * * *', 'subscriptions.utils.expire_subscriptions'),
+    # ('* * * * *', 'subscriptions.utils.expire_subscriptions'),
+    # Add more cron jobs as needed
+]
 
 # CKEDITOR_5_CONFIGS = {
 #     'extends': {

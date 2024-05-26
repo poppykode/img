@@ -16,3 +16,6 @@ def role_required(allowed_roles=[]):
       raise PermissionDenied("You don't have permission to access this view.")
     return wrapper
   return decorator
+
+def check_subscription():
+  pass

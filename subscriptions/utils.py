@@ -1,8 +1,13 @@
+import stripe, logging
 from decimal import Decimal
-import stripe
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
+from django.shortcuts import  get_object_or_404
 from django.conf import settings
+from .models import SubscriptionProduct, Subscription
+from accounts.models import User
 
-from core.enums import CurrencyEnum
+from core.enums import CurrencyEnum, IntervalEnum, StatusEnum
 
 SECRET_KEY = settings.STRIPE_SECRET_KEY
 
@@ -60,7 +65,83 @@ def edit_stripe(obj, product_name: str, price: Decimal):
     except stripe.error.StripeError as e:
         print(f"Stripe Error : {e}")
         raise
-def retrive_product():
-    x = stripe.Product.retrieve('prod_Q9XI4n1AchnGPQ')
-    print(x)
+
+def calculate_subscription_expiry_date(sub_id):
+    sub_obj = get_object_or_404(SubscriptionProduct, id=sub_id)
+    sub_date = date.today()
+    interval_mapping = {
+        IntervalEnum.MONTH.value: relativedelta(months=sub_obj.duration_period),
+        IntervalEnum.YEAR.value: relativedelta(years=sub_obj.duration_period),
+        IntervalEnum.DAY.value: relativedelta(days=sub_obj.duration_period),
+    }
+    try:
+        date_to_be_added = interval_mapping[sub_obj.interval]
+        expiry_date = sub_date + date_to_be_added
+    except Exception as e:
+        print(e)
+        raise
+
+    return expiry_date
+
+
+def create_subscription(sub_obj, user_id,check_out_session_id):
+    user_obj = get_object_or_404(User, id=user_id)
+    subscription = Subscription.objects.create(
+        user=user_obj,
+        subscription_product = sub_obj,
+        check_out_session_id = check_out_session_id
+    )
+    logging.info(f"resp --->> {subscription.id}")
+    return subscription
+
+def successful_subscription(check_out_session_id, sub_id):
+    sub_obj = get_object_or_404(Subscription,check_out_session_id=check_out_session_id)
+    sub_obj.expiration_date = calculate_subscription_expiry_date(sub_id)
+    sub_obj.status = StatusEnum.SUCCESSFULL.value
+    sub_obj.save()
+    return sub_obj
+
+def unsuccessful_subscription(check_out_session_id):
+    sub_obj = get_object_or_404(Subscription,check_out_session_id=check_out_session_id)
+    sub_obj.status = StatusEnum.CANCELLED.value
+    sub_obj.is_active = False
+    sub_obj.is_successfully = False
+    sub_obj.save()
+    return sub_obj
+
+def check_if_active_subscription(request):
+    is_grayed_out = False
+    is_subscribed = Subscription.objects.filter(user = request.user).filter(is_active=True).exists()
+    if is_subscribed:
+        is_grayed_out = True
+    return is_grayed_out
+
+
+
+
+def get_expired_subscriptions():
+    today = date.today()
+    active_subscriptions = Subscription.objects.filter(
+        expiration_date__lte=today,
+        is_active=True
+    )
+    total_count = active_subscriptions.count()
+    return active_subscriptions, total_count
+
+
+
+def expire_subscriptions():
+    today = date.today()
+    subscriptions_to_expire = Subscription.objects.filter(
+        expiration_date__lte=today,
+        is_active=True
+    )
+    now =  datetime.now()
+    formatted_time = now.strftime("%H:%M:%S")
+    logging.info(f"number of expired subs :: {subscriptions_to_expire.count()}")
+    logging.info(f"Cron::{formatted_time}")
+    subscriptions_to_expire.update(is_active=False)
+
+def notify_subscription_expiry_vial_email():
+    pass
 

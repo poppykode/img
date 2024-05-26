@@ -24,3 +24,14 @@ class ExaminerMarkSheetEnum(Enum):
 class CurrencyEnum(Enum):
     USD = 'usd'
     GBP = 'gbp'
+
+class IntervalEnum(Enum):
+    MONTH = 'Month'
+    DAY = 'Day'
+    YEAR = 'Year'
+
+class StatusEnum(Enum):
+    SUCCESSFULL = 'successfull'
+    CANCELLED = 'cancelled'
+    FAILED = 'failed'
+    PROCESSING = 'processing'

@@ -1,4 +1,4 @@
-import stripe
+import stripe, logging
 from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404
@@ -18,13 +18,28 @@ stripe.api_key = SECRET_KEY
 
 # Create your views here.
 @role_required(allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value])
-def success(request):
+def success(request,sub_id):
+    checkout_session_id = request.session.get('checkout_session_id')
+    if checkout_session_id:
+        obj = utils.successful_subscription(checkout_session_id,sub_id)
+        logging.info(obj.id)
+        del request.session['checkout_session_id']  
+    else:
+        logging.error(f"Check session id does not exist.")
     messages.success(request, "Subscription was successfull")
     return redirect("subscriptions:subscription_products")
 
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value])
 def cancel(request):
+    checkout_session_id = request.session.get('checkout_session_id')
+    if checkout_session_id:
+        obj = utils.unsuccessful_subscription(checkout_session_id)
+        logging.info(obj.id)
+        del request.session['checkout_session_id'] 
+    else:
+        logging.error(f"Check session id does not exist.")
+    
     messages.error(request, "Subscription was cancelled.")
     return redirect("subscriptions:subscription_products")
 
@@ -80,13 +95,15 @@ def edit_subscription_product(request, product_id):
 def subscription_products(request):
     template_name = "subscription_products/subscription_products.html"
     subscription_products = models.SubscriptionProduct.objects.filter(is_active=True)
-    return render(request, template_name, {"items": subscription_products})
+    return render(request, template_name, {"items": subscription_products,'is_grayed_out':utils.check_if_active_subscription(request)})
+
 
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value])
 def subscribe(request, product_id):
+    user_id = request.user.id
     obj = get_object_or_404(models.SubscriptionProduct, id=product_id)
-    success_path = reverse("subscriptions:success")
+    success_path = reverse("subscriptions:success", kwargs={'sub_id':obj.id})
     cancel_path = reverse("subscriptions:cancel")
     success_url = f"{BASE_URL}{success_path}"
     cancel_url = f"{BASE_URL}{cancel_path}"
@@ -96,5 +113,10 @@ def subscribe(request, product_id):
         success_url=success_url,
         cancel_url=cancel_url,
     )
+    checkout_session_id = checkout_session.id
+    new_sub = utils.create_subscription(obj,user_id,checkout_session_id)
+    logging.info(new_sub.id)
+    if new_sub.id:
+        request.session['checkout_session_id'] = checkout_session_id
 
     return HttpResponseRedirect(checkout_session.url)

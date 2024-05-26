@@ -2,7 +2,7 @@ import stripe
 from django.db import models
 from django.conf import settings
 
-from core.enums import CurrencyEnum
+from core.enums import CurrencyEnum, IntervalEnum, StatusEnum
 
 SECRET_KEY = settings.STRIPE_SECRET_KEY
 USER = settings.AUTH_USER_MODEL
@@ -14,9 +14,9 @@ stripe.api_key = SECRET_KEY
 
 class SubscriptionProduct(models.Model):
     class Interval(models.TextChoices):
-        MONTH = 'Month'
-        DAY = 'Day'
-        YEAR = 'Year'
+        MONTH = IntervalEnum.MONTH.value
+        DAY = IntervalEnum.DAY.value
+        YEAR = IntervalEnum.YEAR.value
 
     title = models.CharField(max_length=255)
     interval = models.CharField(max_length=255, choices=Interval.choices)
@@ -53,12 +53,18 @@ class SubscriptionProduct(models.Model):
     #     super().save(*args, **kwargs)
 
 class Subscription(models.Model):
+    class Status(models.TextChoices):
+        SUCCESSFULL = StatusEnum.SUCCESSFULL.value
+        CANCELLED = StatusEnum.CANCELLED.value
+        FAILED = StatusEnum.FAILED.value
+        PROCESSING = StatusEnum.PROCESSING.value
     user = models.ForeignKey(USER,related_name='user_subscription', on_delete=models.CASCADE)
     subscription_product = models.ForeignKey(SubscriptionProduct,related_name='user_subscription_product', on_delete=models.CASCADE)
     check_out_session_id = models.CharField(max_length=255, blank=True)
     is_active = models.BooleanField(default=True)
     is_successfully = models.BooleanField(default=True)
-    expiration_date = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices= Status.choices, default=Status.PROCESSING)
+    expiration_date = models.DateField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
