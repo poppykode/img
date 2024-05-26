@@ -140,7 +140,8 @@ def expire_subscriptions():
     formatted_time = now.strftime("%H:%M:%S")
     logging.info(f"number of expired subs :: {subscriptions_to_expire.count()}")
     logging.info(f"Cron::{formatted_time}")
-    subscriptions_to_expire.update(is_active=False)
+    if subscriptions_to_expire:
+        subscriptions_to_expire.update(is_active=False)
 
 def notify_subscription_expiry_vial_email():
     pass

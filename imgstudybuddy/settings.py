@@ -69,7 +69,7 @@ INSTALLED_APPS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 CRONJOBS = [
     # ('0 23 * * *', 'subscriptions.utils.expire_subscriptions'),
-    # ('* * * * *', 'subscriptions.utils.expire_subscriptions'),
+    ('* * * * *', 'subscriptions.utils.expire_subscriptions'),
     # Add more cron jobs as needed
 ]
 
