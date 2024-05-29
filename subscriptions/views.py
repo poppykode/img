@@ -1,4 +1,4 @@
-import stripe, logging
+import stripe, logging, pika
 from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404
@@ -44,9 +44,6 @@ def cancel(request):
     return redirect("subscriptions:subscription_products")
 
 
-# check if already subscribed
-# gray out subscription
-# can upgrade subscription
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def create_subscription_product(request):
     template_name = "subscription_products/create_subscription_product.html"
@@ -93,7 +90,7 @@ def edit_subscription_product(request, product_id):
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value])
 def subscription_products(request):
-    utils.expire_subscriptions()
+    # utils.expire_subscriptions()
     template_name = "subscription_products/subscription_products.html"
     subscription_products = models.SubscriptionProduct.objects.filter(is_active=True)
     return render(request, template_name, {"items": subscription_products,'is_grayed_out':utils.check_if_active_subscription(request)})
