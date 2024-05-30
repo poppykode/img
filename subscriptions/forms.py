@@ -15,3 +15,10 @@ class SubscriptionProductForm(forms.ModelForm):
         'duration_period':'Duration of Subscription'
     }
     fields = ['title','interval','is_active','duration_period','price',]
+
+
+class SubscriptionForm(forms.Form):
+  date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type':'date'}))
+  date_to = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type':'date'}))
+
+

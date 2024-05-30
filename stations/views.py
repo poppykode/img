@@ -5,6 +5,7 @@ from core.enums import RoleEnum
 from . import forms
 from . import models
 from . import utils
+from core.utils import paginator
 
 
 # Create your views here.
@@ -18,7 +19,7 @@ def first_level_stations(request):
     return render(
         request,
         template_name,
-        {"items": utils.paginator(request, first_level_stations_, 10)},
+        {"items": paginator(request, first_level_stations_, 10)},
     )
 
 
@@ -78,7 +79,7 @@ def second_level_stations(request):
     return render(
         request,
         template_name,
-        {"items": utils.paginator(request, second_level_stations_, 10)},
+        {"items": paginator(request, second_level_stations_, 10)},
     )
 
 
@@ -138,7 +139,7 @@ def third_level_stations(request):
     return render(
         request,
         template_name,
-        {"items": utils.paginator(request, third_level_stations_, 10)},
+        {"items": paginator(request, third_level_stations_, 10)},
     )
 
 
@@ -239,7 +240,7 @@ def stations_admin(request):
     return render(
         request,
         template_name,
-        {"items": utils.paginator(request, station_, 10)}
+        {"items": paginator(request, station_, 10)}
     )
 
 #User views
@@ -251,7 +252,7 @@ def first_level_station_view(request):
     return render(
         request,
         template_name,
-        {"items": utils.paginator(request, station_, 10)}
+        {"items": paginator(request, station_, 10)}
     )
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])
@@ -262,7 +263,7 @@ def second_level_station_view(request,id):
     return render(
         request,
         template_name,
-        {"items": utils.paginator(request, station_, 10),'obj':first_level_station_}
+        {"items": paginator(request, station_, 10),'obj':first_level_station_}
     )
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])
@@ -273,7 +274,7 @@ def third_level_station_view(request,id):
     return render(
         request,
         template_name,
-        {"items": utils.paginator(request, station_, 10),'obj':second_level_station_}
+        {"items": paginator(request, station_, 10),'obj':second_level_station_}
     )
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])

@@ -10,5 +10,6 @@ urlpatterns = [
     path('create-subscription-product/', views.create_subscription_product,name='create_subscription_product'),
     path('edit-subscription-product/<int:product_id>/', views.edit_subscription_product,name='edit_subscription_product'),
     path('subscribe/<int:product_id>/', views.subscribe,name='subscribe'),
+    path('all/', views.subscriptions,name='subscriptions'),
     
 ]

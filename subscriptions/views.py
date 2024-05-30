@@ -1,4 +1,6 @@
-import stripe, logging, pika
+import stripe, logging
+from datetime import date
+from django.db.models import Q
 from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404
@@ -8,6 +10,7 @@ from core.decorators import role_required
 from . import forms
 from . import models
 from . import utils
+from core.utils import paginator
 
 
 SECRET_KEY = settings.STRIPE_SECRET_KEY
@@ -29,7 +32,6 @@ def success(request,sub_id):
     messages.success(request, "Subscription was successfull")
     return redirect("subscriptions:subscription_products")
 
-
 @role_required(allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value])
 def cancel(request):
     checkout_session_id = request.session.get('checkout_session_id')
@@ -42,7 +44,6 @@ def cancel(request):
     
     messages.error(request, "Subscription was cancelled.")
     return redirect("subscriptions:subscription_products")
-
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def create_subscription_product(request):
@@ -62,7 +63,6 @@ def create_subscription_product(request):
         messages.success(request, "Subcription successfully created.")
         return redirect("subscriptions:subscription_products")
     return render(request, template_name, {"form": form, "type": "create"})
-
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def edit_subscription_product(request, product_id):
@@ -87,15 +87,12 @@ def edit_subscription_product(request, product_id):
 
     return render(request, template_name, {"form": form, "type": "edit", "obj": obj})
 
-
 @role_required(allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value])
 def subscription_products(request):
     # utils.expire_subscriptions()
     template_name = "subscription_products/subscription_products.html"
     subscription_products = models.SubscriptionProduct.objects.filter(is_active=True)
     return render(request, template_name, {"items": subscription_products,'is_grayed_out':utils.check_if_active_subscription(request)})
-
-
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value])
 def subscribe(request, product_id):
@@ -118,3 +115,36 @@ def subscribe(request, product_id):
         request.session['checkout_session_id'] = checkout_session_id
 
     return HttpResponseRedirect(checkout_session.url)
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value])
+def subscriptions(request):
+    template_name = 'subscriptions.html'
+    subscriptions = models.Subscription.objects.all()
+    form = forms.SubscriptionForm(request.POST or None)
+
+    if request.method == 'POST':
+        date_from = request.POST.get('date_from')
+        date_to = request.POST.get('date_to')
+
+        q_objects = Q()
+
+        if date_from:
+            q_objects &= Q(timestamp__date=date_from)
+
+        if date_from and date_to:
+            q_objects &= Q(timestamp__date__range=(date_from, date_to))
+     
+            
+        subscriptions = models.Subscription.objects.filter(q_objects)
+    today = date.today()
+    context = {
+        'items': paginator(request, subscriptions, 10),
+        'form':form,
+        'all_subs':subscriptions.count(),
+        'expired_subs':subscriptions.filter(expiration_date__lte=today, is_active=False).count(),
+        'active_subs':subscriptions.filter(expiration_date__gt=today, is_active=True).count(),
+        'successfull_payments' : subscriptions.filter(is_successfully=True).count(),
+        'unsuccessfull_payments' : subscriptions.filter(is_successfully=False).count()
+
+    }
+    return render(request, template_name, context)

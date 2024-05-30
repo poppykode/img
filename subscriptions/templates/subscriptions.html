@@ -1,0 +1,201 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% load calc %}
+{% load crispy_forms_tags %}
+{% block title %}
+Subscriptions
+{% endblock %}
+{% block content %}
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home /</span>
+  Subscriptions
+</h5>
+
+<div class="card-header flex-column flex-md-row mb-4">
+  {% if messages %}
+  {% for message in messages %}
+
+  <div class="alert alert-{{ message.tags }} alert-dismissible mt-3" role="alert">
+    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+    </button>
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+</div>
+
+<div class="row g-4 mb-4">
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-start justify-content-between">
+          <div class="content-left">
+            <span>Expired Subscriptions</span>
+            <div class="d-flex align-items-end mt-2">
+              <h4 class="mb-0 me-2">{{expired_subs}}/{{all_subs}}</h4>
+              <small class="text-success">({{expired_subs|percentage:all_subs}}%)</small>
+            </div>
+            <small>Total expired subs</small>
+          </div>
+          <span class="badge bg-label-danger rounded p-2">
+            <i class="bx bx-user-plus bx-sm"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-start justify-content-between">
+          <div class="content-left">
+            <span>Active Subscriptions</span>
+            <div class="d-flex align-items-end mt-2">
+              <h4 class="mb-0 me-2">{{active_subs}}/{{all_subs}}</h4>
+              <small class="text-danger">({{active_subs|percentage:all_subs}}%)</small>
+            </div>
+            <small>Total expired subs</small>
+          </div>
+          <span class="badge bg-label-success rounded p-2">
+            <i class="bx bx-group bx-sm"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-start justify-content-between">
+          <div class="content-left">
+            <span>Successfull Payments</span>
+            <div class="d-flex align-items-end mt-2">
+              <h4 class="mb-0 me-2">{{successfull_payments}}/{{all_subs}}</h4>
+              <small class="text-success">({{successfull_payments|percentage:all_subs}}%)</small>
+            </div>
+            <small>Total successfull payments</small>
+          </div>
+          <span class="badge bg-label-warning rounded p-2">
+            <i class="bx bx-user-voice bx-sm"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-start justify-content-between">
+          <div class="content-left">
+            <span>Unsuccessfull payments</span>
+            <div class="d-flex align-items-end mt-2">
+              <h4 class="mb-0 me-2">{{unsuccessfull_payments}}/{{all_subs}}</h4>
+              <small class="text-success">({{unsuccessfull_payments|percentage:all_subs}}%)</small>
+            </div>
+            <small>Total unsuccessfull payments</small>
+          </div>
+          <span class="badge bg-label-primary rounded p-2">
+            <i class="bx bx-user bx-sm"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Users List Table -->
+<div class="card">
+  <div class="card-header border-bottom">
+
+    <h5 class="card-title">Search Filter</h5>
+    <form action="{% url 'subscriptions:subscriptions' %}" method="POST">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6">
+
+          {{form.date_from|as_crispy_field}}
+
+        </div>
+        <div class="col-md-6">
+
+          {{form.date_to|as_crispy_field}}
+
+        </div>
+      </div>
+      <div class="row justify-content-start">
+        <div class="col-sm-12">
+          <button type="submit" class="btn btn-primary me-sm-3 me-1">Search</button>
+          <a href="{% url 'subscriptions:subscriptions' %}" class="btn btn-label-secondary">Reset</a>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<div class="card">
+
+
+  <div class="table-responsive">
+    <table class="table border-top table-hover">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th>Subscription Package</th>
+          <th>Expiry Date</th>
+          <th>Subcription Date</th>
+          <th>Subscription Status</th>
+          <th>Payment Status</th>
+
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{item.user.get_full_name|title}}</td>
+          <td>{{item.subscription_product.title|title}}</td>
+          <td>{{item.expiration_date}}</td>
+          <td>{{item.timestamp}}</td>
+          <td>
+            {% if item.is_active %}
+            <span class="badge bg-success">Active</span>
+            {% else %}
+            <span class="badge bg-danger">Inactive</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if item.status == 'successfull' %}
+            <span class="badge bg-success">{{item.status|title}}</span>
+            {% elif item.status == 'cancelled' %}
+            <span class="badge bg-warning">{{item.status|title}}</span>
+            {% elif item.status == 'failed' %}
+            <span class="badge bg-danger">{{item.status|title}}</span>
+            {% else %}
+            <span class="badge bg-info">{{item.status|title}}</span>
+            {% endif %}
+          </td>
+
+
+        </tr>
+        {% empty %}
+        <tr>
+          <td>No data</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+  </div>
+  {% if items %}
+  {% include 'snippets/pagination.html' with items=items %}
+  {% endif %}
+
+</div>
+
+
+</div>
+
+{% endblock %}
