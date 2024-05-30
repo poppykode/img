@@ -68,8 +68,8 @@ INSTALLED_APPS = [
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 CRONJOBS = [
-    ('0 23 * * *', 'subscriptions.utils.expire_subscriptions'),
-    # ('* * * * *', 'subscriptions.utils.expire_subscriptions'),
+    # ('0 23 * * *', 'subscriptions.utils.expire_subscriptions'),
+    ('*/10 * * * *', 'subscriptions.utils.expire_subscriptions'),
 ]
 
 # CKEDITOR_5_CONFIGS = {
