@@ -34,12 +34,12 @@ Subscriptions
             <span>Expired Subscriptions</span>
             <div class="d-flex align-items-end mt-2">
               <h4 class="mb-0 me-2">{{expired_subs}}/{{all_subs}}</h4>
-              <small class="text-success">({{expired_subs|percentage:all_subs}}%)</small>
+              <small class="text-danger">({{expired_subs|percentage:all_subs}}%)</small>
             </div>
             <small>Total expired subs</small>
           </div>
           <span class="badge bg-label-danger rounded p-2">
-            <i class="bx bx-user-plus bx-sm"></i>
+            <i class="bx bx-money-withdraw bx-sm"></i>
           </span>
         </div>
       </div>
@@ -53,12 +53,12 @@ Subscriptions
             <span>Active Subscriptions</span>
             <div class="d-flex align-items-end mt-2">
               <h4 class="mb-0 me-2">{{active_subs}}/{{all_subs}}</h4>
-              <small class="text-danger">({{active_subs|percentage:all_subs}}%)</small>
+              <small class="text-success">({{active_subs|percentage:all_subs}}%)</small>
             </div>
             <small>Total expired subs</small>
           </div>
           <span class="badge bg-label-success rounded p-2">
-            <i class="bx bx-group bx-sm"></i>
+            <i class="bx bx-money-withdraw bx-sm"></i>
           </span>
         </div>
       </div>
@@ -77,7 +77,7 @@ Subscriptions
             <small>Total successfull payments</small>
           </div>
           <span class="badge bg-label-warning rounded p-2">
-            <i class="bx bx-user-voice bx-sm"></i>
+            <i class="bx bx-money bx-sm"></i>
           </span>
         </div>
       </div>
@@ -91,12 +91,12 @@ Subscriptions
             <span>Unsuccessfull payments</span>
             <div class="d-flex align-items-end mt-2">
               <h4 class="mb-0 me-2">{{unsuccessfull_payments}}/{{all_subs}}</h4>
-              <small class="text-success">({{unsuccessfull_payments|percentage:all_subs}}%)</small>
+              <small class="text-danger">({{unsuccessfull_payments|percentage:all_subs}}%)</small>
             </div>
             <small>Total unsuccessfull payments</small>
           </div>
           <span class="badge bg-label-primary rounded p-2">
-            <i class="bx bx-user bx-sm"></i>
+            <i class="bx bx-money bx-sm"></i>
           </span>
         </div>
       </div>

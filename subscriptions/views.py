@@ -128,7 +128,7 @@ def subscriptions(request):
 
         q_objects = Q()
 
-        if date_from:
+        if date_from and not date_to:
             q_objects &= Q(timestamp__date=date_from)
 
         if date_from and date_to:
