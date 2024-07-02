@@ -1,0 +1,25 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% block title %}Calendar{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/calendar.css' %}">
+{% endblock %}
+
+  {% block content %}
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / </span> Calendar </h5>
+<div class="row">
+<div class="col-md-12">
+    <div class="clearfix">
+        <a class="btn btn-primary left" href="{% url 'meeting_calendar:calendar' request.user.id %}?{{ prev_month }}"> Previous Month </a>
+        <a class="btn btn-primary right" href="{% url 'meeting_calendar:calendar'request.user.id %}?{{ next_month }}"> Next Month </a>
+    </div>
+   
+</div>
+ 
+<div class="col-md-12 mb-5">
+    {{ calendar }}
+</div>
+</div>
+  
+  {% endblock %}
