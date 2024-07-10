@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import redirect
 
 def role_required(allowed_roles=[]):
   def decorator(view_func):
@@ -13,7 +14,8 @@ def role_required(allowed_roles=[]):
         if request.user.role == role:      
             return view_func(request, *args, **kwargs)
         # will put redirect url
-      raise PermissionDenied("You don't have permission to access this view.")
+
+      return redirect("accounts:not_authorized")
     return wrapper
   return decorator
 

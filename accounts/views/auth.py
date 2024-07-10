@@ -45,18 +45,20 @@ def not_authorized(request):
 def redirect_logged(request):
     user_role = request.user.role
     has_availabilty = Avaliability.objects.filter(user = request.user).exists()
-    if not has_availabilty:
+    if has_availabilty:
         # redirect to page where on can create availability
-        redirect("meeting_calendar:create_availability")
-    if user_role == RoleEnum.ADMIN.value:
-        return redirect('accounts:admin_dashboard')
-    elif user_role == RoleEnum.CANDIDATE.value:
-        return redirect('accounts:candidate_dashboard')
-    elif user_role == RoleEnum.COACH.value:
-        return redirect('accounts:coach_dashboard')
+        if user_role == RoleEnum.ADMIN.value:
+            return redirect('accounts:admin_dashboard')
+        elif user_role == RoleEnum.CANDIDATE.value:
+            return redirect('accounts:candidate_dashboard')
+        elif user_role == RoleEnum.COACH.value:
+            return redirect('accounts:coach_dashboard')
+        else:
+            messages.error(request,'You do not have a role assigned.')
+            return redirect('accounts:not_authorized')
     else:
-        messages.error(request,'You do not have a role assigned.')
-        return redirect('accounts:not_authorized')
+        messages.info(request,'Please create add your availabilty to proceed.')
+        return redirect("meeting_calendar:create_availability")
     
 @login_required
 def my_logout(request):
