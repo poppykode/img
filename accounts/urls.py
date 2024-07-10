@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import auth,dashboard,applications
+from .views import (auth,dashboard,applications) 
 
 app_name = 'accounts'
 
@@ -11,5 +11,7 @@ urlpatterns = [
 
     path('dashboard/admin',dashboard.admin_dashboard, name='admin_dashboard'),
     path('dashboard/candidate',dashboard.candidate_dashboard, name='candidate_dashboard'),
-    path('dashboard/coach',dashboard.coach_dashboard, name='coach_dashboard')
+    path('dashboard/coach',dashboard.coach_dashboard, name='coach_dashboard'),
+
+    path('register-study-buddy',auth.StudyBuddyDataWizard.as_view(),name='register_study_buddy')
 ]

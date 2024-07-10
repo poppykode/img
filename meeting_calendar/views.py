@@ -1,4 +1,5 @@
 import calendar
+from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.views import generic
 from django.contrib import messages
@@ -8,7 +9,7 @@ from core.decorators import role_required
 from core.enums import RoleEnum
 from meeting_calendar.forms import AvaliabilityForm
 from .utils import Calendar
-from .models import BookedMeeting, Avaliability
+from .models import BookedMeeting, Avaliability, MeetingCheckInAndOut
 from datetime import datetime,timedelta, date 
 
 
@@ -55,6 +56,7 @@ def availability(request):
     template_name = 'availability.html'
     qs = Avaliability.objects.all()
     return render(request,template_name,{'avail':qs})
+    
 
 @role_required(allowed_roles=[RoleEnum.ADMIN.value])
 def create_availability(request):
@@ -67,5 +69,41 @@ def create_availability(request):
             instance.save()
             messages.success(request,'Availability successfully added.')
             return redirect('meeting_calendar:availability')
-    return render(request, template_name,{'form':form})
+    return render(request, template_name,{'form':form,'type':'create'})
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value])
+def remove_availability(request, id):
+    qs = get_object_or_404(Avaliability, id = id)
+    qs.delete()
+    messages.success(request, "Availability successfully deleted.")
+    return redirect("meeting_calendar:availability")
+
+@role_required(allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value])
+def check_in_or_check_out(request, meeting_id, check_type):
+    booked_meeting = get_object_or_404(BookedMeeting, id = meeting_id)
+    if check_type == 'check_in':   
+        MeetingCheckInAndOut.objects.create(
+            booked_meeting = booked_meeting,
+            is_checked_in = True
+        )
+        messages.success(request,'You have successfully checked in.')
+    else:
+        MeetingCheckInAndOut.objects.create(
+        booked_meeting = booked_meeting,
+        is_checked_out = True
+        )
+        messages.success(request,'You have successfully checked out.')
+    return redirect("/")
+
+
+
+
+    
+    qs = get_object_or_404(Avaliability, id = id)
+    qs.delete()
+    messages.success(request, "Availability successfully deleted.")
+    return redirect("meeting_calendar:availability")
+    
+    
+
 

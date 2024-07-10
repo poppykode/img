@@ -1,0 +1,156 @@
+{% extends 'shared.html' %}
+{% load static %}
+{% block title %}Offers{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:profile' %}">Profile</a>
+
+    </li>
+    <li class="breadcrumb-item active">Offers</li>
+  </ol>
+</nav>
+
+<div class="row">
+  <div class="col-md-12 mb-5">
+    <a href="{% url 'offers:create_offer' %}" class="btn btn-primary">Add Offer</a>
+    <!-- <a href="#" class="btn btn-primary">Add Offer</a> -->
+  </div>
+  <div class="col-md-12" id="offerSuccessMsg">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+      <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+      </button>
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+  {% for offer in offers %}
+  <div class="col-md-4 mb-3">
+    <div class="card h-100">
+      <img class="card-img-top" src="{{ offer.image.url }}" alt="{{offer.title}}">
+      <div class="card-body">
+        <h5 class="card-title">{{offer.title|title}}</h5>
+        <p class="card-text">
+          {% if offer.status == 'pending' %}
+            <span class="badge bg-label-warning"> {{offer.status}}</span>
+          {% elif offer.status == 'rejected' %}         
+            <span class="badge bg-label-danger">{{offer.status}}</span>
+          {% else %}          
+            <span class="badge bg-label-success">{{offer.status}}</span>
+          {% endif %}
+        </p>
+        <p class="card-text">
+          {{offer.title|truncatechars:20}}
+        </p>
+        <a href="{% url 'offers:offer_details' offer.id %}" class="btn btn-outline-primary me-2">Preview</a>
+        <a href="#" class="btn btn-warning">Edit</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <h4>No offers</h4>
+  {% endfor %}
+
+
+</div>
+<!-- Modal -->
+<div class="modal fade" id="meetingModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="offersModal">Add Offer</h5>
+        <hr>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="offersData">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="mb-3">
+                <label for="image" class="form-label">Upload Offer Image</label>
+                <input type="file" class="form-control" id="image" accept="image/jpeg, image/png">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="number" min="0.01" step="0.01" class="form-control" id="price">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="mb-3">
+                <label for="summary" class="form-label">Offer Summary</label>
+                <textarea class="form-control" id="summary" rows="3" spellcheck="false" name="summary"></textarea>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="mb-3">
+                <label for="description" class="form-label">Offer Description</label>
+                <textarea class="form-control" id="description" rows="3" spellcheck="false" name="description"></textarea>
+              </div>
+            </div>
+
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="submit" class="btn btn-primary">Create Offer</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+  let formData = new FormData();
+  document.getElementById("offersData").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const URL = '{% url "offers:create_offer_json" %}';
+    const title = document.getElementById('title').value;
+    const image = document.getElementById('image').files[0];
+    const price = document.getElementById('price').value;
+    const summary = document.getElementById('summary').value;
+    const description = document.getElementById('description').value;
+    console.log(description)
+    formData.append('title', title)
+    formData.append('action', 'create')
+    formData.append('image', image)
+    formData.append('price', price)
+    formData.append('summary', summary)
+    formData.append('description', description)
+    formData.append('csrfmiddlewaretoken', '{{csrf_token}}')
+    fetch(URL, {
+      method: 'POST',
+      body: formData,
+      enctype: 'multipart/form-data'
+    }).then(res => res.json()).then(data => {
+      location.reload();
+      title = '';
+      image = '';
+      price = '';
+      summary = '';
+      description = '';
+      //document.getElementById('offerSuccessMsg').innerHTML ='<div class="alert alert-success alert-dismissible" role="alert">Offer successfull added <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
+    }).catch(err => console.log(err));
+  })
+</script>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'shared.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Create Offer {% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:profile' %}">Profile</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'offers:offers' %}">Offers</a>
+        </li>
+        <li class="breadcrumb-item active">Create Offer</li>
+    </ol>
+</nav>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+    </button>
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Create Offer </h5>
+      <small class="text-muted float-end">offers</small>
+    </div>
+    <div class="card-body">
+        <form action="{% url 'offers:create_offer' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form.title|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form.price|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form.image|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form.file|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        {{ form.summary|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        {{ form.description|as_crispy_field }}
+                    </div>
+                </div>
+
+            </div>
+      
+        <div class="modal-footer">
+            <a href="{% url 'accounts:profile' %}" class="btn btn-warning">
+                Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">Create Offer</button>
+        </div>
+        </form>
+        </div>
+    </div>
+  </div>
+
+
+
+
+
+
+{% endblock %}

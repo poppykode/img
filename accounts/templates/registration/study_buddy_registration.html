@@ -1,0 +1,72 @@
+{% extends 'auth_shared.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Register Study Buddy{% endblock %}
+{% block content %}
+<div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+            <!-- Register -->
+            <div class="card">
+                <div class="card-body">
+                 
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                        </button>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+
+                    <div class="bs-stepper-content">
+                        <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+        
+                            {{ wizard.management_form }}
+                            {% if wizard.form.forms %}
+                            {{ wizard.form.management_form }}
+        
+                            {% if field.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {% for error in field.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+        
+        
+                            {% for form in wizard.form.forms %}
+                            {{ form|crispy }}
+                            {% endfor %}
+                            {% else %}
+                            {{ wizard.form|crispy}}
+                            {% endif %}
+        
+                            {% if wizard.steps.prev %}
+                            <button name="wizard_goto_step" type="submit" class="btn btn-primary"
+                                value="{{ wizard.steps.first }}">First step</button>
+                            <button name="wizard_goto_step" type="submit" class="btn btn-primary"
+                                value="{{ wizard.steps.prev }}">Previous</button>
+                            {% endif %}
+        
+                            {% if wizard.steps.step1 == wizard.steps.count %}
+                            <input type="submit" class="btn btn-success" value="Submit" />
+                            {% else %}
+                            <input type="submit" class="btn btn-success" value="Next" />
+                            {% endif %}
+                        </form>
+        
+                    </div>
+                </div>
+
+               
+            </div>
+            <!-- /Register -->
+        </div>
+    </div>
+</div>
+{% endblock %}

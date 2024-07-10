@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'stations',
     'subscriptions',
     'meeting_calendar',
+    'offers',
+    'review_ratings',
     #3rd Part Apps
     'crispy_forms',
     'crispy_bootstrap5',

@@ -3,31 +3,49 @@
 {% block title %}Availability{% endblock %}
 {% block content %}
 <h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / </span> Availability </h5>
-<div class="container-xxl flex-grow-1 container-p-y">
 
-    <div class="card">
-        <h5 class="card-header">Add Availability</h5>
-        <div class="table-responsive text-nowrap">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>MONDAY</th>
-                        <th>TUESDAY</th>
-                        <th>WEDNESDAY</th>
-                        <th>THURSDAY</th>
-                        <th>FRIDAY</th>
-                        <th>SATURDAY</th>
-                        <th>SUNDAY</th>
-                    </tr>
-                </thead>
-                <tbody class="table-border-bottom-0">
-                    <tr>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<div class="dt-buttons btn-group flex-wrap mb-4">
+    <div class="btn-group">
+
     </div>
-
+    <a class="btn btn-secondary create-new btn-primary" href="{% url 'meeting_calendar:create_availability' %}">
+        <span>
+            <i class="bx bx-plus me-sm-1"></i>
+            <span class="d-none d-sm-inline-block">Add Availability</span>
+        </span>
+    </a>
 </div>
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible mt-3 mb-4" role="alert">
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+  </button>
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="row">
+    {% regroup avail|dictsort:"day" by day as day_list %}
+    {% for day in day_list %}
+  
+    <div class="col-md-3 mb-3">
+
+        <div class="card">
+          
+            <div class="card-body">
+              <h5 class="card-title">{{ day.grouper }}</h5>
+              {% for d in day.list %}
+              <p class="card-text">{{ d.start_time }}: {{ d.end_time }} <a href="{% url 'meeting_calendar:remove_availability' d.id %}">  <i
+                class="fa-solid fa-x"></i></a></p>
+              {% endfor %}
+            </div>
+          </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+
 {% endblock %}

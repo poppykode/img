@@ -1,9 +1,52 @@
 {% extends 'main_shared.html' %}
+{% load crispy_forms_tags %}
 {% load static %}
-{% block title %}Create availability{% endblock %}
+{% block title %}
+{% include 'snippets/title_text.html' %} Availability
+{% endblock %}
+{% block content %}
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / <span>
+      {% include 'snippets/title_text.html' %} Availability {% if type == 'edit' %} {{obj.title|title}} {% endif %}
+</h5>
 
 
-  {% block content %}
-  <h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / </span>Create Availability </h5>
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+  {% for field, error_list in form.errors.items %}
+  {{ error_list.as_text }}
+  {% endfor %}
+</div>
+{% endif %}
 
-  {% endblock %}
+
+<div class="card mb-4">
+  {% if type == 'create' %}
+  <form class="card-body" action="{% url 'meeting_calendar:create_availability' %}" method="POST">
+    {% else %}
+    <form class="card-body" action="#" method="POST">
+      {% endif %}
+
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-4">
+          {{form.day|as_crispy_field}}
+
+        </div>
+        <div class="col-md-4">
+          {{form.start_time|as_crispy_field}}
+        </div>
+        <div class="col-md-4">
+          {{form.end_time|as_crispy_field}}
+
+        </div>
+      </div>
+      <div class="pt-4">
+        <button type="submit" class="btn btn-primary me-sm-3 me-1">
+          {% include 'snippets/title_text.html' %} Availability
+        </button>
+        <a href="#" class="btn btn-label-secondary">Cancel</a>
+      </div>
+    </form>
+</div>
+
+{% endblock %}
