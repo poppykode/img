@@ -1,11 +1,28 @@
+from datetime import date
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.forms import PasswordChangeForm
 from accounts.models import (
   User,
- StudyBuddyGeneralInfo,
+  GeneralInfo,
   StudyBuddyAdditionalInfo
-
 )
+from meeting_calendar.models import (
+    BookedMeeting
+)
+
+
+class ProfilePictureForm(forms.Form):
+    profile_picture = forms.ImageField(
+        help_text="Allowed JPG or PNG",
+        widget= forms.FileInput(attrs={'accept': 'image/png, image/jpeg, image/jpg'}))
+
+class MyPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['old_password'].help_text = ''
+        self.fields['new_password1'].help_text = ''
+        self.fields['new_password2'].help_text = ''
 
 class LoginForm(forms.Form):
   username = forms.CharField(label="Username", max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -31,16 +48,21 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ['first_name', 'last_name',]
 
-class StudyBuddyGeneralInfoForm(forms.ModelForm):
+class AdminUserForm(forms.ModelForm):
     class Meta:
-        model =  StudyBuddyGeneralInfo
+        model = User
+        fields = ['first_name', 'last_name','email']
+
+class GeneralInfoForm(forms.ModelForm):
+    class Meta:
+        model =  GeneralInfo
         fields = ['gender', 'time_zone', 'phone_number', 'profile_picture']
 
 class StudyBuddyAdditionalInfoForm(forms.ModelForm):
     class Meta:
         model = StudyBuddyAdditionalInfo
         widgets = {
-            "exam_date": forms.DateInput(attrs={"class": "datepicker", "type": "date"})
+            'exam_date': forms.widgets.DateInput(attrs={'class': 'datepicker', 'data-date-format': 'YYYY-MM-DD', 'type': 'date', 'min':date.today()})
         }
         fields = ['exam_date']
 

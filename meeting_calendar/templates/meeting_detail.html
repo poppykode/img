@@ -1,0 +1,110 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% block title %}
+ {{obj.availability.day}} {{obj.booking_date}}
+{% endblock %}
+{% block content %}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">{{obj.availability.day}} {{obj.booking_date}}</li>
+    </ol>
+</nav>
+
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible mt-3 mb-4" role="alert">
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+  </button>
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md">
+        <div class="card mb-4">
+          <div class="card-header header-elements">
+          
+            <div class="card-header-elements">
+
+                {% if obj.accepted %}
+                <span class="badge bg-success rounded-pill">
+                   Accepted
+                </span>
+                {% elif obj.rejected %}
+                <span class="badge bg-danger rounded-pill">
+                    Rejected
+                </span>
+                {% elif obj.cancelled %}
+                <span class="badge bg-danger rounded-pill">
+                    Cancelled
+                </span>
+                {% else %}
+                <span class="badge bg-primary rounded-pill">
+                    
+                    Not Actioned
+                </span>
+                {% endif %}
+
+             
+            </div>
+            <div class="card-header-elements ms-auto">
+                {% if not is_checked_in and not obj.rejected %}
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary">Meeting Actions</button>
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                <div class="dropdown-menu" style="">
+                {% if not obj.accepted and not obj.rejected and not obj.cancelled %}
+                  <a class="dropdown-item" href="#">Accept</a>
+                  <a class="dropdown-item" href="#">Reject</a>
+                  {% endif %}
+                  {% if obj.accepted and not obj.cancelled and not obj.rejected %}
+                  <a class="dropdown-item" href="#">Cancel</a>
+                  {% endif %}
+                </div>
+              </div>
+              {% else %}
+              No actions available
+              {% endif %}
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="card-text"><i class="fa fa-calendar" aria-hidden="true"></i> Meeting date : {{obj.booking_date}}</p>
+            <p class="card-text"><i class="fa fa-sun-o" aria-hidden="true"></i> Day : {{obj.availability.day}}</p>
+            <p class="card-text"><i class="fa fa-clock-o" aria-hidden="true"></i> Time  : {{obj.availability.start_time}} - {{obj.availability.end_time}}</p>
+            <p class="card-text">
+                <i class="fa fa-user-o" aria-hidden="true"></i> Requester : {% if obj.requester.id == request.user.id %} Yourself {% else %} {{obj.requester.get_full_name|title}}{% endif %}
+                | 
+                <i class="fa fa-user" aria-hidden="true"></i> Requested : {% if obj.requested.id == request.user.id %} Yourself {% else %} {{obj.requested.get_full_name|title}}{% endif %}
+            </p>
+            {% if obj.accepted %}
+            <p class="card-text">
+                <i class="fa fa-check-circle-o" aria-hidden="true"></i> Checked In : {% if is_checked_in %} Yes {% else %} No {% endif %}
+            </p>
+            <p class="card-text">
+                <i class="fa fa-check-circle" aria-hidden="true"></i> Checked Out : {% if is_checked_out %} Yes {% else %} No {% endif %}
+            </p>
+            {% endif %}
+            
+            <p class="card-text">
+                {% if obj.booking_date == current_date and obj.accepted and not is_checked_in %}        
+                    <a href="{% url 'meeting_calendar:check_in_or_check_out' obj.id 'check-in' %}" class="btn btn-sm btn-primary">Check In</a>             
+                {% endif %}
+                {% if obj.booking_date == current_date and is_checked_in and not is_checked_out  %}            
+                <a href="{% url 'meeting_calendar:check_in_or_check_out' obj.id 'check-out' %}" class="btn btn-sm btn-primary">Check Out</a>
+               {% endif %}
+            </p>
+           
+          </div>
+        </div>
+      </div>
+</div>
+{% endblock %}

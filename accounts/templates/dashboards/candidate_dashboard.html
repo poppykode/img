@@ -1,6 +1,193 @@
 {% extends 'main_shared.html' %}
 {% load static %}
-{% block title %}Candidate Dashboard{% endblock %}
+{% block title %}Study Buddy{% endblock %}
 {% block content %}
-<h1>Candidate</h1>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+</nav>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+    </button>
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div class="card-info">
+                <p class="card-text">Accepted</p>
+                <div class="d-flex align-items-end mb-2">
+                  <h4 class="card-title mb-0 me-2">{{accepted_count}}/{{total_meetimgs}}</h4>
+                </div>
+               
+              </div>
+              <div class="card-icon">
+                <span class="badge bg-label-success rounded p-2">
+                  <i class="bx bx-briefcase-alt bx-sm"></i>
+                 
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div class="card-info">
+                <p class="card-text">Cancelled</p>
+                <div class="d-flex align-items-end mb-2">
+                  <h4 class="card-title mb-0 me-2">{{cancelled_count}}/{{total_meetimgs}}</h4>
+                </div>
+               
+              </div>
+              <div class="card-icon">
+                <span class="badge bg-label-warning rounded p-2">
+                  <i class="bx bx-briefcase-alt bx-sm"></i>
+                 
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div class="card-info">
+                <p class="card-text">Rejected</p>
+                <div class="d-flex align-items-end mb-2">
+                  <h4 class="card-title mb-0 me-2">{{rejected_count}}/{{total_meetimgs}}</h4>
+                </div>
+               
+              </div>
+              <div class="card-icon">
+                <span class="badge bg-label-danger rounded p-2">
+                  <i class="bx bx-briefcase-alt bx-sm"></i>
+                 
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div class="card-info">
+                <p class="card-text">Check-in & out</p>
+                <div class="d-flex align-items-end mb-2">
+                  <h4 class="card-title mb-0 me-2">{{check_in_and_out_count}}</h4>
+                </div>
+               
+              </div>
+              <div class="card-icon">
+                <span class="badge bg-label-primary rounded p-2">
+                  <i class="bx bx-briefcase-alt bx-sm"></i>
+                 
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+
+<div class="card p-3">
+    <div class="table-responsive text-nowrap">
+        <table class="table" id="users">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Requester</th>
+                    <th>Requested</th>
+                    <th>Booked Slot</th>
+                    <th>Booked Date</th>
+                    <th>Booking Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                {% for item in items %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                      {% if item.requester.id == user.id %}
+                        Yourself
+                        {% else %}
+                        {{item.requester.get_full_name|title}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.requested.id == user.id %}
+                        Yourself
+                        {% else %}
+                        {{item.requested.get_full_name|title}}
+                        {% endif %}
+                    </td>
+                    <td>{{item.availability.day}} ({{item.availability.start_time}} - {{item.availability.end_time}})
+                    </td>
+                    <td>
+                        {% if item.booking_date >= current_date %}
+                        <span class="badge bg-success">
+                            {{item.booking_date}}
+                        </span>
+                        {% else %}
+                        <span class="badge bg-danger">
+                            {{item.booking_date}}
+                        </span>
+                        
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.accepted %}
+                        <span class="badge bg-success">
+                           Accepted
+                        </span>
+                        {% elif item.rejected %}
+                        <span class="badge bg-danger">
+                            Rejected
+                        </span>
+                        {% elif item.cancelled %}
+                        <span class="badge bg-danger">
+                            Cancelled
+                        </span>
+                        {% else %}
+                        <span class="badge bg-primary">
+                            
+                            Not Actioned
+                        </span>
+                        {% endif %}
+
+                    </td>
+                    <td>
+                        <a href="{% url 'meeting_calendar:meeting_detail' item.id %}"><i class="fa fa-eye" aria-hidden="true"></i> View</a>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% if items %}
+{% include 'snippets/pagination.html' with items=items %}
+{% endif %}
+
 {% endblock %}

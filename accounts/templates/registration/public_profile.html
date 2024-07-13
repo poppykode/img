@@ -1,0 +1,212 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}{{obj.get_full_name}}{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item">
+      {% if obj.role == 'Candidate' %}
+      <a href="{% url 'study_buddies:view_all_study_buddies' %}">Study Buddies</a>
+      {% else %}
+      <a href="{% url 'coaches:view_all_coaches' %}">Coaches</a>
+      {% endif %}
+    </li>
+    <li class="breadcrumb-item active">{{obj.get_full_name|title}}</li>
+  </ol>
+</nav>
+<div class="row">
+  <div class="col-md">
+    <div class="card mb-3">
+      <div class="row g-0">
+        <div class="col-md-12">
+          {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+            <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+            </button>
+            {{ message }}
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div>
+        <div class="col-md-3">
+          <img class="card-img card-img-left" src="{{obj.user_general_additional_info.profile_picture.url}}"
+            alt="{{obj.get_full_name}}"
+            style="height:260px;width:100%;object-fit:cover; object-position: 100% 0; padding: 1.5em 0 0 1.5em;">
+        </div>
+        <div class="col-md-9">
+          <div class="card-body">
+            <h5 class="card-title">{{obj.get_full_name|title}}</h5>
+            <a href="{% url 'meeting_calendar:book_a_meeting' obj.id %}" class="btn btn-primary">
+              {% if obj.role == 'Candidate' %}
+              Propose Meeting
+              {% else %}
+              Book Session
+              {% endif %}
+            </a>
+
+            <div class="row mt-3">
+              <div class="col-md-4">Time Zone : {{obj.user_general_additional_info.time_zone}} </div>
+              {% if obj.role == 'Candidate' %}
+              <div class="col-md-4"><a href="{% url 'meeting_calendar:availability' obj.id %}">See Availability</a> </div>
+              <div class="col-md-4">Exam Date: {{obj.user_candidate_additional_info.exam_date}} </div>
+              {% else %}
+              <div class="col-md-4">Rate : {{obj.user_coach_additional_info.rate}} /hr</div>
+              <div class="col-md-4">Nhs Experience: {{obj.user_coach_additional_info.nhs_experience}} years</div>
+              {% endif %}
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-4 col-xl-4">
+                <div class="card shadow-none bg-transparent border border-info mb-3">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{obj.meeting_attendance}}</h5>
+                    <p class="card-text"><a href="">Meetings</a> </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 col-xl-4">
+                <div class="card shadow-none bg-transparent border border-info mb-3">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{obj.reliability|floatformat:0}}%</h5>
+                    <p class="card-text"><a href="">Reliability</a> </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 col-xl-4">
+                <div class="card shadow-none bg-transparent border border-info mb-3">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">
+                      {% include 'snippets/ratings.html' with obj=obj %}
+                    </h5>
+                    <p class="card-text"><a href="">Reviews</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Motivations -->
+        {% if obj.is_coach %}
+        <div class="col-md-12">
+          <div class="card-body">
+            <p class="card-text">{{obj.user_motivation.description|safe|title}}</p>
+          </div>
+        </div>
+        <hr>
+        {% endif %}
+        <div class="col-md-12">
+          <div class="card-body">
+            <h3 class="mb-5">{{obj.countReview}} Reviews</h3>
+            <div class="row mb-5">
+              {% for review in obj.user_rated_review.all %}
+              <ul class="col-12 commented pl-0">
+                <li class="comm-inf">
+
+                  <div class="col-md-12 comments-info">
+                    <div class="conra">
+                      <h5 class="mb-2">{{review.timestamp}} by {{review.user_rating.get_full_name|title}}</h5>
+                      <div class="rating-box">
+                        <div class="detail-list-rating mr-0">
+                          <i class="fa fa-star{% if review.rating < 0.5 %}-o{% elif review.rating >= 0.5 and review.rating < 1 %}-half-o {% endif %}"
+                            aria-hidden="true"></i>
+                          <i class="fa fa-star{% if review.rating < 1.5 %}-o{% elif review.rating >= 1.5 and review.rating < 2 %}-half-o {% endif %}"
+                            aria-hidden="true"></i>
+                          <i class="fa fa-star{% if review.rating < 2.5 %}-o{% elif review.rating >= 2.5 and review.rating < 3 %}-half-o {% endif %}"
+                            aria-hidden="true"></i>
+                          <i class="fa fa-star{% if review.rating < 3.5 %}-o{% elif review.rating >= 3.5 and review.rating < 4 %}-half-o {% endif %}"
+                            aria-hidden="true"></i>
+                          <i class="fa fa-star{% if review.rating < 4.5 %}-o{% elif review.rating >= 4.5 and review.rating < 5 %}-half-o {% endif %}"
+                            aria-hidden="true"></i>
+                          {{review.rating}}
+                        </div>
+                      </div>
+
+                    </div>
+                    <!-- <p class="mb-4">{{review.timestamp}}</p> -->
+                    <p>{{review.review|safe}}</p>
+
+                  </div>
+                </li>
+
+              </ul>
+              {% empty %}
+              <h5>No reviews</h5>
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+        <hr>
+        <div class="col-md-12">
+
+          <div class="card-body">
+            <!-- Leave Rating -->
+            <h3 class="mb-3">Add Review</h3>
+            <span>Your rating for this {% if obj.is_candidate %} Candidate {% else %} Coach {% endif %}</span>
+            <form action="{% url 'review_ratings:create_review' obj.id %}" method="POST">
+              {% csrf_token %}
+              <div class="clearfix"></div>
+
+              <!-- Rating stars -->
+              <div class="rate">
+                <input type="radio" name="rating" id="rating10" value="5" /><label for="rating10" title="5"></label>
+                <input type="radio" name="rating" id="rating9" value="4.5" /><label for="rating9" title="4.5"
+                  class="half"></label>
+                <input type="radio" name="rating" id="rating8" value="4" /><label for="rating8" title="4"></label>
+                <input type="radio" name="rating" id="rating7" value="3.5" /><label for="rating7" title="3.5"
+                  class="half"></label>
+                <input type="radio" name="rating" id="rating6" value="3" /><label for="rating6" title="3"></label>
+                <input type="radio" name="rating" id="rating5" value="2.5" /><label for="rating5" title="2.5"
+                  class="half"></label>
+                <input type="radio" name="rating" id="rating4" value="2" /><label for="rating4" title="2"></label>
+                <input type="radio" name="rating" id="rating3" value="1.5" /><label for="rating3" title="1.5"
+                  class="half"></label>
+                <input type="radio" name="rating" id="rating2" value="1" /><label for="rating2" title="1"></label>
+                <input type="radio" name="rating" id="rating1" value="0.5" /><label for="rating1" title="0.5"
+                  class="half"></label>
+              </div>
+              <div class="clearfix"></div>
+              <div class="mb-3">
+
+              
+                  <textarea id="basic-icon-default-message" name="review" class="form-control"
+                    placeholder="Review"></textarea>
+               
+
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if obj.role == 'Coach' %}
+<div class="row">
+  {% for offer in offers %}
+  <h3 class="mb-3">Offers</h3>
+  <div class="col-md-4 mb-3">
+    <div class="card h-100">
+      <img class="card-img-top" src="{{offer.image.url}}" alt="{{offer.title}}">
+      <div class="card-body">
+        <h5 class="card-title">{{offer.title|title}}</h5>
+        <p class="card-text">
+          {{offer.description|truncatechars:20}}
+        </p>
+        <a href="{% url 'offers:offer_details' offer.id %}" class="btn btn-outline-primary">View More</a>
+      </div>
+    </div>
+  </div>
+ 
+{% endfor %}
+</div>
+
+{% endif %}
+{% endblock %}

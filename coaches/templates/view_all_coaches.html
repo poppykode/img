@@ -1,0 +1,149 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% block title %}Coaches{% endblock %}
+{% block content %}
+
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+      <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+      </button>
+      {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+  <div class="row mb-3">
+    <form action="{% url 'coaches:view_all_coaches' %}" method="POST">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-3">
+          <div class="mb-3">
+            <label for="time_zone" class="form-label">Time Zone</label>
+            <input type="text" id="time_zone" class="form-control" name="time_zone_" list="time_zones">
+              <datalist id="time_zones">
+                {% for tz in time_zones %}
+                <option value="{{tz}}"></option>
+                {% endfor %}
+              </datalist>      
+          </div>
+        </div>
+        <div class="col-md-3">
+        <div class="mb-3">
+            <label for="budget" class="form-label">Budget/rate</label>
+            <select id="budget" class="form-select" value="budget">
+              <option value="">Select a budget/rate</option>
+              <option value="1.0-1.5">Lowest - Highest</option>
+              <option value="2.0-2.5">Highest - Lowest</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3">
+              <div class="mb-3">
+                <label for="avg_rating" class="form-label">Avarage Rating</label>
+                <select id="avg_rating" class="form-select" value="avg_rating">
+                  <option value="">Select a Rating</option>
+                  <option value="1.0-1.5">1.0 - 1.5</option>
+                  <option value="2.0-2.5">2.0 - 2.5</option>
+                  <option value="3.0-3.5">3.0 - 3.5</option>
+                  <option value="4.0-4.5">4.0 - 4.5</option>
+                  <option value="5.0-5.5">5.0 - 5.5</option>
+                </select>
+              </div>
+        </div>
+     
+        <div class="col-md-3 d-flex flex-column" style="margin-top: auto !important; margin-bottom: 1.1em !important;">
+          
+          <button type="submit" class="btn btn-primary">
+           Find <span class="tf-icons bx bx-search-alt me-1"></span>
+          </button>
+        </div>
+      
+      </div>
+          
+        </form>
+  </div>
+  <div class="row mb-5">
+    <div class="col-md-12">
+      <h1 class="display-6 mb-0" style="color:#0080FF;"><span>{{coaches}} coaches available </span></h1>
+      {% if type == 1 %}
+      <br>
+      <span>
+        <i>Search Results for >></i> 
+        {% if time_zone %}
+          Time zone: <b>{{time_zone}} </b>
+        {% endif %}
+        {% if budget %}
+          Budget: <b>{{budget}}/hr</b>
+        {% endif %}
+        {% if avg_rating %}
+          Avarage Rating : <b>{{avg_rating}}</b>
+        {% endif %}
+        <a href="{% url 'coaches:view_all_coaches' %}"><span class="tf-icons bx bx-x me-1" style="color: red; font-size: 30px;"></span></a>
+        </span>
+        {% endif %}
+    </div>
+  </div>
+{% for item in obj %}
+  <div class="row mb-5">
+ 
+    <div class="col-md">
+      <div class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-3">
+            <a href="{% url 'accounts:public_profile' item.id %}">
+            <img class="card-img card-img-left" src="{{item.user_general_additional_info.profile_picture.url}}" alt="{{item.get_full_name}}" style="height:250px;width:100%;object-fit:cover; object-position: 100% 0;">
+          </a>
+          </div>
+          <div class="col-md-9">
+            <div class="card-body">
+              <h5 class="card-title">{{item.get_full_name|title}}</h5>
+              <div class="row">
+                <div class="col-md-4">Time Zone : {{item.user_general_additional_info.time_zone}}</div>
+                <div class="col-md-4">Rate :  {{item.user_coach_additional_info.rate|floatformat:2}} /hr</div>
+                <div class="col-md-4">Nhs Experience: {{item.user_coach_additional_info.nhs_experience}} years </div>
+              </div>
+            <div class="row mt-3">
+              <div class="col-md-4 col-xl-4">
+                <div class="card shadow-none bg-transparent border border-info mb-3">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{item.meetings_attended}}</h5>
+                    <p class="card-text"><a href="">Meetings</a> </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 col-xl-4">
+                <div class="card shadow-none bg-transparent border border-info mb-3">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{item.reliability|floatformat:0}}%</h5>
+                    <p class="card-text"><a href="">Reliability</a> </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 col-xl-4">
+                <div class="card shadow-none bg-transparent border border-info mb-3">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">  {% include 'snippets/ratings.html' with obj=item %}</h5>
+                    <p class="card-text"><a href="">Reviews</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+          
+    
+        </div>
+      </div>
+      <div class="card">      
+            <div class="card-body">
+                <p class="card-text">{{item.user_motivation.description|safe|title}}</p>
+            </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% if obj %}
+  {% include 'snippets/pagination.html' with items=obj %}
+  {% endif %}
+{% endblock %}

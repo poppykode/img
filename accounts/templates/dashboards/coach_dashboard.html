@@ -2,5 +2,12 @@
 {% load static %}
 {% block title %}Coach Dashboard{% endblock %}
 {% block content %}
-<h1>Coach</h1>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item active">Coach</li>
+    </ol>
+</nav>
 {% endblock %}

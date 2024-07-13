@@ -1,0 +1,153 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% block title %}study Buddies{% endblock %}
+{% block content %}
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+  </button>
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+<div class="row mb-3">
+  <form action="{% url 'study_buddies:view_all_study_buddies' %}" method="POST">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-3">
+        <div class="mb-3">
+          <label for="time_zone" class="form-label">Time Zone</label>
+          <input type="text" id="time_zone" class="form-control" name="time_zone_" list="time_zones">
+          <datalist id="time_zones">
+            {% for tz in time_zones %}
+            <option value="{{tz}}"></option>
+            {% endfor %}
+          </datalist>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div id="exam_date" class="mb-3">
+          <label for="exam_date" class="form-label"> Exam Date</label>
+          <input type="date" name="exam_date" class="datepicker dateinput form-control" data-date-format="YYYY-MM-DD"
+            id="exam_date">
+        </div>
+      </div>
+      <!-- <div class="col-md-4">
+          <div class="mb-3">
+            <label for="availability" class="form-label">Day</label>
+            <input type="text" id="availability" class="form-control" name="availability">
+          </div>
+        </div> -->
+      <div class="col-md-4">
+        <div class="mb-3">
+          <label for="online_offline" class="form-label">Day</label>
+          <select id="day" class="form-select" name="day">
+            <option value="">Monday</option>
+            <option value="Online">Tuesday</option>
+            <option value="Offline">Wednesday</option>
+            <option value="">Thursday</option>
+            <option value="Online">Friday</option>
+            <option value="Offline">Saturday</option>
+            <option value="Offline">Sunday</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-2 d-flex flex-column" style="margin-top: auto !important; margin-bottom: 1.1em !important;">
+
+        <button type="submit" class="btn btn-primary">
+          Find <span class="tf-icons bx bx-search-alt me-1"></span>
+        </button>
+      </div>
+
+    </div>
+
+  </form>
+</div>
+<div class="row mb-5">
+  <div class="col-md-12">
+    <h1 class="display-6 mb-0" style="color:#0080FF;"><span>{{candidates}} candidates available </span></h1>
+    {% if type == 1 %}
+    <br>
+    <span>
+      <i>Search Results for >></i>
+      {% if time_zone %}
+      Time zone: <b>{{time_zone}} </b>
+      {% endif %}
+      {% if exam_date %}
+      Exam date: <b>{{exam_date}}</b>
+      {% endif %}
+      {% if day %}
+      Day: <b>{{day}}</b>
+      {% endif %}
+      <a href="{% url 'study_buddies:view_all_study_buddies' %}"><span class="tf-icons bx bx-x me-1"
+          style="color: red; font-size: 30px;"></span></a>
+    </span>
+    {% endif %}
+  </div>
+</div>
+{% for item in obj %}
+<div class="row mb-5">
+
+  <div class="col-md">
+    <div class="card mb-3">
+      <div class="row g-0">
+        <div class="col-md-3">
+          <a href="{% url 'accounts:public_profile' item.id %}">
+            {% if item.user_general_additional_info.profile_picture %}
+            <img class="card-img card-img-left" src="{{item.user_general_additional_info.profile_picture.url}}"
+              alt="{{item.get_full_name}}" style="height:250px;width:100%;object-fit:cover; object-position: 100% 0;">
+            {% else %}
+            <img class="card-img card-img-left" src="  {% static 'assets/img/placeholder.jpg' %}"
+              alt="{{item.get_full_name}}" style="height:250px;width:100%;object-fit:cover; object-position: 100% 0;">
+            {% endif %}
+          </a>
+        </div>
+        <div class="col-md-9">
+          <div class="card-body">
+            <h5 class="card-title">{{item.get_full_name|title}}</h5>
+            <div class="row">
+              <div class="col-md-4">Time Zone : {{item.user_general_additional_info.time_zone}} </div>
+              <div class="col-md-4"><a href="{% url 'meeting_calendar:availability' item.id %}">See Availability</a>
+              </div>
+              <div class="col-md-4">Exam Date: {{item.study_buddy_additional_info.exam_date}}</div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-4 col-xl-4">
+                <div class="card shadow-none bg-transparent border border-info mb-3">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{item.meeting_attendance}}</h5>
+                    <p class="card-text"><a href="">Meetings</a> </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 col-xl-4">
+                <div class="card shadow-none bg-transparent border border-info mb-3">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{item.reliability|floatformat:0}}</h5>
+                    <p class="card-text"><a href="">Reliability</a> </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 col-xl-4">
+                <div class="card shadow-none bg-transparent border border-info mb-3">
+                  <div class="card-body text-center">
+                    <h5 class="card-title"> {% include 'snippets/ratings.html' with obj=item %}</h5>
+                    <p class="card-text"><a href="">Reviews</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% if obj %}
+{% include 'snippets/pagination.html' with items=obj %}
+{% endif %}
+
+{% endblock %}

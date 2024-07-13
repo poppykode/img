@@ -1,0 +1,134 @@
+{% extends 'main_shared.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+Book a meeting
+{% endblock %}
+{% block content %}
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item">
+      {% if obj.role == 'Candidate' %}
+      <a href="{% url 'study_buddies:view_all_study_buddies' %}">Study Buddies</a>
+      {% else %}
+      <a href="{% url 'study_buddies:view_all_coaches' %}">Coaches</a>
+      {% endif %}
+    </li>
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:public_profile' obj.id %}">{{obj.get_full_name|title}}</a>
+    </li>
+    <li class="breadcrumb-item active">Book a meeting</li>
+  </ol>
+</nav>
+
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+  {% for field, error_list in form.errors.items %}
+  {{ error_list.as_text }}
+  {% endfor %}
+</div>
+{% endif %}
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible mt-3 mb-4" role="alert">
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+  </button>
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+
+<div class="card mb-4">
+  {% if obj.user_availability.all %}
+  <form class="card-body" action="{% url 'meeting_calendar:book_a_meeting' obj.id %}" method="POST">
+    {% csrf_token %}
+
+    <div class="row">
+      <input type="hidden" value="{{user.id}}" id="user_id" name="user_id">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="booking_date" class="form-label">Select Date*</label>
+          <input type="date" name="booking_date" id="booking_date" class="form-control" onchange="filterSlots()" min="{{min_date}}" required>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="day" class="form-label">Select Slot*</label>
+          <select id="day" class="form-select" name="day" disabled required>
+            <!-- Options will be populated by JavaScript -->
+          </select>
+          <!-- <select id="day" class="form-select" name="day">
+                  {% for item in obj.user_availability.all %}
+                      <option value="{{item.id}}">{{item.day}} ({{item.start_time}} - {{item.end_time}})</option>      
+                {% endfor %}
+              </select> -->
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="mb-3">
+          <label for="notes" class="form-label">Notes</label>
+          <textarea class="form-control" name="notes" id="notes" rows="3"></textarea>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="pt-4">
+      <a href="{% url 'accounts:public_profile' obj.id %}" class="btn btn-warning me-sm-3 me-1">
+        Cancel
+      </a>
+      <button type="submit" class="btn btn-primary me-sm-3 me-1">
+        Book a meeting
+      </button>
+    </div>
+  </form>
+  {% else %}
+  <div class="card-body">
+    The user {{obj.get_full_name|title}} does not have any available slots for meetings at the moment.
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+  const filterSlots = () => {
+    const bookingDate = document.getElementById('booking_date').value;
+    const requestedUserId =  document.getElementById('user_id').value;
+    const daySelect = document.getElementById('day');
+  fetch(`/meetings/get-availability/${requestedUserId}/${bookingDate}/`)
+    .then(response => response.json())
+    .then(data => {
+      daySelect.innerHTML = '';
+      daySelect.disabled = data.length === 0;
+      
+      const option = document.createElement('option');
+      if (data.length <= 0){
+        console.log("empty array")
+        option.value = "";
+        option.textContent = `No slots available for ${bookingDate}  please select another date.`;
+        daySelect.appendChild(option);
+      }else{
+        data.forEach(item => {   
+        option.value = item.id;
+        option.textContent = `${item.day} (${item.start_time} - ${item.end_time})`;
+        daySelect.appendChild(option);
+      });
+      }
+      
+     
+    });
+  }
+ 
+</script>
+
+{% endblock %}

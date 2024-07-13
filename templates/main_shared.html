@@ -50,10 +50,11 @@
     <!-- <link rel="stylesheet" href="{% static 'assets/css/jquery.dataTables.min.css' %}" /> -->
    
   
-    <link rel="stylesheet" href="{% static 'assets/css/ratings.css' %}" />
+  
     <link rel="stylesheet" href="{% static 'assets/vendor/libs/jstree/jstree.css' %}" />
-    <link rel="stylesheet" href="{% static 'assets/vendor/fonts/fontawesome.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/ratings.css' %}" />
 
     <!-- Page CSS -->
 
@@ -101,6 +102,18 @@
                 <div data-i18n="Dashboard">Dashboard</div>
               </a>
             </li>
+            <li class="menu-item {% if url_name == 'view_all_study_buddies' %}active {% endif %}">
+              <a href="{% url 'study_buddies:view_all_study_buddies' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user-plus"></i>
+                <div data-i18n="Study Buddies">Study Buddies</div>
+              </a>
+            </li>
+            <li class="menu-item {% if url_name == 'view_all_coaches' %}active {% endif %}">
+              <a href="{% url 'coaches:view_all_coaches' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-group"></i>
+                <div data-i18n="Coaches">Coaches</div>
+              </a>
+            </li>
             <li class="menu-item {% if url_name == 'availability' %} active {% endif %}">
               <a href="{% url 'meeting_calendar:availability' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
@@ -108,7 +121,7 @@
               </a>
             </li>
             <li class="menu-item">
-              <a href="/" class="menu-link">
+              <a href="{% url 'accounts:users' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
                 <div data-i18n="Users">Users</div>
               </a>
@@ -215,7 +228,7 @@
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                   <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                      <img src="{% static 'assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                      <img src="{% static 'assets/img/placeholder.jpg' %}" alt class="w-px-40 h-auto rounded-circle" />
                     </div>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
@@ -238,7 +251,7 @@
                       <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="/">
+                      <a class="dropdown-item" href="{% url 'accounts:profile' %}">
                         <i class="bx bx-user me-2"></i>
                         <span class="align-middle">My Profile</span>
                       </a>
@@ -282,6 +295,13 @@
             <!-- Content -->
 
             <div class="container-xxl flex-grow-1 container-p-y">
+              {% if not request.session.has_availabilty %}
+              <div class="alert alert-danger alert-dismissible" role="alert">
+                Please add you availabilty so that other users can be able to book meetings with you. <a href="{% url 'meeting_calendar:create_availability' %}">click here</a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+
+               {% endif %}
               {% block content %}
 
               {% endblock %}

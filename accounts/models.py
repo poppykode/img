@@ -1,9 +1,13 @@
 import uuid
 import pytz
+from django.db.models import Avg, Count, Q
 from django.db import models
 from tinymce.models import HTMLField
 from django.contrib.auth.models import AbstractUser
 from core.enums import RoleEnum
+from review_ratings.models import ReviewRating
+from meeting_calendar.models import BookedMeeting,MeetingCheckInAndOut
+
 
 # Create your models here.
 class User (AbstractUser):
@@ -21,8 +25,38 @@ class User (AbstractUser):
     class Meta:
         ordering = ["-date_joined", ]
 
+    def averageReview(self):
+        reviews = ReviewRating.objects.filter(user_rated=self, status=True).aggregate(average=Avg('rating'))
+        avg = 0
+        if reviews['average'] is not None:
+            avg = float(reviews['average'])
+        return avg
+
+    def countReview(self):
+        reviews = ReviewRating.objects.filter(user_rated=self).aggregate(count=Count('id'))
+        count = 0
+        if reviews['count'] is not None:
+            count = int(reviews['count'])
+        return count
+    
+
+    def meeting_attendance(self):
+        meetings = MeetingCheckInAndOut.objects.filter(user=self).filter(is_checked_in = True).aggregate(count=Count('id'))
+        count = 0
+        if meetings['count'] is not None:
+            count = int(meetings['count'])
+        return count
+    
+    def reliability(self):
+        number_of_meeting_accepted = BookedMeeting.objects.filter((Q(requester=self) | Q(requested=self)) & Q(accepted=True)).count()
+        meetings_attended = self.meeting_attendance()
+        reliability_percentage = 0
+        if not number_of_meeting_accepted == 0 and meetings_attended == 0:
+            reliability_percentage = (meetings_attended / number_of_meeting_accepted) * 100
+        return reliability_percentage
+
        
-class StudyBuddyGeneralInfo(models.Model):
+class GeneralInfo(models.Model):
     GENDER=(('','select a gender'),
             ('male','Male'),
             ('female','Female'),
@@ -53,6 +87,63 @@ class StudyBuddyAdditionalInfo(models.Model):
 
     class Meta:
         ordering = ["-timestamp", ]
+
+class CoachWorkExperience(models.Model):
+    user=models.ForeignKey(User,related_name='user_work_experience', on_delete=models.CASCADE)
+    name_of_hospital = models.CharField(max_length=255)
+    country_of_hospital = models.CharField(max_length=255)
+    position_at_the_hospital = models.CharField(max_length=255)
+    period_from =models.DateField()
+    period_to = models.DateField() 
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+         return self.user.first_name.capitalize() + ' ' + self.user.last_name.capitalize() + ' | ' + str(self.user.email)
+
+    class Meta:
+        ordering = ["-timestamp", ]
+
+class CoachEducation(models.Model):
+    user=models.ForeignKey(User,related_name='user_education', on_delete=models.CASCADE)
+    name_of_instutution = models.CharField(max_length=255)
+    period_from =models.DateField()
+    period_to = models.DateField() 
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+         return self.user.first_name.capitalize() + ' ' + self.user.last_name.capitalize() + ' | ' + str(self.user.email)
+
+    class Meta:
+        ordering = ["-timestamp", ]
+
+class CoachMotivation(models.Model):
+    user=models.OneToOneField(User,related_name='user_motivation', on_delete=models.CASCADE)
+    description = HTMLField()
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+         return self.user.first_name.capitalize() + ' ' + self.user.last_name.capitalize() + ' | ' + str(self.user.email)
+
+    class Meta:
+        ordering = ["-timestamp", ]
+
+class CoachAdditionalInfo(models.Model):
+    user=models.OneToOneField(User,related_name='user_coach_additional_info', on_delete=models.CASCADE)
+    cv = models.FileField(upload_to='files')
+    nhs_experience = models.CharField(max_length=255)
+    rate = models.FloatField()
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+         return self.user.first_name.capitalize() + ' ' + self.user.last_name.capitalize() + ' | ' + str(self.user.email)
+
+    class Meta:
+        ordering = ["-timestamp", ]
+
 
 
 

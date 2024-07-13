@@ -1,0 +1,149 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}{{obj.get_full_name}}{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:users' %}">Users</a>
+    </li>
+    <li class="breadcrumb-item active">{{obj.get_full_name|title}}</li>
+  </ol>
+</nav>
+<div class="row">
+  <div class="col-md-3">
+    {% if obj.user_general_additional_info.profile_picture %}
+    <img class="card-img card-img-left img-image" src="{{obj.user_general_additional_info.profile_picture.url}}"
+      alt="{{obj.get_full_name}}">
+ {% else %}
+ <img class="card-img card-img-left img-image" src="{% static 'assets/img/placeholder.jpg' %}"
+ alt="{{obj.get_full_name}}">
+ {% endif %}
+    </div>
+  <div class="col-md-9">
+    {% if obj.is_coach %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+      <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+      </button>
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div class="button-wrapper">
+      {% if not obj.account_status == 'accepted' %}
+      {% if obj.account_status == 'pending' %}
+      <a href="{% url 'accounts:accept_or_reject_application' obj.id 'rejected' %}"
+        class="btn btn-danger account-image-reset mb-4">
+        <span class="d-none d-sm-block">Reject Application</span>
+      </a>
+      {% endif %}
+      <a href="{% url 'accounts:accept_or_reject_application' obj.id 'accepted' %}"
+        class="btn btn-success account-image-reset mb-4">
+        <span class="d-none d-sm-block">Accept Application </span>
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <h4 class="card-title">{{obj.get_full_name|title}}</h4>
+        <div class="card-subtitle text-muted mb-3">
+          {% if obj.is_admin %}Admin{% endif %}
+          {% if obj.is_candidate %}Candidate{% endif %}
+          {% if obj.is_coach %}Coach{% endif %}
+          {% if obj.is_coach %}
+          {% if obj.account_status == 'accepted' %}
+          - Application Status: <span class="badge bg-label-success me-1">{{obj.account_status}} </span>
+          {% elif obj.account_status == 'rejected' %}
+          - Application Status: <span class="badge bg-label-danger me-1">{{obj.account_status}} </span>
+          {% else %}
+          - Application Status: <span class="badge bg-label-warning me-1">{{obj.account_status}} </span>
+          {% endif %}
+          {% endif %}
+        </div>
+        {% if not obj.is_admin %}
+        <hr>
+        <h5 class="card-title">Person Information</h5>
+        <p class="card-text"><strong>Phone Number :</strong> {{obj.user_general_additional_info.phone_number}}</p>
+        <p class="card-text"><strong>Gender :</strong> {{obj.user_general_additional_info.gender|title}}</p>
+        <p class="card-text"><strong>Email :</strong> {{obj.email}}</p>
+        {% endif %}
+        {% if obj.is_coach %}
+        <hr>
+        <h5 class="card-title">Education Information</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Name of Institution</th>
+                <th>Period From</th>
+                <th>Period To</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for edu_info in obj.user_education.all %}
+              <tr>
+                <td>{{edu_info.name_of_instutution|title}}</td>
+                <td>{{edu_info.period_from}}</td>
+                <td>{{edu_info.period_to}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <hr>
+        <h5 class="card-title">Work Experience</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Name of Hospital</th>
+                <th>Country of Hospital</th>
+                <th>Position</th>
+                <th>Period From</th>
+                <th>Period To</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for work_exp in obj.user_work_experience.all %}
+              <tr>
+                <td>{{work_exp.name_of_hospital|title}}</td>
+                <td>{{work_exp.country_of_hospital|title}}</td>
+                <td>{{work_exp.position_at_the_hospital|title}}</td>
+                <td>{{work_exp.period_from}}</td>
+                <td>{{work_exp.period_to}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <hr>
+        <h5 class="card-title">Motivation</h5>
+        <p class="card-text">{{obj.user_motivation.description|safe}}</p>
+        <hr>
+        <h5 class="card-title">Additional Info</h5>
+        <p class="card-text"><strong>NHS Experience :</strong> {{obj.user_coach_additional_info.nhs_experience}} months
+        </p>
+        <p class="card-text"><strong>Rate :</strong> {{obj.user_coach_additional_info.rate}}/hour</p>
+        <p class="card-text"><strong> Curriculum Vitae (CV) :</strong> <a
+            href="{{obj.user_coach_additional_info.cv.url}}" target="_blank">View <i class="tf-icons bx bxs-file-pdf"
+              style="color: red;"></i></a></p>
+        {% endif %}
+        {% if obj.is_candidate %}
+        <hr>
+        <h5 class="card-title">Additional Info</h5>
+        <p class="card-text"><strong>Exam date :</strong> {{obj.user_candidate_additional_info.exam_date}}</p>
+        <p class="card-text"><strong>Availability :</strong> {{obj.user_candidate_additional_info.availability}} hrs/day
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

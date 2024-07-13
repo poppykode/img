@@ -5,9 +5,19 @@
 {% include 'snippets/title_text.html' %} Availability
 {% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / <span>
-      {% include 'snippets/title_text.html' %} Availability {% if type == 'edit' %} {{obj.title|title}} {% endif %}
-</h5>
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+      <li class="breadcrumb-item">
+          <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+      </li>
+      <li class="breadcrumb-item">
+          <a href="{% url 'meeting_calendar:availability' %}">Availability</a>
+      </li>
+
+      <li class="breadcrumb-item active">  {% include 'snippets/title_text.html' %} Availability {% if type == 'edit' %} {{obj.title|title}} {% endif %}</li>
+  </ol>
+</nav>
 
 
 {% if form.errors %}
@@ -16,6 +26,16 @@
   {{ error_list.as_text }}
   {% endfor %}
 </div>
+{% endif %}
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible mt-3 mb-4" role="alert">
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+  </button>
+  {{ message }}
+</div>
+{% endfor %}
 {% endif %}
 
 
@@ -41,10 +61,12 @@
         </div>
       </div>
       <div class="pt-4">
+        <a href="{% url 'meeting_calendar:availability' %}" class="btn btn-warning me-sm-3 me-1">
+          Cancel
+      </a>
         <button type="submit" class="btn btn-primary me-sm-3 me-1">
           {% include 'snippets/title_text.html' %} Availability
-        </button>
-        <a href="#" class="btn btn-label-secondary">Cancel</a>
+        </button>      
       </div>
     </form>
 </div>

@@ -2,5 +2,13 @@
 {% load static %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block content %}
-<h1>Admin</h1>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+
+        <li class="breadcrumb-item active">Admin</li>
+    </ol>
+</nav>
 {% endblock %}

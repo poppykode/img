@@ -9,7 +9,7 @@ from core.enums import RoleEnum
 from accounts import forms
 from accounts.models import (
     User,
-    StudyBuddyGeneralInfo,
+    GeneralInfo,
     StudyBuddyAdditionalInfo
 )
 from meeting_calendar.models import Avaliability
@@ -38,27 +38,22 @@ def login(request):
 
 def not_authorized(request):
     template_name = 'registration/not_authorized.html'
-    return render(request,template_name)
+    return render(request,template_name,{'msg':request.user.role})
 
 
 @login_required
 def redirect_logged(request):
     user_role = request.user.role
-    has_availabilty = Avaliability.objects.filter(user = request.user).exists()
-    if has_availabilty:
-        # redirect to page where on can create availability
-        if user_role == RoleEnum.ADMIN.value:
-            return redirect('accounts:admin_dashboard')
-        elif user_role == RoleEnum.CANDIDATE.value:
-            return redirect('accounts:candidate_dashboard')
-        elif user_role == RoleEnum.COACH.value:
-            return redirect('accounts:coach_dashboard')
-        else:
-            messages.error(request,'You do not have a role assigned.')
-            return redirect('accounts:not_authorized')
+    request.session['has_availabilty'] = Avaliability.objects.filter(user = request.user).exists()
+    if user_role == RoleEnum.ADMIN.value:
+        return redirect('accounts:admin_dashboard')
+    elif user_role == RoleEnum.CANDIDATE.value:
+        return redirect('accounts:candidate_dashboard')
+    elif user_role == RoleEnum.COACH.value:
+        return redirect('accounts:coach_dashboard')
     else:
-        messages.info(request,'Please create add your availabilty to proceed.')
-        return redirect("meeting_calendar:create_availability")
+        messages.error(request,'You do not have a role assigned.')
+        return redirect('accounts:not_authorized')
     
 @login_required
 def my_logout(request):
@@ -70,7 +65,7 @@ def my_logout(request):
 class StudyBuddyDataWizard(SessionWizardView):
     form_list = [
         forms.UserForm,
-        forms.StudyBuddyGeneralInfoForm,
+        forms.GeneralInfoForm,
         forms.StudyBuddyAdditionalInfoForm,
         forms.LoginInfoForm
     ]
@@ -91,7 +86,7 @@ class StudyBuddyDataWizard(SessionWizardView):
         user.is_active = True
         user.save()
 
-        StudyBuddyGeneralInfo.objects.create(
+        gen_info=GeneralInfo.objects.create(
             user = user,
             gender = study_buddy_gen_info_form['gender'],
             time_zone = study_buddy_gen_info_form['time_zone'],
@@ -99,6 +94,8 @@ class StudyBuddyDataWizard(SessionWizardView):
             profile_picture = study_buddy_gen_info_form['profile_picture'],
 
         )
+        print("general info")
+        print(gen_info)
 
         StudyBuddyAdditionalInfo.objects.create(
             user = user,

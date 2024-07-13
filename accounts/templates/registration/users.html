@@ -1,0 +1,80 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item active">Users</li>
+  </ol>
+</nav>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+  </button>
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+<div class="mb-4">
+<a href="{% url 'accounts:add_admin' %}" class="btn btn-primary">
+  <span class="tf-icons bx bx-plus"></span>&nbsp; Add Admin
+</a>
+</div>
+<div class="card p-3">
+  <div class="table-responsive text-nowrap">
+    <table class="table" id="users">
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Role</th>
+          <th>Created</th>
+          <th>Account Status</th>        
+        </tr>
+      </thead>
+      <tbody class="table-border-bottom-0">
+        {% for user in users %}
+        <tr>
+          <td><a href="{% url 'accounts:admin_profile' user.id %}">{{user.get_full_name|title}}</a></td>
+          <td>
+            <strong>
+              {% if user.role == 'Admin' %}
+              Admin
+              {% endif %}
+              {% if user.role == 'Candidate' %}
+              Candidate
+              {% endif %}
+              {% if user.role == 'Coach' %}
+              Coach
+              {% endif %}
+            </strong>
+          </td>
+          <td>
+            {{user.date_joined}}
+          </td>
+          <td>
+            {% if user.is_active %}
+            <a href="{% url 'accounts:activate_or_deactivate_account' user.id %}"><span class="badge bg-label-success me-1">Deactivate</span></a> 
+            {% else %}
+            <a href="{% url 'accounts:activate_or_deactivate_account' user.id %}"><span class="badge bg-label-danger me-1">Activate</span></a>
+            {% endif %}
+          </td>
+      
+    
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+  </div>
+</div>
+
+{% if users %}
+{% include 'snippets/pagination.html' with items=users %}
+{% endif %}
+
+{% endblock %}
+

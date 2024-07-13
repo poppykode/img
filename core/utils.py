@@ -1,5 +1,10 @@
 from datetime import datetime
 from django.core.paginator import Paginator
+from accounts.models import User
+
+def generate_password():
+    new_password = User.objects.make_random_password()
+    return new_password
 
 
 def get_current_datetime(format_string="%Y-%m-%d %H:%M:%S"):

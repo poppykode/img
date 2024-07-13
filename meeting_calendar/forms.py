@@ -35,3 +35,11 @@ class AvaliabilityForm(forms.ModelForm):
             raise forms.ValidationError("This availability overlaps with an existing availability.")
 
         return cleaned_data
+    
+class BookMeetingForm(forms.Form):
+    day = forms.ModelChoiceField(queryset=None, empty_label=None)  # Dynamically populated later
+
+    def __init__(self, *args, user_id=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user_id:
+            self.fields['day'].queryset = models.Avaliability.objects.filter(user=user_id)

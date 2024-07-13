@@ -2,5 +2,13 @@
 {% load static %}
 {% block title %}Not Authorized{% endblock %}
 {% block content %}
-<h3>You are not Authorized to access that page.</h3>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item active">Not Authorized 404</li>
+    </ol>
+</nav>
+<h3>Your role does not have authority to access that page.</h3>
 {% endblock %}

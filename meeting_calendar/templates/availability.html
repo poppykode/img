@@ -2,8 +2,15 @@
 {% load static %}
 {% block title %}Availability{% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / </span> Availability </h5>
-
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item active">Availability</li>
+  </ol>
+</nav>
+{% if request.user == user %}
 <div class="dt-buttons btn-group flex-wrap mb-4">
     <div class="btn-group">
 
@@ -15,6 +22,7 @@
         </span>
     </a>
 </div>
+{% endif %}
 {% if messages %}
 {% for message in messages %}
 
@@ -27,6 +35,7 @@
 {% endif %}
 
 <div class="row">
+  {% if avail %}
     {% regroup avail|dictsort:"day" by day as day_list %}
     {% for day in day_list %}
   
@@ -44,6 +53,19 @@
           </div>
     </div>
     {% endfor %}
+    {% else %}
+    <div class="col-md">
+      <div class="alert alert-success alert-dismissible" role="alert">
+        {% if request.user == user %}
+          Please add you availability.
+        {% else %}
+          The user {{user.first_name|title}} {{user.last_name|title}} does not have any available slots for meetings at the moment.
+        {% endif %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      
+    </div>
+    {% endif %}
 </div>
 
 

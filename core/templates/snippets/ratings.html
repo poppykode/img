@@ -1,0 +1,13 @@
+<div class="rating-star">
+    <span>
+        <i class="fa fa-star{% if obj.averageReview < 0.5 %}-o{% elif single_product.averageReview >= 0.5 and single_product.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+        <i class="fa fa-star{% if obj.averageReview < 1.5 %}-o{% elif obj.averageReview >= 1.5 and obj.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+        <i class="fa fa-star{% if obj.averageReview < 2.5 %}-o{% elif obj.averageReview >= 2.5 and obj.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+        <i class="fa fa-star{% if obj.averageReview < 3.5 %}-o{% elif obj.averageReview >= 3.5 and obj.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+        <i class="fa fa-star{% if obj.averageReview < 4.5 %}-o{% elif obj.averageReview >= 4.5 and obj.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+   <span>
+    {{obj.averageReview}} 
+  
+</span>
+        </span>
+</div>
