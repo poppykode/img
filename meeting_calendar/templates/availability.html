@@ -7,9 +7,23 @@
     <li class="breadcrumb-item">
       <a href="{% url 'accounts:redirect_logged' %}">Home</a>
     </li>
-    <li class="breadcrumb-item active">Availability</li>
+    {% if not request.user == user %}
+      <li class="breadcrumb-item">
+        <a href="{% url 'meeting_calendar:book_a_meeting' user.id %}">Book a Meeting</a>
+      </li>
+    {% endif%}
+   
+    <li class="breadcrumb-item active">
+      {% if request.user == user %}
+      My Availability
+      {% else %}
+      {{user.get_full_name|title}} availability
+      {% endif%}
+    </li>
+
   </ol>
 </nav>
+
 {% if request.user == user %}
 <div class="dt-buttons btn-group flex-wrap mb-4">
     <div class="btn-group">
@@ -46,8 +60,11 @@
             <div class="card-body">
               <h5 class="card-title">{{ day.grouper }}</h5>
               {% for d in day.list %}
-              <p class="card-text">{{ d.start_time }}: {{ d.end_time }} <a href="{% url 'meeting_calendar:remove_availability' d.id %}">  <i
-                class="fa-solid fa-x"></i></a></p>
+              <p class="card-text">{{ d.start_time }}: {{ d.end_time }} 
+                {% if request.user == user %}
+                <a href="{% url 'meeting_calendar:remove_availability' d.id %}">  <i class="fa fa-times" aria-hidden="true"></i></a>
+                {% endif %}
+              </p>
               {% endfor %}
             </div>
           </div>

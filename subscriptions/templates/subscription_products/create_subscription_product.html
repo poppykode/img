@@ -5,9 +5,18 @@
 {% include 'snippets/title_text.html' %} Subscription Product
 {% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Subscriptions /</span>
-    {% include 'snippets/title_text.html' %} Subscription Product {% if type == 'edit' %} {{obj.title|title}} {% endif %}
-</h5>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item">Subscriptions</li>    
+        <li class="breadcrumb-item active"> 
+            {% include 'snippets/title_text.html' %} Subscription Product {% if type == 'edit' %} {{obj.title|title}} {% endif %}
+        </li>      
+    </ol>
+  </nav>
+
 <div class="card mb-4">
     {% if type == 'create' %}
     <form class="card-body" action="{% url 'subscriptions:create_subscription_product' %}" method="POST"> 

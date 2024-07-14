@@ -44,3 +44,8 @@ class DayEnum(Enum):
     FRIDAY = 'FRIDAY'
     SATURDAY = 'SATURDAY'
     SUNDAY = 'SUNDAY'
+
+class MeetingStatusEnum(Enum):
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    CANCELLED = "cancelled"

@@ -4,9 +4,19 @@
  Subscriptions Products
 {% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Subscriptions / </span>
-  Subscriptions Products
-</h5>
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+      <li class="breadcrumb-item">
+          <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+      </li>
+      <li class="breadcrumb-item">Subscriptions</li>    
+      <li class="breadcrumb-item active"> 
+        Subscriptions Products
+      </li>      
+  </ol>
+</nav>
 
 <div class="card-header flex-column flex-md-row mb-4">
   {% if messages %}
@@ -19,6 +29,7 @@
   </div>
   {% endfor %}
   {% endif %}
+  {% if request.user.role == 'Admin' %}
   <div class="dt-action-buttons pt-3 pt-md-0">
     <div class="dt-buttons btn-group flex-wrap">
       <div class="btn-group">
@@ -32,6 +43,7 @@
       </a>
     </div>
   </div>
+  {% endif %}
 </div>
 
 <div class="row">
@@ -69,19 +81,23 @@
         </ul>
 
         <div class="d-grid w-100 mt-4 pt-2">
-          {% if is_grayed_out %}
-          <button class="btn btn-primary" disabled>
-            Subscribe to {{item.title|title}}
-          </button>
-          {% else %}
-          <a class="btn btn-primary" href="{% url 'subscriptions:subscribe' item.id %}">
-            Subscribe to {{item.title|title}}
-          </a>
-
+          {% if not request.user.role == 'Admin' %}
+            {% if is_grayed_out %}
+            <button class="btn btn-primary" disabled>
+              Subscribe to {{item.title|title}}
+            </button>
+            {% else %}
+            <a class="btn btn-primary" href="{% url 'subscriptions:subscribe' item.id %}">
+              Subscribe to {{item.title|title}}
+            </a>
+            {% endif %}
           {% endif %}
+
+          {% if request.user.role == 'Admin' %}
           <a class="btn btn-warning mt-2" href="{% url 'subscriptions:edit_subscription_product' item.id %}">
             Edit Product
           </a>
+          {% endif %}
         </div>
       </div>
     </div>

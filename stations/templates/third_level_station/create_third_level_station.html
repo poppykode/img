@@ -5,9 +5,15 @@
  {% include 'snippets/title_text.html' %} Station
 {% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Station Creator /</span>
-    {% include 'snippets/title_text.html' %} Station
-   </h5>
+   <nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item">Station Creator</li>
+        <li class="breadcrumb-item active">{% include 'snippets/title_text.html' %} Station</li>        
+    </ol>
+  </nav>
 <div class="card mb-4">
    {% if type == 'create' %}
    <form class="card-body"  action="{% url 'stations:create_third_level_station' %}" method="POST">

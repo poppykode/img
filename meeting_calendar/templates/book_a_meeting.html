@@ -54,20 +54,20 @@ Book a meeting
       <div class="col-md-6">
         <div class="mb-3">
           <label for="booking_date" class="form-label">Select Date*</label>
-          <input type="date" name="booking_date" id="booking_date" class="form-control" onchange="filterSlots()" min="{{min_date}}" required>
+          <input type="date" name="booking_date" id="booking_date" class="form-control" min="{{min_date}}" required>
         </div>
       </div>
       <div class="col-md-6">
         <div class="mb-3">
           <label for="day" class="form-label">Select Slot*</label>
-          <select id="day" class="form-select" name="day" disabled required>
-            <!-- Options will be populated by JavaScript -->
-          </select>
-          <!-- <select id="day" class="form-select" name="day">
+          <!-- <select id="day" class="form-select" name="day" disabled required>
+
+          </select> -->
+          <select id="day" class="form-select" name="day">
                   {% for item in obj.user_availability.all %}
                       <option value="{{item.id}}">{{item.day}} ({{item.start_time}} - {{item.end_time}})</option>      
                 {% endfor %}
-              </select> -->
+              </select>
         </div>
       </div>
       <div class="col-md-12">
@@ -100,7 +100,7 @@ Book a meeting
 {% endblock %}
 
 {% block js %}
-<script>
+<!-- <script>
   const filterSlots = () => {
     const bookingDate = document.getElementById('booking_date').value;
     const requestedUserId =  document.getElementById('user_id').value;
@@ -129,6 +129,6 @@ Book a meeting
     });
   }
  
-</script>
+</script> -->
 
 {% endblock %}

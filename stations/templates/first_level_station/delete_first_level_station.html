@@ -3,7 +3,16 @@
 {% load static %}
 {% block title %}{{obj.title|title}}{% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / First Level Sations /</span> Delete {{obj.title|title}}</h5>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+      <li class="breadcrumb-item">
+          <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+      </li>
+      <li class="breadcrumb-item"> First Level Sations</li>
+      <li class="breadcrumb-item active"> Delete {{obj.title|title}}</li>
+  </ol>
+</nav>
+
 <div class="card mb-4">
 
    <form class="card-body"  action="{% url 'stations:delete_first_level_station' obj.id %}" method="POST">

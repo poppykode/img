@@ -14,6 +14,7 @@ urlpatterns = [
     path('book-a-meeting/<uuid:user_id>/', views.book_a_meeting, name='book_a_meeting'),
     path('meeting_detail/<int:meeting_id>/', views.meeting_detail, name='meeting_detail'),
     path('check-in-or-check-out/<int:meeting_id>/<str:check_type>/', views.check_in_or_check_out, name='check_in_or_check_out'),
+    path('update-meeting-status/<int:meeting_id>/<str:status_type>/', views.update_meeting_status, name='update_meeting_status'),
 
     # API
     path('get-availability/<uuid:requested_user_id>/<str:booking_date>/', views.get_availability,name='get_availability')

@@ -28,10 +28,11 @@ def view_all_study_buddies(request):
         if day == '':
             day = None
         final_qs= candidates_qs.filter(
-            Q(user_availability_day = day)|
+            Q(user_availability__day = day)|
             Q (user_general_additional_info__time_zone=time_zone)|
-            Q(user_candidate_additional_info__exam_date=exam_date)
+            Q(study_buddy_additional_info__exam_date=exam_date)
             )
+        
         context = {
             'obj':paginator(request,final_qs,25),
             'candidates':len(final_qs),

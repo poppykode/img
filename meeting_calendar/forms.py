@@ -22,18 +22,7 @@ class AvaliabilityForm(forms.ModelForm):
             
             raise forms.ValidationError("End time must be after start time.")
 
-        conflicting_availability = models.Avaliability.objects.filter(
-            Q(day=day),
-            Q(
-                Q(start_time__lte=end_time) & Q(end_time__gte=start_time)  # Overlapping availability
-                | Q(start_time__gte=start_time) & Q(end_time__lte=end_time)  # Availability entirely within selected times
-                | Q(start_time__lt=start_time) & Q(end_time__gt=end_time)  # Availability surrounds selected times
-            ),
-        )
-
-        if conflicting_availability.exists():
-            raise forms.ValidationError("This availability overlaps with an existing availability.")
-
+    
         return cleaned_data
     
 class BookMeetingForm(forms.Form):

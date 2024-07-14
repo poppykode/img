@@ -5,7 +5,15 @@
 {% include 'snippets/title_text.html' %} Station
 {% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / First Level Sations /</span>
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item active"> First Level Sations</li>
+    </ol>
+  </nav>
   {% include 'snippets/title_text.html' %} Station
   </h5>
 <div class="card mb-4">

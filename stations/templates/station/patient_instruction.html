@@ -2,7 +2,18 @@
 {% load static %}
 {% block title %}{{obj.title|title}}{% endblock %}
 {% block content %}
-<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Stations / {{obj.title|title}} / </span>Patient Instruction </h5>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item">Sations</li>
+        <li class="breadcrumb-item">{{obj.title|title}}</li>
+        <li class="breadcrumb-item active">Patient Instruction</li>
+      
+    </ol>
+  </nav>
 
 <div class="row">
     <div class="col-md-9">
