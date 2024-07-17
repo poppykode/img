@@ -218,9 +218,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.privateemail.com'  # Replace with your Namecheap server address
 # EMAIL_PORT = 465  # Or 587 depending on your Namecheap configuration
 # EMAIL_USE_TLS = True  # Or EMAIL_USE_SSL = True if required
-# EMAIL_HOST_USER = 'youremail@yourdomain.com'  # Replace with your Namecheap email address
-# EMAIL_HOST_PASSWORD = 'your_password'  # Replace with your secure password
-# DEFAULT_FROM_EMAIL = 'Your Name <youremail@yourdomain.com>'  # Optional, customize sender name
+# EMAIL_HOST_USER = 'no-reply@imgstudybuddy.com'  # Replace with your Namecheap email address
+# EMAIL_HOST_PASSWORD = 'I1m1@1n1i1d1o1n1d1o1'  # Replace with your secure password
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Optional, customize sender name
 
 
 try:
