@@ -14,6 +14,14 @@
         <li class="breadcrumb-item active">Add Admin</li>
     </ol>
 </nav>
+
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+  {% for field, error_list in form.errors.items %}
+  {{ error_list.as_text }}
+  {% endfor %}
+</div>
+{% endif %}
 {% if messages %}
 {% for message in messages %}
 <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">

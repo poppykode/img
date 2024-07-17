@@ -41,18 +41,27 @@ class User (AbstractUser):
     
 
     def meeting_attendance(self):
-        meetings = MeetingCheckInAndOut.objects.filter(user=self).filter(is_checked_in = True).aggregate(count=Count('id'))
+        meetings = MeetingCheckInAndOut.objects.filter(user=self).filter(is_checked_in = True).filter(is_checked_out = True).aggregate(count=Count('id'))
         count = 0
         if meetings['count'] is not None:
             count = int(meetings['count'])
         return count
     
     def reliability(self):
-        number_of_meeting_accepted = BookedMeeting.objects.filter((Q(requester=self) | Q(requested=self)) & Q(accepted=True)).count()
+        number_of_meeting_accepted = BookedMeeting.objects.filter((Q(requester=self) | Q(requested=self)) & Q(accepted=True)).aggregate(count=Count('id'))
         meetings_attended = self.meeting_attendance()
+
+
         reliability_percentage = 0
-        if not number_of_meeting_accepted == 0 and meetings_attended == 0:
-            reliability_percentage = (meetings_attended / number_of_meeting_accepted) * 100
+        number_of_meeting_accepted_ = 0
+
+        if number_of_meeting_accepted['count'] is not None:
+            number_of_meeting_accepted_ = int(number_of_meeting_accepted['count'])
+
+
+        if not number_of_meeting_accepted_ == 0 and not meetings_attended == 0:
+            reliability_percentage = (meetings_attended / number_of_meeting_accepted_) * 100
+
         return reliability_percentage
 
        

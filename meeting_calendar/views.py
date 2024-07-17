@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 
 from core.decorators import role_required
+from core.email import Email
 from core.enums import RoleEnum, MeetingStatusEnum
 from meeting_calendar.forms import AvaliabilityForm
 from .utils import Calendar
@@ -145,15 +146,30 @@ def book_a_meeting(request, user_id):
                 f"The {availability.day.capitalize()} slot on {booking_date} from {availability.start_time.strftime('%H:%M')} to {availability.end_time.strftime('%H:%M')} is already booked.",
             )
             return redirect("meeting_calendar:book_a_meeting", user.id)
-        BookedMeeting.objects.create(
+        new_booked_meeting = BookedMeeting.objects.create(
             requester=request.user,
             requested=user,
             booking_date=booking_date,
             availability=availability,
             notes = request.POST.get("notes")
         )
+        # base_url = request.build_absolute_uri('/')
+        
+        # link = f"{base_url}{new_booked_meeting.get_absolute_url()}"
         messages.success(request, "Meeting request successfully sent")
-        # send email
+        email_ = Email(
+            subject="Meeting request",
+            recipient_list=[new_booked_meeting.requested.email],
+            message=f"""
+            <p>New Meetings Details</p>
+            <p>Requester: {new_booked_meeting.requester.get_full_name().title()} </p>
+            <p>Date: {new_booked_meeting.booking_date} </p>
+            <p>Slot: {new_booked_meeting.availability.day}: {new_booked_meeting.availability.start_time} {new_booked_meeting.availability.end_time} </p>
+        
+            """
+
+        )
+        email_.send()
         return redirect("accounts:public_profile", user.id)
     return render(request, template_name, {"obj": user, 'min_date': date.today().strftime('%Y-%m-%d'),})
 
@@ -278,7 +294,15 @@ def update_meeting_status(request, meeting_id, status_type):
     }
     success_message = f"Meeting successfully {status_message_map[status_type]}."
     messages.success(request, success_message)
-
-    # Send email
+    email_ = Email(
+        subject="Meeting Status",
+        recipient_list=[meeting.requested.email,meeting.requester.email],
+        message=f"""
+        <p>Expected Meeting Attendees: {meeting.requested.get_full_name().title()} and {meeting.requester.get_full_name().title()}</p>
+        <p>Meeting Status: {status_message_map[status_type]} </p>
+        <p>Meeting Date: {meeting.booking_date} Slot: {meeting.availability.day} ({meeting.availability.start_time} - {meeting.availability.end_time})  </p>
+        """
+    )
+    email_.send()
 
     return redirect('meeting_calendar:meeting_detail', meeting.id)

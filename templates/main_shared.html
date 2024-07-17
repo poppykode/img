@@ -96,36 +96,43 @@
           {% with request.resolver_match.url_name as url_name %}
           <ul class="menu-inner py-1">
             <!-- Page -->
-            <li class="menu-item {% if url_name == 'admin_dashboard' or url_name == 'coach_dashboard' %} active {% endif %}">
+            <li class="menu-item {% if url_name == 'admin_dashboard' or url_name == 'candidate_dashboard' or url_name == 'subscriptions' %} active {% endif %}">
               <a href="/" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Dashboard">Dashboard</div>
               </a>
             </li>
+            {% if not request.user.role == 'Admin' %}
             <li class="menu-item {% if url_name == 'view_all_study_buddies' %}active {% endif %}">
               <a href="{% url 'study_buddies:view_all_study_buddies' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user-plus"></i>
                 <div data-i18n="Study Buddies">Study Buddies</div>
               </a>
             </li>
-            <li class="menu-item {% if url_name == 'view_all_coaches' %}active {% endif %}">
+       
+            <!-- <li class="menu-item {% if url_name == 'view_all_coaches' %}active {% endif %}">
               <a href="{% url 'coaches:view_all_coaches' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-group"></i>
                 <div data-i18n="Coaches">Coaches</div>
               </a>
-            </li>
+            </li> -->
+          
             <li class="menu-item {% if url_name == 'availability' %} active {% endif %}">
               <a href="{% url 'meeting_calendar:availability' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Availability">Availability</div>
               </a>
             </li>
-            <li class="menu-item">
+            {% endif %}
+            {% if request.user.role == 'Admin' %}
+            <li class="menu-item {% if url_name == 'users' %} active {% endif %}">
               <a href="{% url 'accounts:users' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
                 <div data-i18n="Users">Users</div>
               </a>
             </li>
+            {% endif %}
+            {% if request.user.role == 'Candidate' %}
             <li class="menu-item">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class='menu-icon  bx bx-book-reader'></i>
@@ -144,7 +151,9 @@
                 </li>
               </ul>
             </li>
-            <li class="menu-item">
+            {% endif %}
+            {% if request.user.role == 'Admin' %}
+            <li class="menu-item  {% if url_name == 'subscription_products' or url_name == 'first_level_stations' or url_name == 'second_level_stations' or url_name == 'third_level_stations' %} active {% endif %}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-cog"></i>
                 <div data-i18n="Settings">Settings</div>
@@ -190,12 +199,13 @@
                 </li>
               </ul>
             </li>
-            <li class="menu-item">
+            <!-- <li class="menu-item">
               <a href="/" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-detail"></i>
                 <div data-i18n="Aplications">Aplications</div>
               </a>
-            </li>
+            </li> -->
+            {% endif %}
           </ul>
           {% endwith %}
         </aside>
@@ -237,12 +247,18 @@
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
-                              <img src="{% static 'assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                              <img src="{% static 'assets/img/placeholder.jpg' %}" alt class="w-px-40 h-auto rounded-circle" />
                             </div>
                           </div>
                           <div class="flex-grow-1">
                             <span class="fw-semibold d-block">{{request.user.get_full_name|title}}</span>
-                            <small class="text-muted">{{request.user.role}}</small>
+                            <small class="text-muted">
+                              {% if request.user.role == 'Candidate' %}
+                              Study Buddy
+                              {% else %}
+                              {{request.user.role}}
+                              {% endif %}
+                            </small>
                           </div>
                         </div>
                       </a>
@@ -256,13 +272,13 @@
                         <span class="align-middle">My Profile</span>
                       </a>
                     </li>
-                    <li>
+                    <!-- <li>
                       <a class="dropdown-item" href="/">
                         <i class="bx bx-cog me-2"></i>
                         <span class="align-middle">Settings</span>
                       </a>
-                    </li>
-                    <li>
+                    </li> -->
+                    <!-- <li>
                       <a class="dropdown-item" href="#">
                         <span class="d-flex align-items-center align-middle">
                           <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
@@ -270,7 +286,7 @@
                
                         </span>
                       </a>
-                    </li>
+                    </li> -->
                     <li>
                       <div class="dropdown-divider"></div>
                     </li>

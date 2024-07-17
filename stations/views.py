@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from core.decorators import role_required
+from core.decorators import role_required, subscription_required
 from core.enums import RoleEnum
 from . import forms
 from . import models
@@ -244,7 +244,7 @@ def stations_admin(request):
     )
 
 #User views
-
+@subscription_required
 @role_required(allowed_roles=[RoleEnum.ADMIN.value,RoleEnum.CANDIDATE.value])
 def first_level_station_view(request):
     template_name = "first_level_station/first_level_station_view.html"

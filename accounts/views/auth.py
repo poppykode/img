@@ -46,7 +46,7 @@ def redirect_logged(request):
     user_role = request.user.role
     request.session['has_availabilty'] = Avaliability.objects.filter(user = request.user).exists()
     if user_role == RoleEnum.ADMIN.value:
-        return redirect('accounts:admin_dashboard')
+        return redirect('subscriptions:subscriptions')
     elif user_role == RoleEnum.CANDIDATE.value:
         return redirect('accounts:candidate_dashboard')
     elif user_role == RoleEnum.COACH.value:

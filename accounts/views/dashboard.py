@@ -3,6 +3,7 @@ import os
 from django.db.models import Q
 from datetime import datetime, date
 from accounts.models import User
+from core.email import Email
 from core.enums import RoleEnum
 from core.utils import generate_password, paginator
 from offers.models import Offer
@@ -143,7 +144,17 @@ def add_admin(request):
             user.role = RoleEnum.ADMIN.value
             user.is_active = True
             user.save()
-                #send_email
+            email_ = Email(
+                subject="New account creation",
+                recipient_list=[email],
+                message=f"""
+                <p>Account Details</p>
+                <p>Username: {email} </p>
+                <p>Password: {generated_password} </p>
+                """
+
+            )
+            email_.send()
             messages.success(request,'User successfully added.')
             return redirect('accounts:users')
 

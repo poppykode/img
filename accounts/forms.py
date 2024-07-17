@@ -53,6 +53,14 @@ class AdminUserForm(forms.ModelForm):
         model = User
         fields = ['first_name', 'last_name','email']
 
+    def clean(self):    
+        cleaned_data = super().clean()
+        email = self.cleaned_data['email']
+        print(f"email validation {email}")
+        if User.objects.filter(username=email).exists():
+            raise forms.ValidationError('This email address is already in use.')
+        return cleaned_data
+
 class GeneralInfoForm(forms.ModelForm):
     class Meta:
         model =  GeneralInfo

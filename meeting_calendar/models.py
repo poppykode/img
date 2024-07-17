@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.db import models
 from core.enums import DayEnum
@@ -23,6 +24,9 @@ class BookedMeeting (models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     objects = BookedMeetingManager()
+
+    def get_absolute_url(self):
+        return reverse('meeting_calendar:meeting_detail', kwargs={'meeting_id': self.pk})
 
     def __str__(self):
         return self.requester.first_name
