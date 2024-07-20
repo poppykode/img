@@ -303,6 +303,7 @@ def update_meeting_status(request, meeting_id, status_type):
 
     meeting = get_object_or_404(BookedMeeting, pk=meeting_id)
 
+
     if status_type == MeetingStatusEnum.CANCELLED.value:
         check_in_exists = MeetingCheckInAndOut.objects.filter(
             Q(booked_meeting=meeting)
@@ -316,10 +317,12 @@ def update_meeting_status(request, meeting_id, status_type):
             )
             return redirect("meeting_calendar:meeting_detail", meeting_id)
 
+
     meeting.accepted = status_type == MeetingStatusEnum.ACCEPTED.value
     meeting.rejected = status_type == MeetingStatusEnum.REJECTED.value
     meeting.cancelled = status_type == MeetingStatusEnum.CANCELLED.value
     meeting.save()
+    
 
     status_message_map = {
         MeetingStatusEnum.ACCEPTED.value: "accepted",
@@ -328,16 +331,17 @@ def update_meeting_status(request, meeting_id, status_type):
     }
     success_message = f"Meeting successfully {status_message_map[status_type]}."
     messages.success(request, success_message)
-    email_ = Email(
-        subject="Meeting Status",
-        recipient_list=[meeting.requested.email, meeting.requester.email],
-        message=f"""
-        <p>Expected Meeting Attendees: {meeting.requested.get_full_name().title()} and {meeting.requester.get_full_name().title()}</p>
-        <p>Meeting Status: {status_message_map[status_type]} </p>
-        <p>Meeting Date: {meeting.booking_date} Slot: {meeting.availability.day} ({meeting.availability.start_time} - {meeting.availability.end_time})  </p>
-        """,
-    )
-    email_.send()
+    if meeting.requested:
+        email_ = Email(
+            subject="Meeting Status",
+            recipient_list=[meeting.requested.email, meeting.requester.email],
+            message=f"""
+            <p>Expected Meeting Attendees: {meeting.requested.get_full_name().title()} and {meeting.requester.get_full_name().title()}</p>
+            <p>Meeting Status: {status_message_map[status_type]} </p>
+            <p>Meeting Date: {meeting.booking_date} Slot: {meeting.availability.day} ({meeting.availability.start_time} - {meeting.availability.end_time})  </p>
+            """,
+        )
+        email_.send()
 
     return redirect("meeting_calendar:meeting_detail", meeting.id)
 
