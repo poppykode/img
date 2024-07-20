@@ -139,7 +139,7 @@ def remove_availability(request, id,action = None):
             qs.delete()
             messages.success(request, "Availability successfully deleted.")
         else:
-            messages.error(request,"Availability can not be removed as it was used in meeting bookings you can try disabling if not disabled.")
+            messages.error(request,"Availability can not be removed as it was used in meeting bookings you can try disabling it, if already disabled.")
     else:
         qs.is_disabled = not qs.is_disabled
         qs.save()
@@ -153,7 +153,8 @@ def remove_availability(request, id,action = None):
 def book_a_meeting(request, user_id):
     template_name = "book_a_meeting.html"
     user = get_object_or_404(User, id=user_id)
-    # check if slot is booked
+    has_availability = [av for av in user.user_availability.all() if not av.is_temp and not av.is_disabled]
+
     if request.method == "POST":
         day = request.POST.get("day")
         booking_date = request.POST.get("booking_date")
@@ -195,6 +196,7 @@ def book_a_meeting(request, user_id):
         {
             "obj": user,
             "min_date": date.today().strftime("%Y-%m-%d"),
+            "has_availability" :has_availability
         },
     )
 
