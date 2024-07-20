@@ -1,5 +1,6 @@
 {% extends 'main_shared.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block title %}Study Buddy{% endblock %}
 {% block content %}
 <nav aria-label="breadcrumb">
@@ -19,6 +20,17 @@
 </div>
 {% endfor %}
 {% endif %}
+
+{% if quick_meetings %}
+  {% for qm in quick_meetings %}
+    <div class="alert alert-success alert-dismissible mb-1" role="alert">    
+      Quick meeting request from <a href="{% url 'accounts:public_profile' qm.requester.id %}">{{qm.requester.get_full_name|title}}</a> on {{qm.availability.start_time}} from ( {{qm.availability.end_time}}) <a href="{% url 'meeting_calendar:accept_a_quick_meeting' qm.id %}">Accept Quick Meeting</a>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+{% endif %}
+
+
 
 <div class="row">
     <div class="col-md-3 mb-4">
@@ -89,7 +101,7 @@
           <div class="card-body">
             <div class="d-flex justify-content-between">
               <div class="card-info">
-                <p class="card-text">Checked-in & Out Meetings</p>
+                <p class="card-text">Checked-in & Out</p>
                 <div class="d-flex align-items-end mb-2">
                   <h4 class="card-title mb-0 me-2">{{check_in_and_out_count}}</h4>
                 </div>
@@ -108,6 +120,33 @@
 </div>
 
 <div class="card p-3">
+  <form action="{% url 'meeting_calendar:create_a_quick_meeting' %}" method="POST">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-3">
+        <div class="mb-3">
+          {{ form.date|as_crispy_field }}
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          {{ form.start_time|as_crispy_field }}
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          {{ form.end_time|as_crispy_field }}
+        </div>
+      </div>
+      <div class="col-md-3 d-flex flex-column"
+        style="margin-top: auto !important; margin-bottom: 1.1em !important;">
+        <button type="submit" class="btn btn-primary">
+          Create Quick Meeting
+        </button>
+      </div>
+    </div>
+  </form>
+  <hr>
     <div class="table-responsive text-nowrap">
         <table class="table" id="users">
             <thead>
@@ -136,7 +175,8 @@
                         {% if item.requested.id == user.id %}
                         Yourself
                         {% else %}
-                        {{item.requested.get_full_name|title}}
+                        {{item.requested.get_full_name|title|default:"-"}}
+                     
                         {% endif %}
                     </td>
                     <td>{{item.availability.day}} ({{item.availability.start_time}} - {{item.availability.end_time}})
@@ -178,6 +218,12 @@
                         <a href="{% url 'meeting_calendar:meeting_detail' item.id %}"><i class="fa fa-eye" aria-hidden="true"></i> View</a>
                     </td>
 
+                </tr>
+                {% empty %}
+                <tr>
+                  <td>
+                    No meetings
+                  </td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -9,8 +9,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from core.decorators import role_required
 from core.email import Email
-from core.enums import RoleEnum, MeetingStatusEnum
-from meeting_calendar.forms import AvaliabilityForm
+from core.enums import DayEnum, RoleEnum, MeetingStatusEnum
+from meeting_calendar.forms import AvaliabilityForm, QuickMeeting
 from .utils import Calendar
 from .models import BookedMeeting, Avaliability, MeetingCheckInAndOut
 from datetime import datetime, timedelta, date
@@ -70,27 +70,28 @@ def availability(request, user_id=None):
             is_avaliability = Avaliability.objects.filter(user=request.user).exists()
             request.session["has_availabilty"] = is_avaliability
     user = request.user
-    qs = Avaliability.objects.filter(user=user)
+    qs = Avaliability.objects.filter(user=user).exclude(is_temp=True)
     if user_id:
         user_ = get_object_or_404(User, id=user_id)
         user = user_
-        qs = Avaliability.objects.filter(user=user_)
+        qs = Avaliability.objects.filter(user=user_).exclude(is_temp=True).exclude(is_disabled=True)
     return render(request, template_name, {"avail": qs, "user": user})
 
 
-@role_required(
-    allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value]
-)
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def create_availability(request):
     template_name = "create_availability.html"
     form = AvaliabilityForm(request.POST or None)
 
     if request.method == "POST":
         if form.is_valid():
-            if is_overlapping_availabilities_func(request,form.cleaned_data):
-                messages.error(request, "This availability overlaps with an existing one. Please choose a different time slot.")
+            if is_overlapping_availabilities_func(request, form.cleaned_data):
+                messages.error(
+                    request,
+                    "This availability overlaps with an existing one. Please choose a different time slot.",
+                )
                 return redirect("meeting_calendar:create_availability")
-            
+
             instance = form.save(commit=False)
             instance.user = request.user
             instance.save()
@@ -99,38 +100,56 @@ def create_availability(request):
 
     return render(request, template_name, {"form": form, "type": "create"})
 
+
 def is_overlapping_availabilities_func(request, data):
-    return Avaliability.objects.filter(
-        Q(user=request.user) 
-        & Q(day=data['day'])
-        & (
-            Q(  # Overlap scenarios:
-                # Existing availability starts before and ends after the new one
-                Q(start_time__lt= data['start_time']) & Q(end_time__gt= data['end_time'])
-            ) | Q(
-                # Existing availability starts within the new one's timeframe
-                Q(start_time__gte=data['start_time']) & Q(start_time__lt=data['end_time'])
-            ) | Q(
-                # Existing availability ends within the new one's timeframe
-                Q(end_time__gt=data['start_time']) & Q(end_time__lte=data['end_time'])
+    return (
+        Avaliability.objects.filter(
+            Q(user=request.user)
+            & Q(day=data["day"])
+            & (
+                Q(  # Overlap scenarios:
+                    # Existing availability starts before and ends after the new one
+                    Q(start_time__lt=data["start_time"])
+                    & Q(end_time__gt=data["end_time"])
+                )
+                | Q(
+                    # Existing availability starts within the new one's timeframe
+                    Q(start_time__gte=data["start_time"])
+                    & Q(start_time__lt=data["end_time"])
+                )
+                | Q(
+                    # Existing availability ends within the new one's timeframe
+                    Q(end_time__gt=data["start_time"])
+                    & Q(end_time__lte=data["end_time"])
+                )
             )
         )
-    ).exists()
+        .exclude(is_temp=True)
+        .exists()
+    )
 
 
-@role_required(
-    allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value]
-)
-def remove_availability(request, id):
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
+def remove_availability(request, id,action = None):
     qs = get_object_or_404(Avaliability, id=id)
-    qs.delete()
-    messages.success(request, "Availability successfully deleted.")
+
+    if action == 'del':
+        avail_exists_in_booking = BookedMeeting.objects.filter(availability=qs).exists()
+        if not avail_exists_in_booking:
+            qs.delete()
+            messages.success(request, "Availability successfully deleted.")
+        else:
+            messages.error(request,"Availability can not be removed as it was used in meeting bookings you can try disabling if not disabled.")
+    else:
+        qs.is_disabled = not qs.is_disabled
+        qs.save()
+        status = "enabled" if not qs.is_disabled else "disabled"
+        messages.success(request, f"Availability successfully {status}.")
+    
     return redirect("meeting_calendar:availability")
 
 
-@role_required(
-    allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value]
-)
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def book_a_meeting(request, user_id):
     template_name = "book_a_meeting.html"
     user = get_object_or_404(User, id=user_id)
@@ -151,10 +170,10 @@ def book_a_meeting(request, user_id):
             requested=user,
             booking_date=booking_date,
             availability=availability,
-            notes = request.POST.get("notes")
+            notes=request.POST.get("notes"),
         )
         # base_url = request.build_absolute_uri('/')
-        
+
         # link = f"{base_url}{new_booked_meeting.get_absolute_url()}"
         messages.success(request, "Meeting request successfully sent")
         email_ = Email(
@@ -166,12 +185,18 @@ def book_a_meeting(request, user_id):
             <p>Date: {new_booked_meeting.booking_date} </p>
             <p>Slot: {new_booked_meeting.availability.day}: {new_booked_meeting.availability.start_time} {new_booked_meeting.availability.end_time} </p>
         
-            """
-
+            """,
         )
         email_.send()
         return redirect("accounts:public_profile", user.id)
-    return render(request, template_name, {"obj": user, 'min_date': date.today().strftime('%Y-%m-%d'),})
+    return render(
+        request,
+        template_name,
+        {
+            "obj": user,
+            "min_date": date.today().strftime("%Y-%m-%d"),
+        },
+    )
 
 
 def check_meeting_exists(requested_user, availability, booking_date):
@@ -179,7 +204,7 @@ def check_meeting_exists(requested_user, availability, booking_date):
         Q(requested=requested_user)
         & Q(availability=availability)
         & Q(booking_date=booking_date)
-        & Q(accepted = True)       
+        & Q(accepted=True)
     ).exists()
 
 
@@ -187,8 +212,6 @@ def get_availability(request, requested_user_id, booking_date):
     requested_user = get_object_or_404(User, id=requested_user_id)
     data = []
     for slot in requested_user.user_availability.all():
-        print(f"slot {slot}")
-        print(check_meeting_exists(requested_user, slot, booking_date))
         if not check_meeting_exists(requested_user, slot, booking_date):
             data.append(
                 {
@@ -200,75 +223,81 @@ def get_availability(request, requested_user_id, booking_date):
             )
     return JsonResponse(data, safe=False)
 
-@role_required(
-    allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value]
-)
+
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def meeting_detail(request, meeting_id):
-    template_name = 'meeting_detail.html'
-    obj = get_object_or_404(BookedMeeting, id = meeting_id)
+    template_name = "meeting_detail.html"
+    obj = get_object_or_404(BookedMeeting, id=meeting_id)
     is_checked_in, is_checked_out = check_status_func(request, obj)
     context = {
-        'obj':obj,
-        'current_date':date.today(),
-        'is_checked_in':is_checked_in,
-        'is_checked_out':is_checked_out
+        "obj": obj,
+        "current_date": date.today(),
+        "is_checked_in": is_checked_in,
+        "is_checked_out": is_checked_out,
     }
-    return render(request, template_name,context)
+    return render(request, template_name, context)
+
 
 def check_status_func(request, obj):
     check_status = MeetingCheckInAndOut.objects.filter(
-        Q(booked_meeting = obj)
-        & Q(user = request.user)
+        Q(booked_meeting=obj) & Q(user=request.user)
     )
-    is_checked_in = check_status.filter(is_checked_in = True).exists()
-    is_checked_out = check_status.filter(is_checked_out = True).exists()
-    return is_checked_in,is_checked_out
+    is_checked_in = check_status.filter(is_checked_in=True).exists()
+    is_checked_out = check_status.filter(is_checked_out=True).exists()
+    return is_checked_in, is_checked_out
 
-@role_required(
-    allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value]
-)
+
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def check_in_or_check_out(request, meeting_id, check_type):
     obj = get_object_or_404(BookedMeeting, id=meeting_id)
-    
-    if check_type not in ['check-in', 'check-out']:
+
+    if check_type not in ["check-in", "check-out"]:
         messages.error(request, "Invalid check type.")
-        return redirect('meeting_calendar:meeting_detail', obj.id)
+        return redirect("meeting_calendar:meeting_detail", obj.id)
 
     is_checked_in, is_checked_out = check_status_func(request, obj)
-    
-    if check_type == 'check-in':
+
+    if check_type == "check-in":
         if is_checked_in:
             messages.error(request, "You have already checked in.")
         else:
-            check_in_and_out_func(request, obj, is_checked_in_=True, is_checked_out_=False)
+            check_in_and_out_func(
+                request, obj, is_checked_in_=True, is_checked_out_=False
+            )
             messages.success(request, "Checked in successfully.")
-    elif check_type == 'check-out':
+    elif check_type == "check-out":
         if not is_checked_in:
             messages.error(request, "You need to check in first.")
         elif is_checked_out:
             messages.error(request, "You have already checked out.")
         else:
-            check_in_and_out_func(request, obj, is_checked_in_=True, is_checked_out_=True)
+            check_in_and_out_func(
+                request, obj, is_checked_in_=True, is_checked_out_=True
+            )
             messages.success(request, "Checked out successfully.")
-    
-    return redirect('meeting_calendar:meeting_detail', obj.id)
+
+    return redirect("meeting_calendar:meeting_detail", obj.id)
+
 
 def check_in_and_out_func(request, obj, is_checked_in_, is_checked_out_):
     MeetingCheckInAndOut.objects.create(
-        booked_meeting = obj,
-        user = request.user,
-        is_checked_in = is_checked_in_,
-        is_checked_out = is_checked_out_
+        booked_meeting=obj,
+        user=request.user,
+        is_checked_in=is_checked_in_,
+        is_checked_out=is_checked_out_,
     )
 
-@role_required(
-    allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value]
-)
+
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def update_meeting_status(request, meeting_id, status_type):
 
-    if status_type not in  [MeetingStatusEnum.ACCEPTED.value, MeetingStatusEnum.REJECTED.value, MeetingStatusEnum.CANCELLED.value]:
+    if status_type not in [
+        MeetingStatusEnum.ACCEPTED.value,
+        MeetingStatusEnum.REJECTED.value,
+        MeetingStatusEnum.CANCELLED.value,
+    ]:
         messages.error(request, "Invalid status type.")
-        return redirect('meeting_calendar:meeting_detail', meeting_id)
+        return redirect("meeting_calendar:meeting_detail", meeting_id)
 
     meeting = get_object_or_404(BookedMeeting, pk=meeting_id)
 
@@ -279,12 +308,15 @@ def update_meeting_status(request, meeting_id, status_type):
             & Q(is_checked_in=True)
         ).exists()
         if check_in_exists:
-            messages.error(request, f"You can not cancel a checked in meeting by either requester or requested.")
-            return redirect('meeting_calendar:meeting_detail', meeting_id)
+            messages.error(
+                request,
+                f"You can not cancel a checked in meeting by either requester or requested.",
+            )
+            return redirect("meeting_calendar:meeting_detail", meeting_id)
 
-    meeting.accepted = (status_type == MeetingStatusEnum.ACCEPTED.value)
-    meeting.rejected = (status_type == MeetingStatusEnum.REJECTED.value)
-    meeting.cancelled = (status_type == MeetingStatusEnum.CANCELLED.value)
+    meeting.accepted = status_type == MeetingStatusEnum.ACCEPTED.value
+    meeting.rejected = status_type == MeetingStatusEnum.REJECTED.value
+    meeting.cancelled = status_type == MeetingStatusEnum.CANCELLED.value
     meeting.save()
 
     status_message_map = {
@@ -296,13 +328,79 @@ def update_meeting_status(request, meeting_id, status_type):
     messages.success(request, success_message)
     email_ = Email(
         subject="Meeting Status",
-        recipient_list=[meeting.requested.email,meeting.requester.email],
+        recipient_list=[meeting.requested.email, meeting.requester.email],
         message=f"""
         <p>Expected Meeting Attendees: {meeting.requested.get_full_name().title()} and {meeting.requester.get_full_name().title()}</p>
         <p>Meeting Status: {status_message_map[status_type]} </p>
         <p>Meeting Date: {meeting.booking_date} Slot: {meeting.availability.day} ({meeting.availability.start_time} - {meeting.availability.end_time})  </p>
-        """
+        """,
     )
     email_.send()
 
-    return redirect('meeting_calendar:meeting_detail', meeting.id)
+    return redirect("meeting_calendar:meeting_detail", meeting.id)
+
+
+def extract_day_of_week(date_value):
+    date_object = datetime.strptime(date_value, "%Y-%m-%d")
+    day_number = date_object.weekday()
+    weekdays = [
+        DayEnum.MONDAY.value,
+        DayEnum.TUESDAY.value,
+        DayEnum.WEDNESDAY.value,
+        DayEnum.THURSDAY.value,
+        DayEnum.FRIDAY.value,
+        DayEnum.SATURDAY.value,
+        DayEnum.SUNDAY.value,
+    ]
+    return weekdays[day_number]
+
+
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
+def create_a_quick_meeting(request):
+
+    if request.method == "POST":
+        form = QuickMeeting(request.POST or None)
+        if form.is_valid():
+            user_ = request.user
+            date = request.POST.get("date")
+            new_avail = Avaliability.objects.create(
+                user=user_,
+                start_time=request.POST.get("start_time"),
+                end_time=request.POST.get("end_time"),
+                day=extract_day_of_week(date),
+                is_temp=True,
+            )
+            if new_avail.id:
+                BookedMeeting.objects.create(
+                    requester=user_, availability=new_avail, booking_date=date
+                )
+                messages.success(request, "Meeting successfully broadcasted.")
+            else:
+                messages.error(request, "Something went wrong.")
+    return redirect("/")
+
+
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
+def accept_a_quick_meeting(request, id):
+    meeting = get_object_or_404(BookedMeeting, id=id)
+    user_ = request.user
+    meeting.requested = user_
+    meeting.accepted = True
+    meeting.save()
+    messages.success(
+        request,
+        f"You have successfully accepted a quick meeting from {meeting.requester.get_full_name()}",
+    )
+    email_ = Email(
+        subject="Quick meeting acceptance",
+        recipient_list=[meeting.requester.email],
+        message=f"""
+        <p>New Meetings Details</p>
+        <p>Accepted by: {user_.get_full_name()} </p>
+        <p>Date: {meeting.booking_date} </p>
+        <p>Slot: {meeting.availability.day}: {meeting.availability.start_time} {meeting.availability.end_time} </p>
+    
+        """,
+    )
+    email_.send()
+    return redirect("/")

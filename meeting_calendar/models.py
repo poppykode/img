@@ -1,3 +1,4 @@
+import datetime
 from django.conf import settings
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -10,10 +11,15 @@ class BookedMeetingManager(models.Manager):
     def for_user(self, user):
         return self.filter(models.Q(requester=user) | models.Q(requested=user))
     
+    def quick_meetings(self,user):
+        return self.filter(requested = None).exclude(requester=user).exclude(booking_date__lt = datetime.date.today())
+    
+
+    
 # Create your models here.
 class BookedMeeting (models.Model):
     requester = models.ForeignKey(User,on_delete=models.CASCADE, related_name="requester")
-    requested = models.ForeignKey(User,on_delete=models.CASCADE, related_name="requested")
+    requested = models.ForeignKey(User,on_delete=models.CASCADE, related_name="requested", blank=True,null=True)
     availability = models.ForeignKey('Avaliability', on_delete=models.CASCADE, related_name='booked_meeting_availability')
     notes = models.TextField(blank=True, null=True)
     booking_date = models.DateField()
@@ -48,6 +54,8 @@ class Avaliability (models.Model):
     day =models.CharField(max_length=12,choices=Day.choices)
     start_time = models.TimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
+    is_temp = models.BooleanField(default=False)
+    is_disabled = models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 

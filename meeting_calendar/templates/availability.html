@@ -62,7 +62,27 @@
               {% for d in day.list %}
               <p class="card-text">{{ d.start_time }}: {{ d.end_time }} 
                 {% if request.user == user %}
-                <a href="{% url 'meeting_calendar:remove_availability' d.id %}">  <i class="fa fa-times" aria-hidden="true"></i></a>
+                <a href="{% url 'meeting_calendar:remove_availability' d.id 'del' %}">  
+                  <i 
+                  class="fa fa-times" 
+                  aria-hidden="true"
+                  aria-hidden="true"                       
+                  data-bs-toggle="tooltip"
+                  data-bs-offset="0,8"
+                  data-bs-placement="top"
+                  data-bs-custom-class="text-primary"
+                  title="Remove availability"
+                  ></i></a>
+                <a href="{% url 'meeting_calendar:remove_availability' d.id %}"> 
+                  <i 
+                  class="fa fa-ban {% if d.is_disabled %} text-danger {% else %} text-success {% endif %}" 
+                  aria-hidden="true"                       
+                  data-bs-toggle="tooltip"
+                  data-bs-offset="0,8"
+                  data-bs-placement="top"
+                  data-bs-custom-class="text-primary"
+                  title="Click to {% if d.is_disabled %}  enable {% else %} disable {% endif %} availability" ></i>
+                </a>
                 {% endif %}
               </p>
               {% endfor %}

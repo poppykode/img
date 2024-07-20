@@ -65,7 +65,9 @@ Book a meeting
           </select> -->
           <select id="day" class="form-select" name="day">
                   {% for item in obj.user_availability.all %}
-                      <option value="{{item.id}}">{{item.day}} ({{item.start_time}} - {{item.end_time}})</option>      
+                      {% if not item.is_disabled or item.is_temp %}
+                      <option value="{{item.id}}">{{item.day}} ({{item.start_time}} - {{item.end_time}})</option> 
+                      {% endif %}     
                 {% endfor %}
               </select>
         </div>

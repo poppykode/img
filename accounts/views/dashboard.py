@@ -6,6 +6,7 @@ from accounts.models import User
 from core.email import Email
 from core.enums import RoleEnum
 from core.utils import generate_password, paginator
+from meeting_calendar.forms import QuickMeeting
 from offers.models import Offer
 from django.contrib import messages
 from django.contrib import auth
@@ -28,6 +29,7 @@ def candidate_dashboard(request):
     template_name = 'dashboards/candidate_dashboard.html'
     user = request.user
     meetings = BookedMeeting.objects.for_user(user)
+    quick_meetings = BookedMeeting.objects.quick_meetings(user)
     rejected_count = meetings.filter(rejected = True).count()
     accepted_count = meetings.filter(accepted = True).count()
     cancelled_count = meetings.filter(cancelled = True).count()
@@ -44,7 +46,9 @@ def candidate_dashboard(request):
         'accepted_count':accepted_count,
         'cancelled_count':cancelled_count,
         'check_in_and_out_count':check_in_and_out_count,
-        'total_meetimgs':meetings.count()
+        'total_meetimgs':meetings.count(),
+        'form':QuickMeeting(),
+        'quick_meetings': quick_meetings
 
     }
     return render(request, template_name,context)
