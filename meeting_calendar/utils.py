@@ -1,4 +1,9 @@
+from datetime import datetime, timedelta
+from django.urls import reverse
+from django.conf import settings
 from calendar import HTMLCalendar
+from core.email import Email
+from .models import BookedMeeting
 
 class Calendar(HTMLCalendar):
 	# def __init__(self, year=None, month=None, user=None):
@@ -35,3 +40,52 @@ class Calendar(HTMLCalendar):
 		for week in self.monthdays2calendar(y, m):
 			cal += f'{self.formatweek(week, meetings)}\n'
 		return cal
+	
+def meetings_due_for_check_in(minutes = 5):
+	print("meetings_due_for_check_in")
+	due_for_check_in = BookedMeeting.objects.to_check_in(minutes)
+	print(f"List of Due meeting: {due_for_check_in}")
+	base_url = settings.BASE_URL
+	if due_for_check_in:
+		for meeting in due_for_check_in:
+			link  = reverse("meeting_calendar:check_in_or_check_out", kwargs={'meeting_id':meeting.id,'check_type':'check-in'})
+			meeting.is_check_in = True
+			meeting.save()
+			email_ = Email(
+				subject="Check In",
+				recipient_list=[meeting.requester.email, meeting.requested.email],
+				message=f"""
+				<p>Check In</p>
+				<p>Accepted by: {meeting.requested.get_full_name()} </p>
+				<p>Requested by: {meeting.requested.get_full_name()} </p>
+				<p>Date: {meeting.booking_date} </p>
+				<p>Slot: {meeting.availability.day}: {meeting.availability.start_time} {meeting.availability.end_time} </p>
+				<a href={base_url}{link}>Click to check in</a>	
+				""",
+			)
+			print(email_)
+			email_.send()
+
+def meetings_due_for_check_out(minutes = 30):
+	print("meetings_due_for_check_OUT")
+	due_for_check_out = BookedMeeting.objects.to_check_out(minutes)
+	print(f"List of Due meeting for check out: {due_for_check_out}")
+	base_url = settings.BASE_URL
+	if due_for_check_out:		
+		for meeting in due_for_check_out:
+			link  = reverse("meeting_calendar:check_in_or_check_out", kwargs={'meeting_id':meeting.id,'check_type':'check-out'})
+			meeting.is_check_out = True
+			meeting.save()
+			email_ = Email(
+				subject="Check Out",
+				recipient_list=[meeting.requester.email, meeting.requested.email],
+				message=f"""
+				<p>Check Out</p>
+				<p>Accepted by: {meeting.requested.get_full_name()} </p>
+				<p>Requested by: {meeting.requested.get_full_name()} </p>
+				<p>Date: {meeting.booking_date} </p>
+				<p>Slot: {meeting.availability.day}: {meeting.availability.start_time} {meeting.availability.end_time} </p>
+				<a href={base_url}{link}>Click to check out</a>	
+				""",
+			)
+			email_.send()

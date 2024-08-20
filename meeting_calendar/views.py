@@ -11,7 +11,7 @@ from core.decorators import role_required
 from core.email import Email
 from core.enums import DayEnum, RoleEnum, MeetingStatusEnum
 from meeting_calendar.forms import AvaliabilityForm, QuickMeeting
-from .utils import Calendar
+from .utils import Calendar, meetings_due_for_check_in, meetings_due_for_check_out
 from .models import BookedMeeting, Avaliability, MeetingCheckInAndOut
 from datetime import datetime, timedelta, date
 from accounts.models import User
@@ -37,28 +37,45 @@ class CalendarView(generic.ListView):
         context["next_month"] = next_month(d)
         return context
 
-
 def get_date(req_month):
     if req_month:
         year, month = (int(x) for x in req_month.split("-"))
         return date(year, month, day=1)
     return datetime.today()
 
-
 def prev_month(d):
     first = d.replace(day=1)
     prev_month = first - timedelta(days=1)
     month = "month=" + str(prev_month.year) + "-" + str(prev_month.month)
     return month
-
-
+ 
 def next_month(d):
     days_in_month = calendar.monthrange(d.year, d.month)[1]
     last = d.replace(day=days_in_month)
     next_month = last + timedelta(days=1)
     month = "month=" + str(next_month.year) + "-" + str(next_month.month)
     return month
-
+@role_required(
+    allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value]
+)
+def meetings(request):
+    meetings_due_for_check_out()
+    template_name = 'meetings.html'
+    user = request.user
+    incoming_meetings = BookedMeeting.objects.filter(requested = user).filter(accepted = False).exclude(booking_date__lt = date.today())
+    outgoing_meetings = BookedMeeting.objects.filter(requester = user).filter(accepted = False).exclude(booking_date__lt = date.today())
+    upcoming_meetings = BookedMeeting.objects.for_user(user).filter(accepted = True).exclude(booking_date__lt = date.today())
+    message_history = BookedMeeting.objects.for_user(user).filter(booking_date__lt = date.today()).exclude(requested = None)
+    quick_meetings = BookedMeeting.objects.quick_meetings(user)
+    context ={
+        'form': QuickMeeting(),
+        'incoming_meetings':incoming_meetings,
+        'outgoing_meetings':outgoing_meetings,
+        'upcoming_meetings':upcoming_meetings,
+        'message_history':message_history,
+        'quick_meetings':quick_meetings
+    }
+    return render(request, template_name, context)
 
 @role_required(
     allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value, RoleEnum.COACH.value]
@@ -76,7 +93,6 @@ def availability(request, user_id=None):
         user = user_
         qs = Avaliability.objects.filter(user=user_).exclude(is_temp=True).exclude(is_disabled=True)
     return render(request, template_name, {"avail": qs, "user": user})
-
 
 @role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def create_availability(request):
@@ -99,7 +115,6 @@ def create_availability(request):
             return redirect("meeting_calendar:availability")
 
     return render(request, template_name, {"form": form, "type": "create"})
-
 
 def is_overlapping_availabilities_func(request, data):
     return (
@@ -128,7 +143,6 @@ def is_overlapping_availabilities_func(request, data):
         .exists()
     )
 
-
 @role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def remove_availability(request, id,action = None):
     qs = get_object_or_404(Avaliability, id=id)
@@ -147,7 +161,6 @@ def remove_availability(request, id,action = None):
         messages.success(request, f"Availability successfully {status}.")
     
     return redirect("meeting_calendar:availability")
-
 
 @role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def book_a_meeting(request, user_id):
@@ -200,7 +213,6 @@ def book_a_meeting(request, user_id):
         },
     )
 
-
 def check_meeting_exists(requested_user, availability, booking_date):
     return BookedMeeting.objects.filter(
         Q(requested=requested_user)
@@ -208,7 +220,6 @@ def check_meeting_exists(requested_user, availability, booking_date):
         & Q(booking_date=booking_date)
         & Q(accepted=True)
     ).exists()
-
 
 def get_availability(request, requested_user_id, booking_date):
     requested_user = get_object_or_404(User, id=requested_user_id)
@@ -225,7 +236,6 @@ def get_availability(request, requested_user_id, booking_date):
             )
     return JsonResponse(data, safe=False)
 
-
 @role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def meeting_detail(request, meeting_id):
     template_name = "meeting_detail.html"
@@ -239,7 +249,6 @@ def meeting_detail(request, meeting_id):
     }
     return render(request, template_name, context)
 
-
 def check_status_func(request, obj):
     check_status = MeetingCheckInAndOut.objects.filter(
         Q(booked_meeting=obj) & Q(user=request.user)
@@ -248,9 +257,9 @@ def check_status_func(request, obj):
     is_checked_out = check_status.filter(is_checked_out=True).exists()
     return is_checked_in, is_checked_out
 
-
 @role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def check_in_or_check_out(request, meeting_id, check_type):
+    template_name = 'check_in_check_out.html'
     obj = get_object_or_404(BookedMeeting, id=meeting_id)
 
     if check_type not in ["check-in", "check-out"]:
@@ -278,7 +287,7 @@ def check_in_or_check_out(request, meeting_id, check_type):
             )
             messages.success(request, "Checked out successfully.")
 
-    return redirect("meeting_calendar:meeting_detail", obj.id)
+    return render(request, template_name)
 
 
 def check_in_and_out_func(request, obj, is_checked_in_, is_checked_out_):
@@ -315,7 +324,7 @@ def update_meeting_status(request, meeting_id, status_type):
                 request,
                 f"You can not cancel a checked in meeting by either requester or requested.",
             )
-            return redirect("meeting_calendar:meeting_detail", meeting_id)
+            return redirect('/')
 
 
     meeting.accepted = status_type == MeetingStatusEnum.ACCEPTED.value
@@ -343,7 +352,7 @@ def update_meeting_status(request, meeting_id, status_type):
         )
         email_.send()
 
-    return redirect("meeting_calendar:meeting_detail", meeting.id)
+    return redirect("/")
 
 
 def extract_day_of_week(date_value):
@@ -410,3 +419,10 @@ def accept_a_quick_meeting(request, id):
     )
     email_.send()
     return redirect("/")
+
+def check_in_from_email(request, meeting_id):
+    meeting = get_object_or_404(BookedMeeting, id = meeting_id)
+
+    
+
+

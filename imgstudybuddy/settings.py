@@ -70,11 +70,14 @@ INSTALLED_APPS = [
 
 
 ]
+APP_BASE_URL = 'http://127.0.0.1:8000'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 CRONJOBS = [
-    # ('0 23 * * *', 'subscriptions.utils.expire_subscriptions'),
-    ('*/10 * * * *', 'subscriptions.utils.expire_subscriptions'),
+    
+    ('*/5 * * * *', 'subscriptions.utils.meetings_due_for_check_in'),
+    ('*/10 * * * *', 'subscriptions.utils.meetings_due_for_check_out'),
+    ('0 0 * * *', 'subscriptions.utils.expire_subscriptions'),
 ]
 
 # CKEDITOR_5_CONFIGS = {

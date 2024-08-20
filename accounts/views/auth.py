@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from accounts.decorators import is_authenticated
 from core.enums import RoleEnum
 from accounts import forms
+from meeting_calendar.forms import AvaliabilityForm
 from accounts.models import (
     User,
     GeneralInfo,
@@ -48,7 +49,7 @@ def redirect_logged(request):
     if user_role == RoleEnum.ADMIN.value:
         return redirect('subscriptions:subscriptions')
     elif user_role == RoleEnum.CANDIDATE.value:
-        return redirect('accounts:candidate_dashboard')
+        return redirect('meeting_calendar:meetings')
     elif user_role == RoleEnum.COACH.value:
         return redirect('accounts:coach_dashboard')
     else:
@@ -67,6 +68,7 @@ class StudyBuddyDataWizard(SessionWizardView):
         forms.UserForm,
         forms.GeneralInfoForm,
         forms.StudyBuddyAdditionalInfoForm,
+        AvaliabilityForm,
         forms.LoginInfoForm
     ]
     file_storage = DefaultStorage()
@@ -77,7 +79,8 @@ class StudyBuddyDataWizard(SessionWizardView):
         user_form = form_data[0]
         study_buddy_gen_info_form = form_data[1]
         study_buddy_add_info_form = form_data[2]
-        login_info_form = form_data[3]
+        study_buddy_add_availability = form_data[3]
+        login_info_form = form_data[4]
 
         user = User.objects.create_user(username=login_info_form['email'], email=login_info_form['email'], password=login_info_form['password'])
         user.first_name = user_form['first_name']
@@ -86,7 +89,7 @@ class StudyBuddyDataWizard(SessionWizardView):
         user.is_active = True
         user.save()
 
-        gen_info=GeneralInfo.objects.create(
+        GeneralInfo.objects.create(
             user = user,
             gender = study_buddy_gen_info_form['gender'],
             time_zone = study_buddy_gen_info_form['time_zone'],
@@ -94,8 +97,13 @@ class StudyBuddyDataWizard(SessionWizardView):
             profile_picture = study_buddy_gen_info_form['profile_picture'],
 
         )
-        print("general info")
-        print(gen_info)
+        Avaliability.objects.create(
+            user=user,
+            day = study_buddy_add_availability['day'],
+            start_time =  study_buddy_add_availability['start_time'],
+            end_time =  study_buddy_add_availability['end_time']
+        )
+    
 
         StudyBuddyAdditionalInfo.objects.create(
             user = user,

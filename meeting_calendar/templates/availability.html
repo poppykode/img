@@ -7,6 +7,11 @@
     <li class="breadcrumb-item">
       <a href="{% url 'accounts:redirect_logged' %}">Home</a>
     </li>
+
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:profile' %}">Profile</a>
+    </li>
+
     {% if not request.user == user %}
       <li class="breadcrumb-item">
         <a href="{% url 'meeting_calendar:book_a_meeting' user.id %}">Book a Meeting</a>

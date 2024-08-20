@@ -1,0 +1,269 @@
+{% extends 'main_shared.html' %}
+{% load static %}
+{% block title %}Meetings{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+    </li>
+   
+      <li class="breadcrumb-item active">
+        Meeting Board
+      </li>
+
+  </ol>
+</nav>
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible mt-3 mb-4" role="alert">
+    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+    </button>
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+ 
+<div class="card p-3">
+  <form action="{% url 'meeting_calendar:create_a_quick_meeting' %}" method="POST">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-3">
+        <div class="mb-3">
+          {{ form.date|as_crispy_field }}
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          {{ form.start_time|as_crispy_field }}
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          {{ form.end_time|as_crispy_field }}
+        </div>
+      </div>
+      <div class="col-md-3 d-flex flex-column"
+        style="margin-top: auto !important; margin-bottom: 1.1em !important;">
+        <button type="submit" class="btn btn-primary">
+          Create Quick Meeting
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+  <div class="mb-4">
+    <div class="nav-align-top mb-4 mt-5">
+      <ul class="nav nav-pills mb-3 nav-fill" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#quick-meets" aria-controls="quick-meets" aria-selected="true">
+           Quick Meets
+            <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger ms-1">{{quick_meetings|length}}</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#incoming-requests" aria-controls="incoming-requests" aria-selected="false" tabindex="-1">
+           Incoming Requests
+            <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger ms-1">{{incoming_meetings|length}}</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#outgoing-requests" aria-controls="outgoing-requests" aria-selected="false" tabindex="-1">
+           Outgoing Requests
+           <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger ms-1">{{outgoing_meetings|length}}</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#upcoming-meetings" aria-controls="upcoming-meetings" aria-selected="false" tabindex="-1">
+            Upcoming Meetings
+            <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger ms-1">{{upcoming_meetings|length}}</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#meetings-history" aria-controls="meetings-history" aria-selected="false" tabindex="-1">
+            Meetings History
+            <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger ms-1">{{message_history|length}}</span>
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="quick-meets" role="tabpanel">
+          {% if quick_meetings %}
+          <div class="row">
+           {% for item in quick_meetings %}
+           <div class="col-md-3 mb-3">
+             <div class="card h-100">
+               <img class="card-img-top img-image"
+                 src="{{item.requester.user_general_additional_info.profile_picture.url}}"
+                 alt="Card image cap">
+               <div class="card-body text-center">
+                 <h5 class="card-title">{{item.requester.get_full_name|title}}</h5>
+                 <p class="card-text">
+                   {{item.requester.meeting_attendance}} Meetings
+                 </p>
+                 <p class="card-text">
+                   {{item.requester.reliability}}% Reliability
+                 </p>
+                 <hr>
+                 <span class="badge bg-warning mb-2">
+                   {% include 'snippets/date_time.html' with obj=item %}
+                 </span>
+                 <a href="{% url 'meeting_calendar:accept_a_quick_meeting' item.id %}"
+                   class="btn btn-primary mt-3">Accept</a>
+               </div>
+             </div>
+           </div>
+           {% endfor %}
+          </div>
+          {% endif %}
+       </div>
+        <div class="tab-pane fade" id="incoming-requests" role="tabpanel">
+        {% if incoming_meetings %}
+           <div class="row">
+              {% for item in incoming_meetings %}
+              <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                  <img class="card-img-top img-image"
+                    src="{{item.requester.user_general_additional_info.profile_picture.url}}"
+                    alt="Card image cap">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{item.requester.get_full_name|title}}</h5>
+                    <p class="card-text">
+                      {{item.requester.meeting_attendance}} Meetings
+                    </p>
+                    <p class="card-text">
+                      {{item.requester.reliability}}% Reliability
+                    </p>
+                    <hr>
+                    <span class="badge bg-warning mb-2">
+                      {% include 'snippets/date_time.html' with obj=item %}
+                    </span>
+                    <a href="{% url 'meeting_calendar:update_meeting_status' item.id 'accepted' %}"
+                      class="btn btn-primary mt-3">Accept</a>
+                    
+                      <a href="{% url 'meeting_calendar:update_meeting_status' item.id 'rejected' %}"
+                      class="btn btn-danger mt-3">Reject</a>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+           </div>
+           {% endif %}
+        </div>
+        <div class="tab-pane fade" id="outgoing-requests" role="tabpanel">
+          {% if outgoing_meetings %}
+          <div class="row">
+            {% for item in outgoing_meetings %}
+            <div class="col-md-3 mb-3">
+              <div class="card h-100">
+                {% if item.requested %}
+                <img class="card-img-top img-image"
+                  src="{{item.requested.user_general_additional_info.profile_picture.url}}"
+                  alt="user imagine">
+                  {% else %}
+                  <img class="card-img-top img-image"
+                  src="{% static 'assets/img/placeholder.jpg' %}"
+                  alt="user imagine">
+                  {% endif %}
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{item.requested.get_full_name|default:"--"|title}}</h5>
+                  <p class="card-text">
+                    {{item.requested.meeting_attendance|default:"--"}} Meetings
+                  </p>
+                  <p class="card-text">
+                    {{item.requested.reliability|default:"--"}}% Reliability
+                  </p>
+                  <hr>
+                  <span class="badge bg-warning mb-2">
+                    {% include 'snippets/date_time.html' with obj=item %}
+                  </span>
+                  <a href="{% url 'meeting_calendar:update_meeting_status' item.id 'cancelled' %}"
+                    class="btn btn-warning mt-3">Cancel</a>                 
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+           </div>
+           {% endif %}
+        </div>
+        <div class="tab-pane fade" id="upcoming-meetings" role="tabpanel">
+          {% if upcoming_meetings %}
+          <div class="row">
+            {% for item in upcoming_meetings %}
+            <div class="col-md-3 mb-3">
+              <div class="card h-100">
+                <img class="card-img-top img-image"
+                  src="{{item.requested.user_general_additional_info.profile_picture.url}}"
+                  alt="Card image cap">
+                <div class="card-body text-center">
+                  <h5 class="card-title">
+                    {% if item.requested == request.user %}
+                      {{item.requester.get_full_name|title}}
+                    {% else %}
+                     {{item.requested.get_full_name|title}}
+                    {% endif %}
+                  </h5>
+                  <p class="card-text">
+                    {{item.requested.meeting_attendance}} Meetings
+                  </p>
+                  <p class="card-text">
+                    {{item.requested.reliability}}% Reliability
+                  </p>
+                  <hr>
+                  <span class="badge bg-warning mb-2">
+                    {% include 'snippets/date_time.html' with obj=item %}
+                  </span>
+                  <a href="{% url 'meeting_calendar:update_meeting_status' item.id 'cancelled' %}"
+                    class="btn btn-warning mt-3">Cancel</a>                 
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+           </div>
+           {% endif %}
+        </div>
+        <div class="tab-pane fade" id="meetings-history" role="tabpanel">
+          {% if message_history %}
+          <div class="row">
+            {% for item in message_history %}
+           
+            <div class="col-md-3 mb-3">
+              <div class="card h-100">
+                <a href="{% url 'accounts:public_profile' item.requested.id %}">
+                <img class="card-img-top img-image"
+                  src="{{item.requested.user_general_additional_info.profile_picture.url}}"
+                  alt="Card image cap">
+                </a>
+                <div class="card-body text-center">
+                  <h5 class="card-title">
+                    <a href="{% url 'accounts:public_profile' item.requested.id %}">
+                    {{item.requested.get_full_name|title}}
+                  </a>
+                  </h5>
+                  <p class="card-text">
+                    {{item.requested.meeting_attendance}} Meetings
+                  </p>
+                  <p class="card-text">
+                    {{item.requested.reliability}}% Reliability
+                  </p>
+                  <hr>
+                  <span class="badge bg-warning mb-2">
+                    {% include 'snippets/date_time.html' with obj=item %}
+                  </span>                
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+           </div>
+           {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}

@@ -51,6 +51,10 @@
               <i class="bx bx-reset d-block d-sm-none"></i>
               <span class="d-none d-sm-block">Change Password</span>
             </a>
+
+            <a href="{% url 'meeting_calendar:availability' %}" class="btn btn-outline-secondary account-image-reset me-2 mb-4">
+              <span class="d-none d-sm-block">Availability</span>
+            </a>
             {% if request.user.is_coach %}
             <a href="{% url 'offers:offers' %}" class="btn btn-outline-secondary account-image-reset mb-4">
               <i class="bx bx-reset d-block d-sm-none"></i>

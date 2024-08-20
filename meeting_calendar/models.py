@@ -1,4 +1,5 @@
 import datetime
+from datetime import datetime as dt, timedelta
 from django.conf import settings
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -12,10 +13,34 @@ class BookedMeetingManager(models.Manager):
         return self.filter(models.Q(requester=user) | models.Q(requested=user))
     
     def quick_meetings(self,user):
-        return self.filter(requested = None).exclude(requester=user).exclude(booking_date__lt = datetime.date.today())
+        return self.filter(requested = None).exclude(requester=user).exclude(booking_date__lt = datetime.date.today()).exclude(cancelled = True)
     
-
+    def to_check_in(self,minutes):
+        now = dt.now()
+        threshhold = now + timedelta(minutes=minutes)
+        print(f"Now: {now}")
+        print(f"Threshhold: {threshhold}") 
+        return BookedMeeting.objects.filter(
+            booking_date=now.date(),
+            availability__start_time__lte=threshhold,
+            availability__start_time__gte=now,
+            accepted=True,
+            is_check_in = False,
+            is_check_out = False
+        )
     
+    def to_check_out(self,minutes): 
+        now = dt.now()
+        threshhold = now - timedelta(minutes= minutes)     
+        return BookedMeeting.objects.filter(
+            booking_date= now,
+            availability__end_time__lte=threshhold,
+            accepted=True,
+            is_check_in = True,
+            is_check_out = False
+        )
+    
+  
 # Create your models here.
 class BookedMeeting (models.Model):
     requester = models.ForeignKey(User,on_delete=models.CASCADE, related_name="requester")
@@ -26,6 +51,8 @@ class BookedMeeting (models.Model):
     accepted = models.BooleanField(default=False)
     rejected = models.BooleanField(default=False)
     cancelled = models.BooleanField(default=False)
+    is_check_in = models.BooleanField(default=False)
+    is_check_out = models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 

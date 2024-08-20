@@ -63,7 +63,7 @@
 
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
-    <script src="{% static 'assets/vendor/js/template-customizer.js' %}"></script>
+    <!-- <script src="{% static 'assets/vendor/js/template-customizer.js' %}"></script> -->
     <script src="https://cdn.tiny.cloud/1/4p6ijqumy54m26961yxn6tqkl43jgwcvaizieuueiimx0fd5/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{% static 'assets/js/config.js' %}"></script>
@@ -96,7 +96,7 @@
           {% with request.resolver_match.url_name as url_name %}
           <ul class="menu-inner py-1">
             <!-- Page -->
-            <li class="menu-item {% if url_name == 'admin_dashboard' or url_name == 'candidate_dashboard' or url_name == 'subscriptions' %} active {% endif %}">
+            <li class="menu-item {% if url_name == 'admin_dashboard' or url_name == 'meetings' or url_name == 'subscriptions' %} active {% endif %}">
               <a href="/" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Dashboard">Dashboard</div>
@@ -117,12 +117,12 @@
               </a>
             </li> -->
           
-            <li class="menu-item {% if url_name == 'availability' %} active {% endif %}">
+            <!-- <li class="menu-item {% if url_name == 'availability' %} active {% endif %}">
               <a href="{% url 'meeting_calendar:availability' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Availability">Availability</div>
               </a>
-            </li>
+            </li> -->
             {% endif %}
             {% if request.user.role == 'Admin' %}
             <li class="menu-item {% if url_name == 'users' %} active {% endif %}">

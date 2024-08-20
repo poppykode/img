@@ -1,3 +1,11 @@
 .font-20{
     font-size: 20px;
 }
+.nav-align-top > .tab-content, .nav-align-right > .tab-content, .nav-align-bottom > .tab-content, .nav-align-left > .tab-content {
+    box-shadow: none !important;
+    background: transparent !important;
+}
+.tab-content {
+    padding: 1.5em 0 !important;
+    border-radius: 0.375rem;
+}
