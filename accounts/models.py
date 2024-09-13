@@ -97,6 +97,19 @@ class StudyBuddyAdditionalInfo(models.Model):
     class Meta:
         ordering = ["-timestamp", ]
 
+
+class SessionExpectationAndAvailabilityInfo(models.Model):
+    user=models.OneToOneField(User,related_name='session_expectation_and_availability', on_delete=models.CASCADE)
+    availability_and_session_expectation = models.TextField()
+    updated = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+         return self.user.first_name.capitalize() + ' ' + self.user.last_name.capitalize() + ' | ' + str(self.user.email)
+
+    class Meta:
+        ordering = ["-timestamp", ]
+
 class CoachWorkExperience(models.Model):
     user=models.ForeignKey(User,related_name='user_work_experience', on_delete=models.CASCADE)
     name_of_hospital = models.CharField(max_length=255)

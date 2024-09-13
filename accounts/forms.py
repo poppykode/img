@@ -5,7 +5,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from accounts.models import (
   User,
   GeneralInfo,
-  StudyBuddyAdditionalInfo
+  StudyBuddyAdditionalInfo,
+  SessionExpectationAndAvailabilityInfo
 )
 from meeting_calendar.models import (
     BookedMeeting
@@ -65,6 +66,14 @@ class GeneralInfoForm(forms.ModelForm):
     class Meta:
         model =  GeneralInfo
         fields = ['gender', 'time_zone', 'phone_number', 'profile_picture']
+
+class SessionExpectationAndAvailabilityInfoForm(forms.ModelForm):
+    class Meta:
+        model =  SessionExpectationAndAvailabilityInfo
+        labels = {
+            'availability_and_session_expectation':'What I want to get out of this session and my availability'
+        }
+        fields = ['availability_and_session_expectation']
 
 class StudyBuddyAdditionalInfoForm(forms.ModelForm):
     class Meta:

@@ -11,7 +11,8 @@ from meeting_calendar.forms import AvaliabilityForm
 from accounts.models import (
     User,
     GeneralInfo,
-    StudyBuddyAdditionalInfo
+    StudyBuddyAdditionalInfo,
+    SessionExpectationAndAvailabilityInfo
 )
 from meeting_calendar.models import Avaliability
 
@@ -45,7 +46,6 @@ def not_authorized(request):
 @login_required
 def redirect_logged(request):
     user_role = request.user.role
-    request.session['has_availabilty'] = Avaliability.objects.filter(user = request.user).exists()
     if user_role == RoleEnum.ADMIN.value:
         return redirect('subscriptions:subscriptions')
     elif user_role == RoleEnum.CANDIDATE.value:
@@ -68,7 +68,7 @@ class StudyBuddyDataWizard(SessionWizardView):
         forms.UserForm,
         forms.GeneralInfoForm,
         forms.StudyBuddyAdditionalInfoForm,
-        AvaliabilityForm,
+        forms.SessionExpectationAndAvailabilityInfoForm,
         forms.LoginInfoForm
     ]
     file_storage = DefaultStorage()
@@ -79,7 +79,7 @@ class StudyBuddyDataWizard(SessionWizardView):
         user_form = form_data[0]
         study_buddy_gen_info_form = form_data[1]
         study_buddy_add_info_form = form_data[2]
-        study_buddy_add_availability = form_data[3]
+        availability_and_session_expectation = form_data[3]
         login_info_form = form_data[4]
 
         user = User.objects.create_user(username=login_info_form['email'], email=login_info_form['email'], password=login_info_form['password'])
@@ -97,14 +97,12 @@ class StudyBuddyDataWizard(SessionWizardView):
             profile_picture = study_buddy_gen_info_form['profile_picture'],
 
         )
-        Avaliability.objects.create(
+        SessionExpectationAndAvailabilityInfo.objects.create(
             user=user,
-            day = study_buddy_add_availability['day'],
-            start_time =  study_buddy_add_availability['start_time'],
-            end_time =  study_buddy_add_availability['end_time']
+            availability_and_session_expectation = availability_and_session_expectation['availability_and_session_expectation']
+
         )
     
-
         StudyBuddyAdditionalInfo.objects.create(
             user = user,
             exam_date = study_buddy_add_info_form['exam_date']

@@ -1,0 +1,78 @@
+{% extends 'main_shared.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+Book a meeting
+{% endblock %}
+{% block content %}
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-style1">
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+    </li>
+    <li class="breadcrumb-item">
+      {% if obj.role == 'Candidate' %}
+      <a href="{% url 'study_buddies:view_all_study_buddies' %}">Study Buddies</a>
+      {% else %}
+      <a href="{% url 'study_buddies:view_all_coaches' %}">Coaches</a>
+      {% endif %}
+    </li>
+    <li class="breadcrumb-item">
+      <a href="{% url 'accounts:public_profile' obj.id %}">{{obj.get_full_name|title}}</a>
+    </li>
+    <li class="breadcrumb-item active">Book a meeting</li>
+  </ol>
+</nav>
+
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+  {% for field, error_list in form.errors.items %}
+  {{ error_list.as_text }}
+  {% endfor %}
+</div>
+{% endif %}
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible mt-3 mb-4" role="alert">
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+  </button>
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+
+<div class="card mb-4">
+ 
+  <form action="{% url 'meeting_calendar:book_a_meeting_v1' obj.id %}" method="POST" class="card-header">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-3">
+        <div class="mb-3">
+          {{ form.booking_date|as_crispy_field }}
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          {{ form.start_time|as_crispy_field }}
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          {{ form.end_time|as_crispy_field }}
+        </div>
+      </div>
+      <div class="col-md-3 d-flex flex-column"
+        style="margin-top: auto !important; margin-bottom: 1.1em !important;">
+        <button type="submit" class="btn btn-primary">
+          Create Meeting
+        </button>
+      </div>
+    </div>
+  </form>
+
+</div>
+
+{% endblock %}

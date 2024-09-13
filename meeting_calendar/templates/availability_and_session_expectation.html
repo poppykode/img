@@ -1,0 +1,58 @@
+{% extends 'main_shared.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+Availability and Session Expectations
+{% endblock %}
+{% block content %}
+
+<nav aria-label="breadcrumb"></nav>
+    <ol class="breadcrumb breadcrumb-style1">
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:redirect_logged' %}">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'accounts:profile' %}">Profile</a>
+        </li>
+        <li class="breadcrumb-item active">Availability and Session Expectation</li>
+    </ol>
+</nav>
+
+
+
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+  {% for field, error_list in form.errors.items %}
+  {{ error_list.as_text }}
+  {% endfor %}
+</div>
+{% endif %}
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-{{ message.tags }} alert-dismissible mt-3 mb-4" role="alert">
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+  </button>
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+
+<div class="card mb-4">
+
+  <form class="card-body" action="{% url 'meeting_calendar:availability_and_session_expectation' %}" method="POST">
+      {% csrf_token %}
+          {{form.availability_and_session_expectation|as_crispy_field}}
+      <div class="pt-4">
+        <a href="{% url 'accounts:profile' %}" class="btn btn-warning me-sm-3 me-1">
+          Cancel
+      </a>
+        <button type="submit" class="btn btn-primary me-sm-3 me-1">
+          Submit
+        </button>      
+      </div>
+    </form>
+</div>
+
+{% endblock %}

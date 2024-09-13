@@ -7,14 +7,15 @@ from django.views import generic
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 
+from accounts.forms import SessionExpectationAndAvailabilityInfoForm
 from core.decorators import role_required
 from core.email import Email
 from core.enums import DayEnum, RoleEnum, MeetingStatusEnum
-from meeting_calendar.forms import AvaliabilityForm, QuickMeeting
+from meeting_calendar.forms import AvaliabilityForm, BookMeetingForm, QuickMeeting
 from .utils import Calendar, meetings_due_for_check_in, meetings_due_for_check_out
 from .models import BookedMeeting, Avaliability, MeetingCheckInAndOut
 from datetime import datetime, timedelta, date
-from accounts.models import User
+from accounts.models import SessionExpectationAndAvailabilityInfo, User
 
 
 class CalendarView(generic.ListView):
@@ -62,8 +63,8 @@ def meetings(request):
     meetings_due_for_check_out()
     template_name = 'meetings.html'
     user = request.user
-    incoming_meetings = BookedMeeting.objects.filter(requested = user).filter(accepted = False).exclude(booking_date__lt = date.today())
-    outgoing_meetings = BookedMeeting.objects.filter(requester = user).filter(accepted = False).exclude(booking_date__lt = date.today())
+    incoming_meetings = BookedMeeting.objects.filter(requested = user).filter(accepted = False).exclude(booking_date__lt = date.today()).exclude(cancelled =True).exclude(rejected =True)
+    outgoing_meetings = BookedMeeting.objects.filter(requester = user).filter(accepted = False).exclude(booking_date__lt = date.today()).exclude(cancelled =True).exclude(rejected =True)
     upcoming_meetings = BookedMeeting.objects.for_user(user).filter(accepted = True).exclude(booking_date__lt = date.today())
     message_history = BookedMeeting.objects.for_user(user).filter(booking_date__lt = date.today()).exclude(requested = None)
     quick_meetings = BookedMeeting.objects.quick_meetings(user)
@@ -161,6 +162,44 @@ def remove_availability(request, id,action = None):
         messages.success(request, f"Availability successfully {status}.")
     
     return redirect("meeting_calendar:availability")
+
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
+def book_a_meeting_v1(request, user_id):
+    template_name = "book_a_meeting_v1.html"
+    form = BookMeetingForm(request.POST or None)
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+       
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            booking_date = cleaned_data['booking_date']
+            start_time = cleaned_data['start_time']
+            end_time = cleaned_data['end_time']
+            new_booking = BookedMeeting.objects.create(
+                requester = request.user,
+                requested = user,
+                start_time = start_time,
+                end_time = end_time,
+                booking_date = booking_date
+            )
+            if new_booking:
+                email_ = Email(
+                    subject="Meeting request",
+                    recipient_list=[new_booking.requested.email],
+                    message=f"""
+                    <p>New Meetings Details</p>
+                    <p>Requester: {new_booking.requester.get_full_name().title()} </p>
+                    <p>Date: {new_booking.booking_date} </p>
+                    <p>Slot: {booking_date} from {start_time} to  {end_time} </p>
+                
+                    """,
+                )            
+                email_.send()
+                messages.success(request, "Meeting request successfully sent")
+        return redirect("accounts:public_profile", user.id)
+
+    return render(request, template_name,{'form':form, 'obj':user})
+
 
 @role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def book_a_meeting(request, user_id):
@@ -347,7 +386,7 @@ def update_meeting_status(request, meeting_id, status_type):
             message=f"""
             <p>Expected Meeting Attendees: {meeting.requested.get_full_name().title()} and {meeting.requester.get_full_name().title()}</p>
             <p>Meeting Status: {status_message_map[status_type]} </p>
-            <p>Meeting Date: {meeting.booking_date} Slot: {meeting.availability.day} ({meeting.availability.start_time} - {meeting.availability.end_time})  </p>
+            <p>Meeting Date: {meeting.booking_date} from : ({meeting.start_time} to {meeting.end_time})  </p>
             """,
         )
         email_.send()
@@ -378,22 +417,40 @@ def create_a_quick_meeting(request):
         if form.is_valid():
             user_ = request.user
             date = request.POST.get("date")
-            new_avail = Avaliability.objects.create(
-                user=user_,
-                start_time=request.POST.get("start_time"),
-                end_time=request.POST.get("end_time"),
-                day=extract_day_of_week(date),
-                is_temp=True,
+            start_time=request.POST.get("start_time"),
+            end_time=request.POST.get("end_time"),
+
+            BookedMeeting.objects.create(
+                requester=user_, start_time=start_time,end_time=end_time, booking_date=date
             )
-            if new_avail.id:
-                BookedMeeting.objects.create(
-                    requester=user_, availability=new_avail, booking_date=date
-                )
-                messages.success(request, "Meeting successfully broadcasted.")
-            else:
-                messages.error(request, "Something went wrong.")
+            messages.success(request, "Meeting successfully broadcasted.")
+
     return redirect("/")
 
+@role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
+def availability_and_session_expectation(request):
+    template_name = 'availability_and_session_expectation.html'
+    user =  request.user
+    obj = ''
+    exists= SessionExpectationAndAvailabilityInfo.objects.filter(user = user).exists()
+    if exists:
+        obj = get_object_or_404(SessionExpectationAndAvailabilityInfo,user=user)
+    else:
+        obj = SessionExpectationAndAvailabilityInfo.objects.create(
+            user=user,
+            availability_and_session_expectation = "n/a"
+
+        )
+
+    form = SessionExpectationAndAvailabilityInfoForm(request.POST or None, instance=obj)
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.save()  
+            messages.success(request,'Session expectations and availability successfully updated.')
+            return redirect('accounts:profile')   
+    return render(request, template_name,{'form':form,'obj':obj})
 
 @role_required(allowed_roles=[RoleEnum.CANDIDATE.value, RoleEnum.COACH.value])
 def accept_a_quick_meeting(request, id):

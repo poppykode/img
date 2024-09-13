@@ -45,8 +45,7 @@
                   <select class="form-select" id="station" aria-label="Default select example" required>
                     {% for station in stations %}
                     <option value="{{station.id}}">{{station.title|title}}</option>
-                    {% empty %}
-                    <option>No Stations Available</option>
+            
                     {% endfor %}
                  
                   </select>

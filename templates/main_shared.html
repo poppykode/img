@@ -311,13 +311,7 @@
             <!-- Content -->
 
             <div class="container-xxl flex-grow-1 container-p-y">
-              {% if not request.session.has_availabilty %}
-              <div class="alert alert-danger alert-dismissible" role="alert">
-                Please add you availabilty so that other users can be able to book meetings with you. <a href="{% url 'meeting_calendar:create_availability' %}">click here</a>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-
-               {% endif %}
+       
               {% block content %}
 
               {% endblock %}

@@ -106,7 +106,7 @@
                    {{item.requester.meeting_attendance}} Meetings
                  </p>
                  <p class="card-text">
-                   {{item.requester.reliability}}% Reliability
+                   {{item.requester.reliability|default:"--"}} % Reliability
                  </p>
                  <hr>
                  <span class="badge bg-warning mb-2">
@@ -136,7 +136,7 @@
                       {{item.requester.meeting_attendance}} Meetings
                     </p>
                     <p class="card-text">
-                      {{item.requester.reliability}}% Reliability
+                      {{item.requester.reliability|default:"--"}} % Reliability
                     </p>
                     <hr>
                     <span class="badge bg-warning mb-2">
@@ -172,10 +172,10 @@
                 <div class="card-body text-center">
                   <h5 class="card-title">{{item.requested.get_full_name|default:"--"|title}}</h5>
                   <p class="card-text">
-                    {{item.requested.meeting_attendance|default:"--"}} Meetings
+                    {{item.requested.meeting_attendance}} Meetings
                   </p>
                   <p class="card-text">
-                    {{item.requested.reliability|default:"--"}}% Reliability
+                    {{item.requested.reliability|default:"--"}} % Reliability
                   </p>
                   <hr>
                   <span class="badge bg-warning mb-2">
@@ -211,7 +211,7 @@
                     {{item.requested.meeting_attendance}} Meetings
                   </p>
                   <p class="card-text">
-                    {{item.requested.reliability}}% Reliability
+                    {{item.requested.reliability|default:"--"}} % Reliability
                   </p>
                   <hr>
                   <span class="badge bg-warning mb-2">
@@ -248,7 +248,7 @@
                     {{item.requested.meeting_attendance}} Meetings
                   </p>
                   <p class="card-text">
-                    {{item.requested.reliability}}% Reliability
+                    {{item.requested.reliability|default:"--"}} % Reliability
                   </p>
                   <hr>
                   <span class="badge bg-warning mb-2">

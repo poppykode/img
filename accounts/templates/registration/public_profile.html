@@ -41,19 +41,22 @@
         <div class="col-md-9">
           <div class="card-body">
             <h5 class="card-title">{{obj.get_full_name|title}}</h5>
-            <a href="{% url 'meeting_calendar:book_a_meeting' obj.id %}" class="btn btn-primary">
-              {% if obj.role == 'Candidate' %}
-              Propose Meeting
-              {% else %}
-              Book Session
-              {% endif %}
-            </a>
-
+   
             <div class="row mt-3">
+              <div class="col-md-4">
+                <a href="{% url 'meeting_calendar:book_a_meeting_v1' obj.id %}" class="btn btn-primary">
+                  {% if obj.role == 'Candidate' %}
+                  Propose Meeting
+                  {% else %}
+                  Book Session
+                  {% endif %}
+                </a>
+    
+              </div>
               <div class="col-md-4">Time Zone : {{obj.user_general_additional_info.time_zone}} </div>
               {% if obj.role == 'Candidate' %}
-              <div class="col-md-4"><a href="{% url 'meeting_calendar:availability' obj.id %}">See Availability</a> </div>
-              <div class="col-md-4">Exam Date: {{obj.user_candidate_additional_info.exam_date}} </div>
+              <!-- <div class="col-md-4"><a href="{% url 'meeting_calendar:availability' obj.id %}">See Availability</a> </div> -->
+              <div class="col-md-4">Exam Date: {{obj.study_buddy_additional_info.exam_date}} </div>
               {% else %}
               <div class="col-md-4">Rate : {{obj.user_coach_additional_info.rate}} /hr</div>
               <div class="col-md-4">Nhs Experience: {{obj.user_coach_additional_info.nhs_experience}} years</div>
@@ -86,6 +89,12 @@
                   </div>
                 </div>
               </div>
+              {% if obj.session_expectation_and_availability.availability_and_session_expectation %}
+              <div class="col-md-12">
+                <h5 class="card-title">Session expectation and  availability</h5>
+                <p>{{obj.session_expectation_and_availability.availability_and_session_expectation|title}}</p>
+              </div>
+              {% endif %}
             </div>
           </div>
         </div>

@@ -26,13 +26,24 @@ class AvaliabilityForm(forms.ModelForm):
     
         return cleaned_data
     
-class BookMeetingForm(forms.Form):
-    day = forms.ModelChoiceField(queryset=None, empty_label=None) 
+class BookMeetingForm(forms.ModelForm):
+    class Meta:
+        model = models.BookedMeeting
+        widgets = {
+            "booking_date": forms.DateInput(attrs={'class': 'datepicker', 'data-date-format': 'YYYY-MM-DD', 'type': 'date','min':date.today()}),
+            "start_time": forms.TimeInput(attrs={"class": "datepicker", "type": "time"}),
+            "end_time": forms.TimeInput(attrs={"class": "datepicker", "type": "time"}),
+        }
+        fields = ("booking_date", "start_time", "end_time")
 
-    def __init__(self, *args, user_id=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if user_id:
-            self.fields['day'].queryset = models.Avaliability.objects.filter(user=user_id)
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get("start_time")
+        end_time = cleaned_data.get("end_time")
+
+        if start_time >= end_time:
+            
+            raise forms.ValidationError("Start time cannot be after end time.")
 
 
 class QuickMeeting(forms.Form):

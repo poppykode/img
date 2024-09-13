@@ -19,8 +19,8 @@ urlpatterns = [
     path('edit-third-level-station/<int:id>',views.edit_third_level_station,name='edit_third_level_station'),
     path('delete-third-level-station/<int:id>',views.delete_third_level_station,name='delete_third_level_station'),
 
-    path('station-creator',views.station_creator,name='station_creator'),
-    path('stations-admin',views.stations_admin,name='stations'),
+    path('station-creator/',views.station_creator,name='station_creator'),
+    path('stations-admin/',views.stations_admin,name='stations'),
 
     path('stations',views.first_level_station_view,name='first_level_station_view'),
     path('stations/2/<int:id>',views.second_level_station_view,name='second_level_station_view'),

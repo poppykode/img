@@ -22,8 +22,8 @@ class BookedMeetingManager(models.Manager):
         print(f"Threshhold: {threshhold}") 
         return BookedMeeting.objects.filter(
             booking_date=now.date(),
-            availability__start_time__lte=threshhold,
-            availability__start_time__gte=now,
+            start_time__lte=threshhold,
+            # start_time__gte=now,
             accepted=True,
             is_check_in = False,
             is_check_out = False
@@ -34,7 +34,7 @@ class BookedMeetingManager(models.Manager):
         threshhold = now - timedelta(minutes= minutes)     
         return BookedMeeting.objects.filter(
             booking_date= now,
-            availability__end_time__lte=threshhold,
+            end_time__lte=threshhold,
             accepted=True,
             is_check_in = True,
             is_check_out = False
@@ -45,7 +45,9 @@ class BookedMeetingManager(models.Manager):
 class BookedMeeting (models.Model):
     requester = models.ForeignKey(User,on_delete=models.CASCADE, related_name="requester")
     requested = models.ForeignKey(User,on_delete=models.CASCADE, related_name="requested", blank=True,null=True)
-    availability = models.ForeignKey('Avaliability', on_delete=models.CASCADE, related_name='booked_meeting_availability')
+    availability = models.ForeignKey('Avaliability', on_delete=models.CASCADE, related_name='booked_meeting_availability',blank=True,null=True)
+    start_time = models.TimeField(blank=True, null=True)
+    end_time = models.TimeField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     booking_date = models.DateField()
     accepted = models.BooleanField(default=False)
