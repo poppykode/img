@@ -60,7 +60,6 @@ def next_month(d):
     allowed_roles=[RoleEnum.ADMIN.value, RoleEnum.CANDIDATE.value]
 )
 def meetings(request):
-    meetings_due_for_check_out()
     template_name = 'meetings.html'
     user = request.user
     incoming_meetings = BookedMeeting.objects.filter(requested = user).filter(accepted = False).exclude(booking_date__lt = date.today()).exclude(cancelled =True).exclude(rejected =True)
@@ -240,6 +239,8 @@ def book_a_meeting(request, user_id):
         
             """,
         )
+        print("sending email .......")
+        print(email_)
         email_.send()
         return redirect("accounts:public_profile", user.id)
     return render(
