@@ -25,7 +25,7 @@
           <div
             class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
             style="width: 1146.46px;">
-            <h5 class="card-title mb-sm-0 me-2">Station Creator</h5>
+            <h5 class="card-title mb-sm-0 me-2">Station Creator</h5> 
             <div class="action-btns">
               <a class="btn btn-label-primary me-3" href="{% url 'stations:stations' %}">
                 <span class="align-middle"> Back</span>
@@ -42,7 +42,7 @@
               <div class="col-md-12">
                 <div class="mb-3">
                   <label for="station" class="form-label">Stations*</label>
-                  <select class="form-select" id="station" aria-label="Default select example" required>
+                  <select class="form-select" id="station" name="third_level_station" aria-label="Default select example" required>
                     {% for station in stations %}
                     <option value="{{station.id}}">{{station.title|title}}</option>
             

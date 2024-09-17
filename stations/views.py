@@ -196,8 +196,10 @@ def station_creator(request):
     template_name = "station_creator.html"
     if request.method == "POST":
         # Station Details
+        print("station________________")
+        print(request.POST.get('third_level_station'))
         station = get_object_or_404(
-            models.ThirdLevelStation, id=request.POST.get("station")
+            models.ThirdLevelStation, id = request.POST.get('third_level_station')
         )
         station_exists = models.ExaminerMarkSheet.objects.filter(station=station).exists()
         if not station_exists:
