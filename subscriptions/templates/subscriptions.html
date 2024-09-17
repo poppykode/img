@@ -42,7 +42,7 @@ Subscriptions
             <span>Expired Subscriptions</span>
             <div class="d-flex align-items-end mt-2">
               <h4 class="mb-0 me-2">{{expired_subs}}/{{all_subs}}</h4>
-              <small class="text-danger">({{expired_subs|percentage:all_subs}}%)</small>
+              <small class="text-danger">({{expired_subs|percentage:all_subs|floatformat:2}}%)</small>
             </div>
             <small>Total expired subs</small>
           </div>
@@ -61,7 +61,7 @@ Subscriptions
             <span>Active Subscriptions</span>
             <div class="d-flex align-items-end mt-2">
               <h4 class="mb-0 me-2">{{active_subs}}/{{all_subs}}</h4>
-              <small class="text-success">({{active_subs|percentage:all_subs}}%)</small>
+              <small class="text-success">({{active_subs|percentage:all_subs|floatformat:2}}%)</small>
             </div>
             <small>Total expired subs</small>
           </div>
@@ -80,7 +80,7 @@ Subscriptions
             <span>Successfull Payments</span>
             <div class="d-flex align-items-end mt-2">
               <h4 class="mb-0 me-2">{{successfull_payments}}/{{all_subs}}</h4>
-              <small class="text-success">({{successfull_payments|percentage:all_subs}}%)</small>
+              <small class="text-success">({{successfull_payments|percentage:all_subs|floatformat:2}}%)</small>
             </div>
             <small>Total successfull payments</small>
           </div>
@@ -99,7 +99,7 @@ Subscriptions
             <span>Unsuccessfull payments</span>
             <div class="d-flex align-items-end mt-2">
               <h4 class="mb-0 me-2">{{unsuccessfull_payments}}/{{all_subs}}</h4>
-              <small class="text-danger">({{unsuccessfull_payments|percentage:all_subs}}%)</small>
+              <small class="text-danger">({{unsuccessfull_payments|percentage:all_subs|floatformat:2}}%)</small>
             </div>
             <small>Total unsuccessfull payments</small>
           </div>
