@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta
+import logging
 from django.urls import reverse
 from django.conf import settings
 from calendar import HTMLCalendar
 from core.email import Email
 from .models import BookedMeeting
+
+
+logging.basicConfig(filename="check_in_check_out.log", level=logging.INFO)
 
 class Calendar(HTMLCalendar):
 	# def __init__(self, year=None, month=None, user=None):
@@ -42,9 +46,9 @@ class Calendar(HTMLCalendar):
 		return cal
 	
 def meetings_due_for_check_in(minutes = 5):
-	print("meetings_due_for_check_in")
+
 	due_for_check_in = BookedMeeting.objects.to_check_in(minutes)
-	print(f"List of Due meeting: {due_for_check_in}")
+	logging.info(f"List of Due meeting: {due_for_check_in}")
 	base_url = settings.BASE_URL
 	if due_for_check_in:
 		for meeting in due_for_check_in:
@@ -67,9 +71,8 @@ def meetings_due_for_check_in(minutes = 5):
 			email_.send()
 
 def meetings_due_for_check_out(minutes = 30):
-	print("meetings_due_for_check_OUT")
 	due_for_check_out = BookedMeeting.objects.to_check_out(minutes)
-	print(f"List of Due meeting for check out: {due_for_check_out}")
+	logging.info(f"List of Due meeting for check out: {due_for_check_out}")
 	base_url = settings.BASE_URL
 	if due_for_check_out:		
 		for meeting in due_for_check_out:

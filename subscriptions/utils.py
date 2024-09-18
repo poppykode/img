@@ -15,7 +15,7 @@ from core.enums import CurrencyEnum, IntervalEnum, StatusEnum
 SECRET_KEY = settings.STRIPE_SECRET_KEY
 
 stripe.api_key = SECRET_KEY
-logging.basicConfig(filename="utils.log", level=logging.INFO)
+logging.basicConfig(filename="subscription.log", level=logging.INFO)
 
 
 def get_stripe_price_in_cents(price) -> int:

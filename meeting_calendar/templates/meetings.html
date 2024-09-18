@@ -217,6 +217,8 @@
                   <span class="badge bg-warning mb-2">
                     {% include 'snippets/date_time.html' with obj=item %}
                   </span>
+               
+                  <input class="form-control" id="clipboard-example" type="text" value="{{item.requested.email}}" readonly>
                   <a href="{% url 'meeting_calendar:update_meeting_status' item.id 'cancelled' %}"
                     class="btn btn-warning mt-3">Cancel</a>                 
                 </div>
