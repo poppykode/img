@@ -75,8 +75,8 @@ APP_BASE_URL = 'http://127.0.0.1:8000'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 CRONJOBS = [
     
-    ('*/2 * * * *', 'subscriptions.utils.meetings_due_for_check_in'),
-    ('*/2.30 * * * *', 'subscriptions.utils.meetings_due_for_check_out'),
+    ('*/2 * * * *', 'meeting_calendar.utils.meetings_due_for_check_in'),
+    ('*/2.30 * * * *', 'meeting_calendar.utils.meetings_due_for_check_out'),
     ('0 0 * * *', 'subscriptions.utils.expire_subscriptions'),
 ]
 
