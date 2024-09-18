@@ -18,8 +18,6 @@ class BookedMeetingManager(models.Manager):
     def to_check_in(self,minutes):
         now = dt.now()
         threshhold = now + timedelta(minutes=minutes)
-        print(f"Now: {now}")
-        print(f"Threshhold: {threshhold}") 
         return BookedMeeting.objects.filter(
             booking_date=now.date(),
             start_time__lte=threshhold,
