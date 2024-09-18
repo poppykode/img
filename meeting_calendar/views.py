@@ -418,8 +418,8 @@ def create_a_quick_meeting(request):
         if form.is_valid():
             user_ = request.user
             date = request.POST.get("date")
-            start_time=request.POST.get("start_time"),
-            end_time=request.POST.get("end_time"),
+            start_time=request.POST.get("start_time")
+            end_time=request.POST.get("end_time")
 
             BookedMeeting.objects.create(
                 requester=user_, start_time=start_time,end_time=end_time, booking_date=date
