@@ -7,8 +7,6 @@ from core.email import Email
 from .models import BookedMeeting
 
 
-logging.basicConfig(filename="check_in_check_out.log", level=logging.INFO)
-
 class Calendar(HTMLCalendar):
 	# def __init__(self, year=None, month=None, user=None):
 	# 	self.year , self.user = year, user
@@ -48,7 +46,7 @@ class Calendar(HTMLCalendar):
 def meetings_due_for_check_in(minutes = 5):
 
 	due_for_check_in = BookedMeeting.objects.to_check_in(minutes)
-	logging.info(f"List of Due meeting: {due_for_check_in}")
+	logging.info(f"Time: {datetime.now()} ->> List of Due meeting: {due_for_check_in}")
 	base_url = settings.BASE_URL
 	if due_for_check_in:
 		for meeting in due_for_check_in:
@@ -62,9 +60,8 @@ def meetings_due_for_check_in(minutes = 5):
 				<p>Check In</p>
 				<p>Accepted by: {meeting.requested.get_full_name()} </p>
 				<p>Requested by: {meeting.requested.get_full_name()} </p>
-				<p>Date: {meeting.booking_date} </p>
-				<p>Slot: {meeting.availability.day}: {meeting.availability.start_time} {meeting.availability.end_time} </p>
-				<a href={base_url}{link}>Click to check in</a>	
+				<p>Slot: {meeting.booking_date}: {meeting.start_time} {meeting.end_time} </p>
+				<a href={base_url}{link}>Click to check in</a>	 
 				""",
 			)
 			print(email_)
@@ -72,7 +69,7 @@ def meetings_due_for_check_in(minutes = 5):
 
 def meetings_due_for_check_out(minutes = 30):
 	due_for_check_out = BookedMeeting.objects.to_check_out(minutes)
-	logging.info(f"List of Due meeting for check out: {due_for_check_out}")
+	logging.info(f"Time: {datetime.now()} ->> List of Due meeting for check out: {due_for_check_out}")
 	base_url = settings.BASE_URL
 	if due_for_check_out:		
 		for meeting in due_for_check_out:
@@ -86,8 +83,7 @@ def meetings_due_for_check_out(minutes = 30):
 				<p>Check Out</p>
 				<p>Accepted by: {meeting.requested.get_full_name()} </p>
 				<p>Requested by: {meeting.requested.get_full_name()} </p>
-				<p>Date: {meeting.booking_date} </p>
-				<p>Slot: {meeting.availability.day}: {meeting.availability.start_time} {meeting.availability.end_time} </p>
+				<p>Slot: {meeting.booking_date}: {meeting.start_time} {meeting.end_time} </p>
 				<a href={base_url}{link}>Click to check out</a>	
 				""",
 			)

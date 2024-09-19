@@ -15,7 +15,7 @@ from core.enums import CurrencyEnum, IntervalEnum, StatusEnum
 SECRET_KEY = settings.STRIPE_SECRET_KEY
 
 stripe.api_key = SECRET_KEY
-logging.basicConfig(filename="subscription.log", level=logging.INFO)
+logging.basicConfig(filename="img.log", level=logging.INFO)
 
 
 def get_stripe_price_in_cents(price) -> int:
@@ -47,12 +47,10 @@ def edit_stripe(obj, product_name: str, price: Decimal):
         modified_stripe_price_id = ""
         stripe_product = stripe.Product.retrieve(obj.stripe_product_id)
         if not stripe_product.name == product_name:
-            print("Price Modify")
             stripe.Product.modify(stripe_product.id, name=product_name)
         stripe_price = stripe.Price.retrieve(obj.stripe_price_id)
         current_price = get_stripe_price_in_cents(price)
         if not stripe_price.unit_amount == current_price:
-            print("Price Modify")
             stripe.Price.modify(stripe_price.id, active=False)
             new_stripe_price = stripe.Price.create(
                 product=stripe_product.id,
@@ -91,7 +89,7 @@ def create_subscription(sub_obj, user_id, check_out_session_id):
         subscription_product=sub_obj,
         check_out_session_id=check_out_session_id,
     )
-    logging.info(f"resp --->> {subscription.id}")
+    logging.info(f"create subscription id from stripe --->> {subscription.id}")
     return subscription
 
 
