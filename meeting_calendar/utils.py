@@ -46,7 +46,7 @@ class Calendar(HTMLCalendar):
 def meetings_due_for_check_in(minutes = 5):
 
 	due_for_check_in = BookedMeeting.objects.to_check_in(minutes)
-	logging.info(f"Time: {datetime.now()} ->> List of Due meeting: {due_for_check_in}")
+	logging.info(f"Time: {datetime.now()} ->> List of Due meeting for check in: {due_for_check_in}")
 	base_url = settings.BASE_URL
 	if due_for_check_in:
 		for meeting in due_for_check_in:
