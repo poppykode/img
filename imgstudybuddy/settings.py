@@ -175,7 +175,7 @@ BASE_URL = 'http://77.37.122.93'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'GMT+1'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
