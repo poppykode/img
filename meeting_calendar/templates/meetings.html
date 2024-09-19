@@ -217,8 +217,12 @@
                   <span class="badge bg-warning mb-2">
                     {% include 'snippets/date_time.html' with obj=item %}
                   </span>
-               
-                  <input class="form-control" id="clipboard-example" type="text" value="{{item.requested.email}}" readonly>
+              
+                  <div class="mb-2">
+                    <button type="button" id="copy-button" value="{{item.requested.email}}" class="btn btn-primary mb-1">Copy Email</button>
+                    <a href="mailto:{{item.requested.email}}" class="btn btn-success">Send Email</a>
+                  </div>
+          
                   <a href="{% url 'meeting_calendar:update_meeting_status' item.id 'cancelled' %}"
                     class="btn btn-warning mt-3">Cancel</a>                 
                 </div>
@@ -268,4 +272,21 @@
   </div>
 
 
+{% endblock %}
+{% block js %}
+<script>
+  const copyButton = document.getElementById('copy-button');
+  const email = copyButton.value;
+  
+  copyButton.addEventListener('click', () => {
+    navigator.clipboard.writeText(email)
+      .then(() => {
+        alert("Email copied to clipboard!");
+      })
+      .catch(err => {
+        alert("Something went wrong!");
+      });
+  });
+  </script>
+  
 {% endblock %}

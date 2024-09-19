@@ -59,7 +59,7 @@ def meetings_due_for_check_in(minutes = 5):
 				message=f"""
 				<p>Check In</p>
 				<p>Accepted by: {meeting.requested.get_full_name()} </p>
-				<p>Requested by: {meeting.requested.get_full_name()} </p>
+				<p>Requested by: {meeting.requester.get_full_name()} </p>
 				<p>Slot: {meeting.booking_date}: {meeting.start_time} {meeting.end_time} </p>
 				<a href={base_url}{link}>Click to check in</a>	 
 				""",
@@ -82,7 +82,7 @@ def meetings_due_for_check_out(minutes = 30):
 				message=f"""
 				<p>Check Out</p>
 				<p>Accepted by: {meeting.requested.get_full_name()} </p>
-				<p>Requested by: {meeting.requested.get_full_name()} </p>
+				<p>Requested by: {meeting.requester.get_full_name()} </p>
 				<p>Slot: {meeting.booking_date}: {meeting.start_time} {meeting.end_time} </p>
 				<a href={base_url}{link}>Click to check out</a>	
 				""",
