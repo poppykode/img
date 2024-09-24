@@ -108,7 +108,7 @@
                    {{item.requester.meeting_attendance}} Meetings
                  </p>
                  <p class="card-text">
-                   {{item.requester.reliability|default:"--"}} % Reliability
+                   {{item.requester.reliability|default:"--"|floatformat:2}} % Reliability
                  </p>
                  <hr>
                  <span class="badge bg-warning mb-2">
@@ -138,7 +138,7 @@
                       {{item.requester.meeting_attendance}} Meetings
                     </p>
                     <p class="card-text">
-                      {{item.requester.reliability|default:"--"}} % Reliability
+                      {{item.requester.reliability|default:"--"|floatformat:2}} % Reliability
                     </p>
                     <hr>
                     <span class="badge bg-warning mb-2">
@@ -177,7 +177,7 @@
                     {{item.requested.meeting_attendance}} Meetings
                   </p>
                   <p class="card-text">
-                    {{item.requested.reliability|default:"--"}} % Reliability
+                    {{item.requested.reliability|default:"--"|floatformat:2}} % Reliability
                   </p>
                   <hr>
                   <span class="badge bg-warning mb-2">
@@ -213,7 +213,7 @@
                     {{item.requested.meeting_attendance}} Meetings
                   </p>
                   <p class="card-text">
-                    {{item.requested.reliability|default:"--"}} % Reliability
+                    {{item.requested.reliability|default:"--"|floatformat:2}} % Reliability
                   </p>
                   <hr>
                   <span class="badge bg-warning mb-2">
@@ -269,7 +269,7 @@
                     {{item.requested.meeting_attendance}} Meetings
                   </p>
                   <p class="card-text">
-                    {{item.requested.reliability|default:"--"}} % Reliability
+                    {{item.requested.reliability|default:"--"|floatformat:2}} % Reliability
                   </p>
                   <hr>
                   <span class="badge bg-warning mb-2">
