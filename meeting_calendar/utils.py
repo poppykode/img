@@ -43,7 +43,7 @@ class Calendar(HTMLCalendar):
 			cal += f'{self.formatweek(week, meetings)}\n'
 		return cal
 	
-def meetings_due_for_check_in(minutes = 5):
+def meetings_due_for_check_in(minutes = 65):
 
 	due_for_check_in = BookedMeeting.objects.to_check_in(minutes)
 	logging.info(f"Time: {datetime.now()} ->> List of Due meeting for check in: {due_for_check_in}")
@@ -64,10 +64,9 @@ def meetings_due_for_check_in(minutes = 5):
 				<a href={base_url}{link}>Click to check in</a>	 
 				""",
 			)
-			print(email_)
 			email_.send()
 
-def meetings_due_for_check_out(minutes = 30):
+def meetings_due_for_check_out(minutes = 90):
 	due_for_check_out = BookedMeeting.objects.to_check_out(minutes)
 	logging.info(f"Time: {datetime.now()} ->> List of Due meeting for check out: {due_for_check_out}")
 	base_url = settings.BASE_URL

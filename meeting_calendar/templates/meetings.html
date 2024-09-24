@@ -2,7 +2,9 @@
 {% load static %}
 {% block title %}Meetings{% endblock %}
 {% load crispy_forms_tags %}
-
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/vendor/libs/toastr/toastr.css' %}" />
+{% endblock %}
 {% block content %}
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb breadcrumb-style1">
@@ -217,9 +219,22 @@
                   <span class="badge bg-warning mb-2">
                     {% include 'snippets/date_time.html' with obj=item %}
                   </span>
+                  <div class="row">
+                    <div class="col-md-12 col-sm-12 pe-0 mb-md-0 mb-2">
+                      <input class="form-control" id="clipboard-example" type="hidden" value="{{item.requested.email}}" />
+                    </div>
+                    <div class="col-md-12 col-sm-12 mb-2">
+                      <button
+                        class="clipboard-btn btn btn-primary"
+                        data-clipboard-action="copy"
+                        data-clipboard-target="#clipboard-example">
+                        Copy email
+                      </button>
+           
+                    </div>
+                  </div>
               
                   <div class="mb-2">
-                    <button type="button" id="copy-button" value="{{item.requested.email}}" class="btn btn-primary mb-1">Copy Email</button>
                     <a href="mailto:{{item.requested.email}}" class="btn btn-success">Send Email</a>
                   </div>
           
@@ -274,19 +289,8 @@
 
 {% endblock %}
 {% block js %}
-<script>
-  const copyButton = document.getElementById('copy-button');
-  const email = copyButton.value;
-  
-  copyButton.addEventListener('click', () => {
-    navigator.clipboard.writeText(email)
-      .then(() => {
-        alert("Email copied to clipboard!");
-      })
-      .catch(err => {
-        alert("Something went wrong!");
-      });
-  });
-  </script>
-  
+  <script src="{% static 'assets/vendor/libs/clipboard/clipboard.js' %}"></script>
+  <script src="{% static 'assets/vendor/libs/toastr/toastr.js' %}"></script>
+  <script src="{% static 'assets/js/extended-ui-misc-clipboardjs.js' %}"></script>
+  <script src="{% static 'assets/vendor/js/template-customizer.js' %}"></script>
 {% endblock %}
