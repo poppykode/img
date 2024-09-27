@@ -471,7 +471,7 @@ def accept_a_quick_meeting(request, id):
         <p>New Meetings Details</p>
         <p>Accepted by: {user_.get_full_name()} </p>
         <p>Date: {meeting.booking_date} </p>
-        <p>Slot: {meeting.availability.day}: {meeting.availability.start_time} {meeting.availability.end_time} </p>
+        <p>Slot: {meeting.booking_date}: {meeting.start_time} {meeting.end_time} </p>
     
         """,
     )
